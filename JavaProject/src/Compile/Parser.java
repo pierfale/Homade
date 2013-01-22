@@ -21,15 +21,18 @@ public class Parser {
 	 * @throws IncorrectFormatSource : Code assembleur incorrecte
 	 */
 	
-	public long[] AsmToBin(String source) throws IncorrectFormatSource {
+	public static long[] AsmToBin(String source) throws IncorrectFormatSource {
 		ArrayList<Long> tmp = new ArrayList<Long>();
 		BufferedReader reader = new BufferedReader(new CharArrayReader(source.toCharArray()));
 		String line;
 		int nbLine = 0;
+		long currLong = 0;
+		int offsetLong = 0;
 		try {
 			line = reader.readLine();
 
 			while(line != null) {
+				short instr = 0;
 				nbLine++;
 				Scanner sc = new Scanner(line);
 				if(sc.hasNext()) { //type instruction
@@ -42,7 +45,7 @@ public class Parser {
 								String p = sc.next();
 								try {
 									inOut[i] = Integer.parseInt(p);
-									if(inOut[i] < 0 && inOut[i] > 3) {
+									if(inOut[i] < 0 || inOut[i] > 3) {
 										sc.close();
 										throw new IncorrectFormatSource("Parametre "+(i+1)+" de IP doit etre compris entre 0 et 3", nbLine);
 									}
@@ -79,8 +82,8 @@ public class Parser {
 						if(sc.hasNext()) { // IP
 							String p4 = sc.next();
 							try {
-								sIP = Integer.parseInt(p4);
-								if(sIP < 0 && sIP > 1024) {
+								IP = Integer.parseInt(p4);
+								if(IP < 0 || IP > 1024) {
 									sc.close();
 									throw new IncorrectFormatSource("Parametre numero IP doit etre compris entre 0 et 1024", nbLine);
 								}
@@ -94,7 +97,12 @@ public class Parser {
 							throw new IncorrectFormatSource("Parametre numero IP manquant", nbLine);
 						}
 						
-						short instr = (short) 0x8000; //signature
+						if(sIP == 1 && IP == 0x03FF) {
+							sc.close();
+							throw new IncorrectFormatSource("Identifiant IP réservé", nbLine);							
+						}
+						
+						instr = (short) 0x8000; //signature
 						instr += inOut[0] << 13; //pop
 						instr += inOut[1] << 11; //push	
 						instr += sIP << 10;
@@ -128,11 +136,21 @@ public class Parser {
 					throw new IncorrectFormatSource("Type manquant", nbLine);
 				}
 				sc.close();
+				currLong += (long)instr << (8*(3-offsetLong));
 				line = reader.readLine();
+				offsetLong++;
+				if(offsetLong == 4) {
+					offsetLong = 0;
+					tmp.add(new Long(currLong));
+					currLong = 0;
+				}
 			} 
 			
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		if(offsetLong != 4) {
+			tmp.add(new Long(currLong));
 		}
 		long [] instr = new long[tmp.size()];
 		for(int i=0; i<tmp.size(); i++)
