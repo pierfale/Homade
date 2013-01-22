@@ -1,5 +1,6 @@
 package Exception;
 
+@SuppressWarnings("serial")
 public class IncorrectFormatSource extends Exception {
 	
 	private String message;
