@@ -58,17 +58,21 @@ public class Processor {
 	}
 	
 	private static short fetch() {
-		short currInstr = (short) (instructions[PC/4] >> 16*(3 - PC%4));
+		short currInstr = getCurrInstr();
 		System.out.println(String.format("%x", currInstr));
 		if(((currInstr >> 13) & 0x1) == 0xF || ((currInstr >> 9) & 0x3) == 0x3F) { //si call ou ba
 			System.out.println("regAddr");
 			PC++;
-			short currInstr2 = (short) (instructions[PC/4] >> 16*(3 - PC%4));
+			short currInstr2 = getCurrInstr();
 			regAddr = currInstr2 << 16;
 			PC++;
-			regAddr += (short) (instructions[PC/4] >> 16*(3 - PC%4));
+			regAddr += getCurrInstr();
 		}
 		PC++;
 		return currInstr;
+	}
+	
+	private static short getCurrInstr() {
+		return  (short) (instructions[PC/4] >> 16*(3 - PC%4));
 	}
 }
