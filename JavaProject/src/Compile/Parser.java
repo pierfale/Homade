@@ -21,19 +21,25 @@ public class Parser {
 	 * @throws IncorrectFormatSource : Code assembleur incorrecte
 	 */
 	
+	private static long currLong;
+	private static ArrayList<Long> tmp;
+	private static int offsetLong;
+	private static short instr;
+	
 	public static long[] AsmToBin(String source) throws IncorrectFormatSource {
-		ArrayList<Long> tmp = new ArrayList<Long>();
+		tmp = new ArrayList<Long>();
 		BufferedReader reader = new BufferedReader(new CharArrayReader(source.toCharArray()));
 		String line;
 		int nbLine = 0;
-		long currLong = 0;
-		int offsetLong = 0;
+		currLong = 0;
+		offsetLong = 0;
+		boolean call = false;
 		try {
 			line = reader.readLine();
-
 			while(line != null) {
-				short instr = 0;
+				instr = 0;
 				nbLine++;
+				String p;
 				Scanner sc = new Scanner(line);
 				if(sc.hasNext()) { //type instruction
 					String type = sc.next();
@@ -42,7 +48,7 @@ public class Parser {
 						int sIP = 0, IP = 0;
 						for(int i=0; i<2; i++) { //Pop et Push
 							if(sc.hasNext()) {
-								String p = sc.next();
+								p = sc.next();
 								try {
 									inOut[i] = Integer.parseInt(p);
 									if(inOut[i] < 0 || inOut[i] > 3) {
@@ -62,9 +68,9 @@ public class Parser {
 						}
 						
 						if(sc.hasNext()) { // Short IP
-							String p3 = sc.next();
+							p = sc.next();
 								try {
-									sIP = Integer.parseInt(p3);
+									sIP = Integer.parseInt(p);
 									if(sIP != 0 && sIP != 1) {
 										sc.close();
 										throw new IncorrectFormatSource("Parametre short IP doit valoir 0 ou 1", nbLine);
@@ -80,9 +86,9 @@ public class Parser {
 						}
 						
 						if(sc.hasNext()) { // IP
-							String p4 = sc.next();
+							p = sc.next();
 							try {
-								IP = Integer.parseInt(p4);
+								IP = Integer.parseInt(p);
 								if(IP < 0 || IP > 1024) {
 									sc.close();
 									throw new IncorrectFormatSource("Parametre numero IP doit etre compris entre 0 et 1024", nbLine);
@@ -108,17 +114,41 @@ public class Parser {
 						instr += sIP << 10;
 						instr += IP; //IP
 					}
-					else if(type.equals("BR")) { //Branchement relatif
-						
+					else if(type.equals("BR")||type.equals("BZ")||type.equals("BNZ")) { //Branchement relatif
+						int saut = 0;
+						if (sc.hasNext()) {
+							saut = Integer.parseInt(sc.next());
+							if (saut == 0 || saut > 512 || saut < -512 ){
+								sc.close();
+								throw new IncorrectFormatSource("Valeur de déplacement interdite :", nbLine);
+							}
+						}
+						if (type.equals("BR"))
+							instr = (short) 0x0000; //signature
+						else if (type.equals("BZ"))
+							instr = (short) 0x0400; //signature
+						else 
+							instr = (short) 0x0800; //signature
+						instr += (short) saut;
 					}
-					else if(type.equals("BZ")) { //Branchement relatif conditionnel
-						
-					}
-					else if(type.equals("BNZ")) { //Branchement relatif conditionnel inverse
-						
-					}
-					else if(type.equals("CALL")) { //Branchement absolue
-						
+					else if(type.equals("CALL") || type.equals("BA")) { //Branchement absolue
+						if(offsetLong >= 2) {
+							instr = 0;
+							addLong();
+							instr = 0;
+							addLong();
+						}
+							if (type.equals("CALL"))
+								instr = (short) 0x1000;
+							else 
+								instr = (short) 0x0C00;
+							call = true;
+							addLong();
+							int instrInt = Integer.parseInt(sc.next());
+							instr = (short)(instrInt >> 16 & 0xFFFF);
+							addLong();
+							instr = (short)instrInt;
+							addLong();
 					}
 					else if(type.equals("RET")) { // Retour
 						
@@ -136,15 +166,11 @@ public class Parser {
 					throw new IncorrectFormatSource("Type manquant", nbLine);
 				}
 				sc.close();
-				currLong += (long)instr << (8*(3-offsetLong));
 				line = reader.readLine();
-				offsetLong++;
-				if(offsetLong == 4) {
-					offsetLong = 0;
-					tmp.add(new Long(currLong));
-					currLong = 0;
-				}
-			} 
+				if (!call) 
+					addLong();
+				call = false;
+			}
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -157,5 +183,14 @@ public class Parser {
 			instr[i] = tmp.get(i);
 		return instr;
 	}
-
+	
+	private static void addLong(){
+		currLong += ((long)instr << (16*(3-offsetLong)))&(long)0xFFFF << (16*(3-offsetLong));
+		offsetLong++;
+		if(offsetLong == 4) {
+			offsetLong = 0;
+			tmp.add(new Long(currLong));
+			currLong = 0;
+		}
+	}
 }
