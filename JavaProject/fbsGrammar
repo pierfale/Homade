@@ -1,0 +1,10 @@
+main 				:= 	listinstruction
+
+listinstruction 	:= 	instruction
+					|	listinstruction instruction
+		
+instruction			:=	number ";"
+
+number 				:=	"0"
+					| 	"1"
+					|	"2"	
