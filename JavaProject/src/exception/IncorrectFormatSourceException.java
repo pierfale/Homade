@@ -1,12 +1,12 @@
-package Exception;
+package exception;
 
 @SuppressWarnings("serial")
-public class IncorrectFormatSource extends Exception {
+public class IncorrectFormatSourceException extends Exception {
 	
 	private String message;
 	private int line;
 	
-	public IncorrectFormatSource(String message, int line) {
+	public IncorrectFormatSourceException(String message, int line) {
 		this.message = message;
 		this.line = line;
 	}

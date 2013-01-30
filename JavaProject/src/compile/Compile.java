@@ -1,12 +1,13 @@
-package Compile;
+package compile;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import Exception.FileNotFoundException;
-import Exception.IncorrectFormatSource;
+import exception.FileNotFoundException;
+import exception.IncorrectFormatSourceException;
+
 
 /**
  * 
@@ -31,7 +32,7 @@ public class Compile {
 					System.out.println(path + " compilé avec succès");
 				} catch (java.io.FileNotFoundException e) {
 					e.printStackTrace();
-				} catch (IncorrectFormatSource e) {
+				} catch (IncorrectFormatSourceException e) {
 					e.printStackTrace();
 				}
 			}
@@ -42,7 +43,7 @@ public class Compile {
 						System.out.println(path + " compilé avec succès");
 					} catch (java.io.FileNotFoundException e) {
 						e.printStackTrace();
-					} catch (IncorrectFormatSource e) {
+					} catch (IncorrectFormatSourceException e) {
 						e.printStackTrace();
 					}
 				}
