@@ -29,29 +29,71 @@ public class Words {
 		return name;
 	}
 
-	public boolean match(String s) {
-		System.out.println(s+"=>"+name+"("+words.size()+")");
+	public WordList match(WordList wl, int deep) {
+		for(int i=0; i<deep; i++)
+			System.out.print("   ");
+		System.out.println(name+"("+words.size()+")=>"+wl);
 		for(int i=0; i<words.size(); i++) {
-			boolean ok = true;
-			int [] sublength = new int[words.get(i).length];
+			boolean ok = true, ok2 = false;
+			int [] sublength = new int[words.get(i).length-1];
 			for(int j=0; j<sublength.length; j++)
 				sublength[j] = 1;
-			for(; sum(sublength) < s.length(); sublength = inc(sublength, s.length())) {
+			System.out.println("tmp : "+sublength.length+", "+wl.size());
+			if(sum(sublength) >= wl.size())
+				ok = false;
+			for(; !ok2 && sublength!= null && sublength.length != 0 && sum(sublength) < wl.size(); sublength = inc(sublength, wl.size()-1)) {
 				for(int k : sublength)
 					System.out.print(k+",");
 				System.out.println("");
-				
-				for(int j=0; j<sublength.length; j++) {
+				WordList tmp = new WordList();
+				for(int j=0; ok && j<sublength.length; j++) {
 					int min = cum(sublength, j), max = cum(sublength, j+1);
-					if(!words.get(i)[j].match(s.substring(min, max)))
+					//System.out.print(">>"+min+"-"+max+"->"+wl.part(min, max)+"->");
+
+					WordList tmp2 = words.get(i)[j].match(wl.part(min, max), deep+1);
+					if(tmp2 == null)
 						ok = false;
+					else
+						tmp.add(tmp2);
 				}
+				//last
+				//System.out.println("0>>"+sum(sublength)+"-"+ wl.size()+"->"+wl.part(sum(sublength), wl.size()));
+				WordList tmp2 = words.get(i)[words.get(i).length-1].match(wl.part(sum(sublength), wl.size()), deep+1);
+				if(tmp2 == null)
+					ok = false;	
+				else
+					tmp.add(tmp2);
+				if(ok) {
+					wl = tmp;
+					ok2 = true;
+				}
+				System.out.println("->"+tmp+"="+ok);
 			}
-			if(ok)
-				return true;
+			if(sublength!= null && sublength.length == 0) {
+				WordList tmp = words.get(i)[words.get(i).length-1].match(wl, deep+1);
+				if(tmp == null)
+					ok = false;	
+				else
+					wl = tmp;
+			}
+			
+			if(ok) {
+				for(int j=0; j<deep; j++)
+					System.out.print("   ");
+				System.out.println(wl);
+				for(int j=0; j<wl.size(); j++)  {
+					if(wl.get(j).getFunction().equals(""))
+						wl.get(j).setFunction(name);
+				}
+					
+				return wl;
+			}
+			for(int j=0; j<deep; j++)
+				System.out.print("   ");
+			System.out.println("null");
 			
 		}
-		return false;
+		return null;
 	}
 	
 	public int sum(int [] i) {

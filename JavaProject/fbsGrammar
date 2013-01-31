@@ -1,10 +1,24 @@
-main 				:= 	listinstruction
+main 					:= 	list_instruction
 
-listinstruction 	:= 	instruction
-					|	listinstruction instruction
+list_instruction		:= 	instruction
+						|	list_instruction instruction
 		
-instruction			:=	number ";"
+instruction				:=	structure
+						|	arithmetic_instruction
+					
+arithmetic_instruction	:=	boolean ";"
 
-number 				:=	"0"
-					| 	"1"
-					|	"2"	
+block_instruction		:=	instruction
+						|	"{" list_instruction "}"
+					
+structure				:= "if" "(" boolean_expresion ")" block_instruction
+
+boolean_expresion		:= 	boolean
+
+boolean					:= 	"true"
+						|	"false"
+					
+number 					:=	digit
+						| 	number digit
+					
+digit					:= [0-9]

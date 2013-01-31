@@ -24,7 +24,7 @@ public class ReadFile {
 			e1.printStackTrace();
 		}
 		while(line != null) {
-			source += line;
+			source += line + '\n';
 			try {
 				line = reader.readLine();
 			} catch (IOException e) {
@@ -37,11 +37,9 @@ public class ReadFile {
 			e.printStackTrace();
 		}
 	}
-	
-	public void match() {
-		System.out.println(source);
-		System.out.println("=====");
-		Grammar.match(source);
+
+	public String getString() {
+		return source;
 	}
 
 }

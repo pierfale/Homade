@@ -3,6 +3,7 @@ package compile.fbs.grammar;
 public interface Word {
 	
 	public boolean isTerminal();
-	public boolean match(String s);
+	public WordList match(WordList wl, int deep);
+	public boolean equals(String s);
 
 }

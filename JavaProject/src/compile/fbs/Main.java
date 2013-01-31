@@ -3,6 +3,9 @@ package compile.fbs;
 import java.io.FileNotFoundException;
 
 import compile.fbs.grammar.Grammar;
+import compile.fbs.grammar.Lexer;
+import compile.fbs.grammar.Parser;
+import compile.fbs.grammar.WordList;
 
 public class Main {
 	
@@ -15,7 +18,12 @@ public class Main {
 		for(String s : args) {
 			try {
 				ReadFile reader = new ReadFile(s);
-				reader.match();
+				
+				WordList wl = Lexer.exec(reader.getString());
+				if(!Parser.exec(wl)) {
+					System.out.println("fin...");
+					break;
+				}
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
