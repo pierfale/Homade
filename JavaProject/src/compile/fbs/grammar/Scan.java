@@ -5,16 +5,16 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-public class Lexer {
+import compile.fbs.Rapport;
+
+public class Scan {
 	
-	private static final int [] spaceChar = {'\n', '\t'};
+	private static final int [] spaceChar = {' ', '\t'};
 	
 	
 	public static WordList exec(String source) {
 		WordList wl = new WordList();
-		System.out.println("==============");
-		System.out.println("Source Lexer :");
-		System.out.println("==============");
+		Rapport.addLine("<h2>Recherche des mots</h2>");
 		BufferedReader reader = new BufferedReader(new StringReader(source));
 		int nbLine = 1;
 		String line = "";
@@ -24,8 +24,8 @@ public class Lexer {
 			e.printStackTrace();
 		}
 		while(line != null) {
-			System.out.println("line "+nbLine+" : "+line);
 			if(!isEmpty(line)) {
+				Rapport.addLine("ligne "+nbLine+" : "+line);
 				int beg = 0;
 				int end = 1;
 				while(beg < line.length()) {
@@ -33,28 +33,26 @@ public class Lexer {
 						beg++;
 						end++;
 					}
-					while(end <= line.length() && !Grammar.existWord(line.substring(beg, end))) {
+					while(end <= line.length() && Grammar.existWord(line.substring(beg, end)) == null) {
 						end++;
 						
 					}	
-					while(end <= line.length() && Grammar.existWord(line.substring(beg, end))) {
+					while(end <= line.length() && Grammar.existWord(line.substring(beg, end)) != null) {
 						end++;
 					}
-
-					if(Grammar.existWord(line.substring(beg, end-1))) {
-						System.out.println("word detected : "+line.substring(beg, end-1));
-						wl.add(line.substring(beg, end-1));
+					String name = Grammar.existWord(line.substring(beg, end-1));
+					if(name != null) {
+						Rapport.addLine("mot detecté: "+line.substring(beg, end-1)+" ["+name+"]");
+						wl.add(line.substring(beg, end-1), name);
 						beg = end-1;
 					}
 					else {
-						System.out.println("Mot inconnue : "+line+" ligne "+nbLine+" colonne "+beg);
+						Rapport.addLine("Mot inconnue : "+line+" ligne "+nbLine+" colonne "+beg);
 						return null;
 					}
 					
 				}
 			}
-			else 
-				System.out.println("empty line : ignored!");
 			
 			nbLine++;
 			try {

@@ -1,3 +1,13 @@
 
-if(false)
-	true;
+
+function main {
+	int tmp = 5;
+	if(5 > 4)
+		display 42;
+}
+
+function sum {
+	int tmp = 5;
+	if(5 > 6)
+		display 45;
+}

@@ -14,6 +14,10 @@ public class WordList {
 		tokens.add(new Token(s));
 	}
 	
+	public void add(String s, String l) {
+		tokens.add(new Token(s, l));
+	}
+	
 	public void add(Token t) {
 		tokens.add(t);
 	}
@@ -47,8 +51,15 @@ public class WordList {
 	
 	public String toString() {
 		String r = "";
-		for(int i=0; i<tokens.size(); i++)
-			r += "\""+tokens.get(i).getContents()+"\" ("+tokens.get(i).getFunction()+"), ";
+		for(int i=0; i<tokens.size(); i++) {
+			if(i != 0)
+				r += ", ";
+			r += "\""+tokens.get(i).getContents()+"\"";
+			if(get(i).getFunction() != "")
+				r += " ("+tokens.get(i).getFunction()+")";/*
+			if(get(i).getLex() != "")
+				r += " ["+tokens.get(i).getLex()+"]";	*/		
+		}
 		return r;
 	}
 }

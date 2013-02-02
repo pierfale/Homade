@@ -3,6 +3,8 @@ package compile.fbs.grammar;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import compile.fbs.Rapport;
+
 public class Words {
 	
 	private ArrayList<Word []> words;
@@ -30,44 +32,51 @@ public class Words {
 	}
 
 	public WordList match(WordList wl, int deep) {
-		for(int i=0; i<deep; i++)
-			System.out.print("   ");
-		System.out.println(name+"("+words.size()+")=>"+wl);
+
+		Rapport.add("<ul><li>"+name+"("+words.size()+")=>"+wl+"</li>");
 		for(int i=0; i<words.size(); i++) {
 			boolean ok = true, ok2 = false;
-			int [] sublength = new int[words.get(i).length-1];
-			for(int j=0; j<sublength.length; j++)
-				sublength[j] = 1;
-			System.out.println("tmp : "+sublength.length+", "+wl.size());
+			int [] sublength = new int[words.get(i).length];
+			//optimisation de la recherche par longeur
+			ArrayList<Integer> unknowLength = new ArrayList<Integer>();
+			int lastUnknown = 0;
+			int knownCount = 0;
+			for(int j=0; j< words.get(i).length; j++) {
+				if(!words.get(i)[j].isTerminal()) {
+					//unknowLength.add(j);
+					lastUnknown = j;
+				}
+				else
+					knownCount++;
+			}
+			
+			for(int j=0; j<sublength.length; j++) {
+				if(words.get(i)[j].isTerminal())
+					sublength[j] = 1;
+				else {
+					if(j != lastUnknown)
+						sublength[j] = 1;
+					else
+						sublength[j] = wl.size()-sublength.length+1;
+				}
+			}
 			if(sum(sublength) >= wl.size())
 				ok = false;
-			for(; !ok2 && sublength!= null && sublength.length != 0 && sum(sublength) < wl.size(); sublength = inc(sublength, wl.size()-1)) {
-				for(int k : sublength)
-					System.out.print(k+",");
-				System.out.println("");
+			for(; !ok2 && sublength!= null && sublength.length != 0 && sum(sublength) == wl.size(); sublength = inc(sublength, wl.size()-sublength.length-1, i, wl.size())) {
+				ok = true;
 				WordList tmp = new WordList();
 				for(int j=0; ok && j<sublength.length; j++) {
 					int min = cum(sublength, j), max = cum(sublength, j+1);
-					//System.out.print(">>"+min+"-"+max+"->"+wl.part(min, max)+"->");
-
 					WordList tmp2 = words.get(i)[j].match(wl.part(min, max), deep+1);
 					if(tmp2 == null)
 						ok = false;
 					else
 						tmp.add(tmp2);
 				}
-				//last
-				//System.out.println("0>>"+sum(sublength)+"-"+ wl.size()+"->"+wl.part(sum(sublength), wl.size()));
-				WordList tmp2 = words.get(i)[words.get(i).length-1].match(wl.part(sum(sublength), wl.size()), deep+1);
-				if(tmp2 == null)
-					ok = false;	
-				else
-					tmp.add(tmp2);
 				if(ok) {
 					wl = tmp;
 					ok2 = true;
 				}
-				System.out.println("->"+tmp+"="+ok);
 			}
 			if(sublength!= null && sublength.length == 0) {
 				WordList tmp = words.get(i)[words.get(i).length-1].match(wl, deep+1);
@@ -78,9 +87,7 @@ public class Words {
 			}
 			
 			if(ok) {
-				for(int j=0; j<deep; j++)
-					System.out.print("   ");
-				System.out.println(wl);
+				Rapport.addSuccess("<li>correspondance trouvé : "+wl.toString()+"</li></ul>");
 				for(int j=0; j<wl.size(); j++)  {
 					if(wl.get(j).getFunction().equals(""))
 						wl.get(j).setFunction(name);
@@ -88,11 +95,9 @@ public class Words {
 					
 				return wl;
 			}
-			for(int j=0; j<deep; j++)
-				System.out.print("   ");
-			System.out.println("null");
 			
 		}
+		Rapport.addError("<li>pas de correspondance</li></ul>");
 		return null;
 	}
 	
@@ -109,14 +114,22 @@ public class Words {
 		return r;
 	}
 	
-	public int[] inc(int[] tab, int max) {
-		for(int i=0; i<tab.length; i++) {
-			if(sum(tab) < max) {
-				tab[i]++;
-				return tab;
-			}
-			else {
-				tab[i] = 1;
+	public int[] inc(int[] tab, int max, int i, int size) {
+		int first = -1;
+		for(int j=tab.length-1; j>=0; j--) {
+			if(!words.get(i)[j].isTerminal()) {
+				if(first == -1) {
+					first = j;
+					tab[j] = 0;
+				}
+				else if(tab[j] < max) {
+					tab[j]++;
+					tab[first] = size-sum(tab);
+					return tab;
+				}
+				else {
+					tab[j] = 1;
+				}
 			}
 		}
 		return null;

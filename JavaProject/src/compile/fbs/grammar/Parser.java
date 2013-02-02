@@ -1,12 +1,11 @@
 package compile.fbs.grammar;
 
+import compile.fbs.Rapport;
+
 public class Parser {
 	
-	public static boolean exec(WordList wl) {
-		System.out.println("==================");
-		System.out.println("Word list Parser :");
-		System.out.println("==================");
-
+	public static WordList exec(WordList wl) {
+		Rapport.addLine("<h2>Recherche de correspondance grammatical</h2>");
 		return Grammar.match(wl);
 	}
 

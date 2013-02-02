@@ -1,24 +1,59 @@
-main 					:= 	list_instruction
+source 					:= list_function
+
+list_function			:= 	function
+						| 	function list_function
+
+function				:= 	"function" function_name "{" list_instruction "}"
 
 list_instruction		:= 	instruction
 						|	list_instruction instruction
 		
 instruction				:=	structure
-						|	arithmetic_instruction
-					
-arithmetic_instruction	:=	boolean ";"
+						|	arithmetic_instruction ";"
+						|	special_instruction ";"
+						
+special_instruction		:=	"display" number
+						|	"display" string
+						
+arithmetic_instruction	:=	allocation_instruction
+						|	declaration_instruction
 
-block_instruction		:=	instruction
-						|	"{" list_instruction "}"
+allocation_instruction 	:= 	variable_name "=" number
+
+declaration_instruction := 	type allocation_instruction
+						|	type variable_name
+
+block_instruction		:=	"{" list_instruction "}"
+						|	instruction
 					
-structure				:= "if" "(" boolean_expresion ")" block_instruction
+structure				:= 	"if" "(" boolean_expresion ")" block_instruction
+						|	"if" "(" boolean_expresion ")" block_instruction "else" block_instruction
 
 boolean_expresion		:= 	boolean
+						|	number op_compare number
+							
+op_compare				:= 	"<"
+						|	">"
+						|	"=="
+						|	">="
+						|	"<="
+						
+type 					:=	"int"
+						|	"float"
+						|	"boolean"
 
 boolean					:= 	"true"
 						|	"false"
 					
-number 					:=	digit
-						| 	number digit
+number					:=	integer
+						|	decimal
 					
-digit					:= [0-9]
+integer					:= [(0-9)+]
+
+decimal					:= [(0-9)+(.)(0-9)+]
+
+string					:= [(")(*)*(")]
+
+variable_name			:= [(a-zA-Z)(a-zA-Z0-9_)*]
+
+function_name			:= [(a-zA-Z)(a-zA-Z0-9_)*]

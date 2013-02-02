@@ -54,5 +54,9 @@ public class Terminal implements Word {
 	public String getWord() {
 		return word;
 	}
+
+	public int getLength() {
+		return 1;
+	}
 	
 }

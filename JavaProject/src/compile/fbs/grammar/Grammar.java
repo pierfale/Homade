@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import compile.fbs.Rapport;
+
 public class Grammar {
 	
 	public static ArrayList<Words> words;
@@ -18,24 +20,24 @@ public class Grammar {
 		
 	}
 	
-	public static void load(String pathname) throws FileNotFoundException {
-		System.out.println("=====================");
-		System.out.println("Read Grammar Config :");
-		System.out.println("=====================");
+	public static boolean load(String pathname) throws FileNotFoundException {
+		Rapport.addLine("<h2>Lecture du fichier de configuration de la grammaire :</h2>");
 		BufferedReader reader = new BufferedReader(new FileReader(new File(pathname)));
 		words = new ArrayList<Words>();
 		String line = "";
 		int nbLine = 1;
+		int nbLaw = 0;
 		Words currWords = null;
+		boolean ok = true;
 		try {
 			line = reader.readLine();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		while(line != null) {
+		while(ok && line != null) {
 			Scanner sc = new Scanner(line);
-			System.out.println("line : "+line);
 			if(sc.hasNext()) {
+				Rapport.addLine("ligne : "+line);
 				String s1 = sc.next();
 				if(isName(s1)) {
 					currWords = new Words(s1);
@@ -44,6 +46,7 @@ public class Grammar {
 						s1 = sc.next();
 				}
 				if(s1.equals(":=") || s1.equals("|")) {
+					
 					ArrayList<Word> tmp = new ArrayList<Word>();
 					while(sc.hasNext()) {
 						String s2 = sc.next();
@@ -58,11 +61,15 @@ public class Grammar {
 						w2[i] = tmp.get(i);
 						
 					currWords.add(w2);
+					nbLaw++;
 				}
-				else
-					System.out.println("expression "+s1+" inconnue a la ligne "+nbLine);
+				else {
+					Rapport.addLineError("expression "+s1+" inconnue a la ligne "+nbLine);
+					ok = false;
+				}
 				
 			}
+			
 			nbLine++;
 			try {
 				line = reader.readLine();
@@ -75,28 +82,41 @@ public class Grammar {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("=======================");
-		System.out.println("link nonterminal word :");
-		System.out.println("=======================");
-		//etablisement des liens entre non-terminaux
-		for(int i=0; i<words.size(); i++) {
-			for(int j=0; j<words.get(i).size(); j++) {
-				for(Word w : words.get(i).get(j)) {
-					if(!w.isTerminal()) {
-						for(int l=0; l<words.size(); l++) {
-							if(words.get(l).getName().equals(((NonTerminal)w).getTarget())) {
-								((NonTerminal)w).setTarget(words.get(l));
+		if(ok) {
+			Rapport.addLineSuccess("terminé : "+nbLaw+" ajouté");
+			Rapport.addLine("<h2>Etablissement des liens entre mots non-terminaux :</h2>");
+			//etablisement des liens entre non-terminaux
+			for(int i=0; i<words.size(); i++) {
+				for(int j=0; j<words.get(i).size(); j++) {
+					for(Word w : words.get(i).get(j)) {
+						if(!w.isTerminal()) {
+							for(int l=0; l<words.size(); l++) {
+								if(words.get(l).getName().equals(((NonTerminal)w).getTarget())) {
+									((NonTerminal)w).setTarget(words.get(l));
+								}
 							}
-						}
-						if(((NonTerminal)w).target() == null) {
-							System.out.println("[erreur] Mot inconnue : "+((NonTerminal)w).getTarget()+" dans la clause "+words.get(i).getName());
+							if(((NonTerminal)w).target() == null) {
+								Rapport.addLineError("Mot inconnue : "+((NonTerminal)w).getTarget()+" dans la clause "+words.get(i).getName());
+								ok = false;
+							}
 						}
 					}
 				}
 			}
 		}
-		System.out.println("ended");
-		
+		if(ok) {
+			Rapport.addLineSuccess("done");
+			Rapport.addLine("<h2>Calcule de la longeur minimal des mots :</h2>");
+			for(int i=0; i<words.size(); i++) {
+				for(int j=0; j<words.get(i).size(); j++) {
+					for(Word w : words.get(i).get(j)) {
+						if(!w.isTerminal())
+							((NonTerminal)w).calculatesLength();
+					}
+				}
+			}
+		}
+		return ok;
 	}
 	
 	private static boolean isName(String s) {
@@ -108,24 +128,24 @@ public class Grammar {
 		return true;
 	}
 	
-	public static boolean match(WordList wl) {
-		return words.get(0).match(wl, 0) != null;
+	public static WordList match(WordList wl) {
+		return words.get(0).match(wl, 0);
+
 	}
 	
-	public static boolean existWord(String word) {
+	public static String existWord(String word) {
 		for(int i=0; i<words.size(); i++) {
 			for(int j=0; j<words.get(i).size(); j++) {
 				for(int k=0; k<words.get(i).get(j).length; k++) {
 					if(words.get(i).get(j)[k].isTerminal()) {
 						if(words.get(i).get(j)[k].equals(word)) {
-
-							return true;
+							return words.get(i).getName();
 						}
 					}
 				}
 			}
 		}
-		return false;
+		return null;
 	}
 
 }
