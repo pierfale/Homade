@@ -7,7 +7,7 @@ import java.io.StringReader;
 
 import compile.fbs.Rapport;
 
-public class Scan {
+public class Lexer {
 	
 	private static final int [] spaceChar = {' ', '\t'};
 	

@@ -14,7 +14,7 @@ public class Match {
 					j++;
 				if(j<expr.length()) {
 					String expr2 = expr.substring(i+1, j);
-					if(j<expr.length() && expr.charAt(j+1) == '*') {
+					if(j+1<expr.length() && expr.charAt(j+1) == '*') {
 						
 						while(cursor < s.length() && match(expr2, s.charAt(cursor))) 
 								cursor++;

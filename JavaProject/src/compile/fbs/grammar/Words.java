@@ -2,6 +2,7 @@ package compile.fbs.grammar;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Stack;
 
 import compile.fbs.Rapport;
 
@@ -9,10 +10,12 @@ public class Words {
 	
 	private ArrayList<Word []> words;
 	private String name;
+	private boolean infinite;
 	
 	public Words(String name) {
 		this.name = name;
 		words = new ArrayList<Word []>();
+		infinite = false;
 	}
 	
 	public void add(Word [] word) {
@@ -30,74 +33,149 @@ public class Words {
 	public String getName() {
 		return name;
 	}
+	
+	public void setInfinite(boolean state) {
+		this.infinite = state;
+	}
 
-	public WordList match(WordList wl, int deep) {
-
+	public WordList match(WordList wl, boolean infinite) {
 		Rapport.add("<ul><li>"+name+"("+words.size()+")=>"+wl+"</li>");
+		WordList retour = new WordList();
+		//parcourir tout les choix
 		for(int i=0; i<words.size(); i++) {
-			boolean ok = true, ok2 = false;
-			int [] sublength = new int[words.get(i).length];
-			//optimisation de la recherche par longeur
-			ArrayList<Integer> unknowLength = new ArrayList<Integer>();
-			int lastUnknown = 0;
-			int knownCount = 0;
-			for(int j=0; j< words.get(i).length; j++) {
-				if(!words.get(i)[j].isTerminal()) {
-					//unknowLength.add(j);
-					lastUnknown = j;
-				}
-				else
-					knownCount++;
-			}
-			
-			for(int j=0; j<sublength.length; j++) {
-				if(words.get(i)[j].isTerminal())
-					sublength[j] = 1;
-				else {
-					if(j != lastUnknown)
-						sublength[j] = 1;
-					else
-						sublength[j] = wl.size()-sublength.length+1;
-				}
-			}
-			if(sum(sublength) >= wl.size())
+			Rapport.add("<li><u>Choix "+(i+1)+"</u></li>");
+			//recherche des terminaux
+			boolean undefinedSize = false;
+			int cursorWl = 0;
+			int oldCursorWl = 0;
+			boolean ok = true;
+			if(wl.size() < words.get(i).length)
 				ok = false;
-			for(; !ok2 && sublength!= null && sublength.length != 0 && sum(sublength) == wl.size(); sublength = inc(sublength, wl.size()-sublength.length-1, i, wl.size())) {
-				ok = true;
-				WordList tmp = new WordList();
-				for(int j=0; ok && j<sublength.length; j++) {
-					int min = cum(sublength, j), max = cum(sublength, j+1);
-					WordList tmp2 = words.get(i)[j].match(wl.part(min, max), deep+1);
-					if(tmp2 == null)
-						ok = false;
-					else
-						tmp.add(tmp2);
+			for(int j=0; ok && j<words.get(i).length; j++) {
+				if(words.get(i)[j].isTerminal()) {
+					if(undefinedSize) {
+						oldCursorWl = cursorWl;
+						WordList tmp2 = words.get(i)[j].match(wl.part(cursorWl, cursorWl+1), this.infinite);
+						Stack<String> nBracket = new Stack<String>();
+						while(cursorWl+1 < wl.size() && (tmp2 == null || !nBracket.isEmpty())) {
+
+							if(wl.get(cursorWl).isOpenBracket()) {
+								nBracket.push(wl.get(cursorWl).getContents());
+							}
+							else if(wl.get(cursorWl).isCloseBracket()) {
+								 if(!nBracket.isEmpty() && wl.get(cursorWl).isCloseBracket(nBracket.peek())) {
+									 nBracket.pop();
+									 
+								 }
+								 else if(tmp2 == null){
+									ok = false;
+									Rapport.addError("Erreur de charactere d'ouverture/fermeture : "+wl.get(cursorWl).getContents());
+								 }
+							}
+							cursorWl++;
+							tmp2 = words.get(i)[j].match(wl.part(cursorWl, cursorWl+1), this.infinite);
+						}							
+			
+						if(oldCursorWl != cursorWl) {
+							Rapport.add("<span class=\"success\"><b>"+tmp2+"</b></span>");
+							WordList tmp = words.get(i)[j-1].match(wl.part(oldCursorWl, cursorWl), this.infinite);
+							if(tmp == null) {
+								ok = false;
+								Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [1]</li>");
+							}
+							else {
+								retour.add(tmp);
+								tmp2.get(0).setFunction(name);
+								retour.add(tmp2);
+							}
+							cursorWl++;
+						}
+						else {
+							ok = false;
+							Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [2]</li>");
+						}
+					}
+					else {
+						WordList tmp = words.get(i)[j].match(wl.part(cursorWl, cursorWl+1), this.infinite);
+						if(tmp == null) {
+							ok = false;
+							Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [3]</li>");
+						}
+						else {
+							Rapport.add("<span class=\"success\"><b>"+tmp+"</b></span>");
+							tmp.get(0).setFunction(name);
+							retour.add(tmp);
+							cursorWl++;
+						}
+					}
+					undefinedSize = false;
 				}
-				if(ok) {
-					wl = tmp;
-					ok2 = true;
+				else {
+					if(undefinedSize) {
+						int k = cursorWl +1;
+						WordList tmp = words.get(i)[j-1].match(wl.part(cursorWl, k), this.infinite); 
+						while(k <= wl.size()-(words.get(i).length-j) &&  tmp == null) {
+							k++;
+							tmp = words.get(i)[j-1].match(wl.part(cursorWl, k), this.infinite); 
+						}
+						if(k == wl.size()-(words.get(i).length-j)+1) {
+							//Rapport.addLine(wl.get(cursorWl).getContents()+"-"+wl.get(k).getContents());
+							ok = false;
+							Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [4]</li>");
+						}
+						else {
+							Rapport.add("<span class=\"success\"><b>"+tmp+"</b></span>");
+							retour.add(tmp);
+							cursorWl = k;
+						}
+					}
+					undefinedSize = true;
+					if(j == words.get(i).length-1) {
+						WordList tmp = words.get(i)[j].match(wl.part(cursorWl, wl.size()), this.infinite); 
+						if(tmp == null) {
+							ok = false;
+							Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [5]</li>");		
+						}
+						else
+							retour.add(tmp);
+						cursorWl = wl.size();
+					}
 				}
 			}
-			if(sublength!= null && sublength.length == 0) {
-				WordList tmp = words.get(i)[words.get(i).length-1].match(wl, deep+1);
-				if(tmp == null)
-					ok = false;	
-				else
-					wl = tmp;
+			//Rapport.add("<li>cursor : "+cursorWl+", wl : "+wl.size()+"</li>");
+			
+			if(wl.size() > cursorWl) {
+				Rapport.addError("infinite("+name+") : "+infinite);
+				if(infinite) {
+					Rapport.add("wl1 : "+wl.part(cursorWl, wl.size()).toString());
+					WordList tmp = this.match(wl.part(cursorWl, wl.size()), this.infinite);
+					
+					if(tmp == null) {
+						Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [6]</li>");
+						ok = false;
+					}
+					else {
+						retour.add(tmp);
+						Rapport.add("<span class=\"success\"><b>"+tmp+"</b></span>");
+					}
+					
+				}
+				else {
+					ok = false;
+					Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [7]</li>");
+				}
 			}
 			
 			if(ok) {
-				Rapport.addSuccess("<li>correspondance trouvé : "+wl.toString()+"</li></ul>");
-				for(int j=0; j<wl.size(); j++)  {
-					if(wl.get(j).getFunction().equals(""))
-						wl.get(j).setFunction(name);
-				}
-					
-				return wl;
+				Rapport.addSuccess("<li>[return] correspondance trouvé pour "+name+"("+i+")</li>");
+				Rapport.add("tmp : "+retour);
+				Rapport.add("</ul>");
+				
+				return retour;
 			}
-			
 		}
-		Rapport.addError("<li>pas de correspondance</li></ul>");
+		Rapport.addError("<li>[return] pas de correspondance pour "+name+"</li>");
+		Rapport.add("</ul>");
 		return null;
 	}
 	
@@ -122,7 +200,7 @@ public class Words {
 					first = j;
 					tab[j] = 0;
 				}
-				else if(tab[j] < max) {
+				else if(tab[j] < max && sum(tab)>size+1) {
 					tab[j]++;
 					tab[first] = size-sum(tab);
 					return tab;

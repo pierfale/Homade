@@ -24,7 +24,7 @@ public class Main {
 		Processor.init();
 		//chargement des IP
 		try {
-			IPConfig ips = new IPConfig("ips");
+			IPConfig ips = new IPConfig("fbsIP");
 			Processor.loadIPS(ips);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

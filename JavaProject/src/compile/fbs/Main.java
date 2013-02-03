@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import compile.fbs.grammar.Grammar;
-import compile.fbs.grammar.Scan;
+import compile.fbs.grammar.Lexer;
 import compile.fbs.grammar.Match;
 import compile.fbs.grammar.Parser;
 import compile.fbs.grammar.Translation;
@@ -24,7 +24,7 @@ public class Main {
 					
 					ReadFile reader = new ReadFile(s);
 					
-					WordList wl = Scan.exec(reader.getString());
+					WordList wl = Lexer.exec(reader.getString());
 					wl = Parser.exec(wl);
 					if(wl == null) {
 						Rapport.addLineError("La compilation a échoué");
@@ -33,7 +33,8 @@ public class Main {
 					}
 					else {
 						Translation.exec("out.asm", wl);
-						Rapport.addLineSuccess("La compilation s'est terminé avec succès!");
+						Rapport.addLineSuccess("La compilation s'est terminé avec succès!<br />Resultat : <br />");
+						Rapport.addLine(wl.toString());
 						System.out.println("La compilation s'est terminé avec succès!");
 					}
 				}
@@ -52,6 +53,11 @@ public class Main {
 		System.out.println("compilation terminé en "+((double)(System.currentTimeMillis()-beg)/1000.0)+" seconds");
 		Rapport.close();
 		
+		//test en direct
+		
+		String [] argsMain = new String[1];
+		argsMain[0] = "out.asm";
+		base.Main.main(argsMain);
 	}
 
 }

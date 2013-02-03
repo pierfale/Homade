@@ -50,7 +50,9 @@ public class Grammar {
 					ArrayList<Word> tmp = new ArrayList<Word>();
 					while(sc.hasNext()) {
 						String s2 = sc.next();
-						if(s2.charAt(0) == '"' && s2.charAt(s2.length()-1) == '"'
+						if(s2.equals("*"))
+							currWords.setInfinite(true);
+						else if(s2.charAt(0) == '"' && s2.charAt(s2.length()-1) == '"'
 						|| s2.charAt(0) == '[' && s2.charAt(s2.length()-1) == ']')
 							tmp.add(new Terminal(s2));
 						else
@@ -129,7 +131,7 @@ public class Grammar {
 	}
 	
 	public static WordList match(WordList wl) {
-		return words.get(0).match(wl, 0);
+		return words.get(0).match(wl, false);
 
 	}
 	

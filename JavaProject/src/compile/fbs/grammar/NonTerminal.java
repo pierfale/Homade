@@ -26,8 +26,8 @@ public class NonTerminal implements Word {
 		return false;
 	}
 
-	public WordList match(WordList wl, int deep) {
-		return target.match(wl, deep);
+	public WordList match(WordList wl, boolean infinite) {
+		return target.match(wl, infinite);
 	}
 
 	public boolean equals(String s) {

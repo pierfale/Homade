@@ -2,6 +2,8 @@ package compile.fbs.grammar;
 
 import java.util.ArrayList;
 
+import compile.fbs.Rapport;
+
 public class WordList {
 	
 	ArrayList<Token> tokens;
@@ -45,6 +47,7 @@ public class WordList {
 		}
 		else {
 			System.out.println("erreur borne ("+min+","+max+")");
+			Rapport.addLineError("erreur borne ("+min+","+max+")");
 			return null;
 		}
 	}

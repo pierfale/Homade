@@ -1,14 +1,19 @@
 package instruction;
 
+import processor.Processor;
 import exception.UnknownInstructionException;
 
 public class Decode {
 	
 	public static Instruction decode(long instructions, int offset) throws UnknownInstructionException {
-		
+
 		short instruction = (short) (instructions >> offset*16);
-		System.out.println("curr instr : "+String.format("%x", instruction));
+		System.out.println("curr instr : "+String.format("%x", instruction)+"offset : "+offset);
 		if ((instruction & 0xFFFF) == 0xFFFF) {
+			return null;
+		}
+		else if ((instruction & 0xFFFF) == 0x0) {
+			Processor.stop();
 			return null;
 		}
 		else if((instruction & 0x8000) == 0x8000) { //IP

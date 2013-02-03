@@ -1,19 +1,20 @@
-source 					:= list_function
+list_function			:= 	*  function
 
-list_function			:= 	function
-						| 	function list_function
+function				:= 	type "function" function_name "(" ")" "{" list_instruction "}"
+						| 	type "function" function_name "(" list_parameter ")" "{" list_instruction "}"
 
-function				:= 	"function" function_name "{" list_instruction "}"
+list_parameter			:= 	* parameter
 
-list_instruction		:= 	instruction
-						|	list_instruction instruction
+parameter				:=	type variable_name
+
+list_instruction		:= 	* instruction
 		
 instruction				:=	structure
 						|	arithmetic_instruction ";"
 						|	special_instruction ";"
 						
 special_instruction		:=	"display" number
-						|	"display" string
+						|	"display" variable_name
 						
 arithmetic_instruction	:=	allocation_instruction
 						|	declaration_instruction
@@ -23,36 +24,46 @@ allocation_instruction 	:= 	variable_name "=" number
 declaration_instruction := 	type allocation_instruction
 						|	type variable_name
 
-block_instruction		:=	"{" list_instruction "}"
-						|	instruction
+block_instruction		:=	instruction
+						|	"{" list_instruction "}"
 					
 structure				:= 	"if" "(" boolean_expresion ")" block_instruction
 						|	"if" "(" boolean_expresion ")" block_instruction "else" block_instruction
 
 boolean_expresion		:= 	boolean
 						|	number op_compare number
+						|	variable_name op_compare number
+						|	number op_compare variable_name
+						|	variable_name op_compare variable_name
 							
 op_compare				:= 	"<"
 						|	">"
 						|	"=="
 						|	">="
 						|	"<="
+					
+op_arithmetic			:=	"+"
+						|	"-"
+						|	"/"
+						|	"%"
+						|	"*"
 						
 type 					:=	"int"
 						|	"float"
 						|	"boolean"
+						|	"void"
 
 boolean					:= 	"true"
 						|	"false"
 					
 number					:=	integer
 						|	decimal
+						|	"(" number op_arithmetic number ")"
 					
 integer					:= [(0-9)+]
 
 decimal					:= [(0-9)+(.)(0-9)+]
 
-string					:= [(")(*)*(")]
 
 variable_name			:= [(a-zA-Z)(a-zA-Z0-9_)*]
 

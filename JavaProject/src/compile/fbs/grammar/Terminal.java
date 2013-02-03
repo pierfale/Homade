@@ -2,6 +2,8 @@ package compile.fbs.grammar;
 
 import java.util.regex.Pattern;
 
+import compile.fbs.Rapport;
+
 public class Terminal implements Word {
 	
 	private String word;
@@ -30,9 +32,10 @@ public class Terminal implements Word {
 		}
 		else return s.equals(word);
 	}
+	
 
-	public WordList match(WordList wl, int deep) {
-		
+
+	public WordList match(WordList wl, boolean infinite) {
 		if(preg_match) {
 			if(wl.size() == 1 && Match.equals(word, wl.get(0).getContents())) {
 				//System.out.println("match succes : "+wl.get(0).getContents()+"="+word);
