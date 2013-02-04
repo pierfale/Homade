@@ -39,11 +39,13 @@ public class Words {
 	}
 
 	public WordList match(WordList wl, boolean infinite) {
-		Rapport.add("<ul><li>"+name+"("+words.size()+")=>"+wl+"</li>");
+		Rapport.add("<ul><li>"+name+"("+words.size()+","+infinite+")=>"+wl+"</li>");
 		WordList retour = new WordList();
+		String message = "";
 		//parcourir tout les choix
 		for(int i=0; i<words.size(); i++) {
-			Rapport.add("<li><u>Choix "+(i+1)+"</u></li>");
+			retour.clear();
+			message += "<li><u>Choix "+(i+1)+"</u></li>";
 			//recherche des terminaux
 			boolean undefinedSize = false;
 			int cursorWl = 0;
@@ -69,40 +71,40 @@ public class Words {
 								 }
 								 else if(tmp2 == null){
 									ok = false;
-									Rapport.addError("Erreur de charactere d'ouverture/fermeture : "+wl.get(cursorWl).getContents());
+									message += "<li><span class=\"error\">Erreur de charactere d'ouverture/fermeture : "+wl.get(cursorWl).getContents()+"</span></li>";
 								 }
 							}
 							cursorWl++;
 							tmp2 = words.get(i)[j].match(wl.part(cursorWl, cursorWl+1), this.infinite);
 						}							
 			
-						if(oldCursorWl != cursorWl) {
-							Rapport.add("<span class=\"success\"><b>"+tmp2+"</b></span>");
+						if(ok && oldCursorWl != cursorWl) {
 							WordList tmp = words.get(i)[j-1].match(wl.part(oldCursorWl, cursorWl), this.infinite);
 							if(tmp == null) {
 								ok = false;
-								Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [1]</li>");
+								message += "<li><span class=\"error\">pas de correspondance pour "+name+"("+i+") : [1]</span></li>";
 							}
 							else {
 								retour.add(tmp);
 								tmp2.get(0).setFunction(name);
 								retour.add(tmp2);
+								message += "<li><span class=\"success\"><b>"+tmp+" "+tmp2+"(1)</b></span></li>";
 							}
 							cursorWl++;
 						}
 						else {
 							ok = false;
-							Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [2]</li>");
+							message += "<li><span class=\"error\"><li>pas de correspondance pour "+name+"("+i+") : [2]</span></li>";
 						}
 					}
 					else {
 						WordList tmp = words.get(i)[j].match(wl.part(cursorWl, cursorWl+1), this.infinite);
 						if(tmp == null) {
 							ok = false;
-							Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [3]</li>");
+							message += "<li><span class=\"error\">pas de correspondance pour "+name+"("+i+") : [3]</span></li>";
 						}
 						else {
-							Rapport.add("<span class=\"success\"><b>"+tmp+"</b></span>");
+							message += "<li><span class=\"success\"><b>"+tmp+"(2)</b></span></li>";
 							tmp.get(0).setFunction(name);
 							retour.add(tmp);
 							cursorWl++;
@@ -112,6 +114,7 @@ public class Words {
 				}
 				else {
 					if(undefinedSize) {
+					
 						int k = cursorWl +1;
 						WordList tmp = words.get(i)[j-1].match(wl.part(cursorWl, k), this.infinite); 
 						while(k <= wl.size()-(words.get(i).length-j) &&  tmp == null) {
@@ -121,54 +124,57 @@ public class Words {
 						if(k == wl.size()-(words.get(i).length-j)+1) {
 							//Rapport.addLine(wl.get(cursorWl).getContents()+"-"+wl.get(k).getContents());
 							ok = false;
-							Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [4]</li>");
+							message += "<li><span class=\"error\">pas de correspondance pour "+name+"("+i+") : [4]</span></li>";
 						}
 						else {
-							Rapport.add("<span class=\"success\"><b>"+tmp+"</b></span>");
+							message += "<li><span class=\"success\"><b>"+tmp+"(3)</b></span></li>";
 							retour.add(tmp);
 							cursorWl = k;
 						}
+					
 					}
 					undefinedSize = true;
-					if(j == words.get(i).length-1) {
+					if(ok && j == words.get(i).length-1) {
 						WordList tmp = words.get(i)[j].match(wl.part(cursorWl, wl.size()), this.infinite); 
 						if(tmp == null) {
 							ok = false;
-							Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [5]</li>");		
+							message += "<li><span class=\"error\">pas de correspondance pour "+name+"("+i+") : [5]</span></li>";		
 						}
-						else
+						else {
 							retour.add(tmp);
+							message += "<li><span class=\"success\"><b>"+tmp+"(4)</b></span></li>";
+						}
 						cursorWl = wl.size();
 					}
 				}
 			}
 			//Rapport.add("<li>cursor : "+cursorWl+", wl : "+wl.size()+"</li>");
 			
-			if(wl.size() > cursorWl) {
-				Rapport.addError("infinite("+name+") : "+infinite);
+			if(ok && wl.size() > cursorWl) {
 				if(infinite) {
-					Rapport.add("wl1 : "+wl.part(cursorWl, wl.size()).toString());
+					Rapport.add("==>"+wl.part(cursorWl, wl.size()));
 					WordList tmp = this.match(wl.part(cursorWl, wl.size()), this.infinite);
 					
 					if(tmp == null) {
-						Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [6]</li>");
+						message += "<li><span class=\"error\">pas de correspondance pour "+name+"("+i+") : [6]</span></li>";
 						ok = false;
 					}
 					else {
 						retour.add(tmp);
-						Rapport.add("<span class=\"success\"><b>"+tmp+"</b></span>");
+						message += "<li><span class=\"success\">Partie d'un mot infinie detecté ! <br/><b>"+tmp+"(5)</b>";
 					}
 					
 				}
 				else {
 					ok = false;
-					Rapport.addError("<li>pas de correspondance pour "+name+"("+i+") : [7]</li>");
+					message += "<li><span class=\"error\">pas de correspondance pour "+name+"("+i+") : [7]</span></li>";
 				}
 			}
 			
 			if(ok) {
-				Rapport.addSuccess("<li>[return] correspondance trouvé pour "+name+"("+i+")</li>");
-				Rapport.add("tmp : "+retour);
+				Rapport.add(message);
+				Rapport.addSuccess("<li>[return] correspondance trouvé pour "+name+"("+i+")<br />Valeur : "+retour+"</span></li>");
+				Rapport.add("Retour : "+retour);
 				Rapport.add("</ul>");
 				
 				return retour;

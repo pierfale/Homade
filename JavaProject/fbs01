@@ -1,14 +1,14 @@
 int function main() {
-	int tmp = (6*4);
-	if(tmp>(5+6))
-		display tmp;
-	else {
-		int xaxaxa = 5;
-		display xaxaxa;
+
+
+	if(tmp == 5) {
+		display 6;
 	}
-
+	if(tmp == 6) {
+		display 7;
+	}
+	else {
+		display 8;
+	}
 }
 
-void function coucou(int n5) {
-	display 2;
-}

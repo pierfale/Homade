@@ -33,6 +33,10 @@ public class WordList {
 		return tokens.size();
 	}
 	
+	public void clear() {
+		tokens.clear();
+	}
+	
 	public Token get(int i) {
 		return tokens.get(i);
 	}

@@ -26,9 +26,13 @@ declaration_instruction := 	type allocation_instruction
 
 block_instruction		:=	instruction
 						|	"{" list_instruction "}"
+
+structure				:=	"while" "(" boolean_expresion ")" block_instruction
+					|	structure_if	
 					
-structure				:= 	"if" "(" boolean_expresion ")" block_instruction
-						|	"if" "(" boolean_expresion ")" block_instruction "else" block_instruction
+structure_if		:= 	"if" "(" boolean_expresion ")" block_instruction
+					|	"if" "(" boolean_expresion ")" block_instruction "else" block_instruction
+					|	"if" "(" boolean_expresion ")" block_instruction "else"	structure
 
 boolean_expresion		:= 	boolean
 						|	number op_compare number
@@ -59,6 +63,7 @@ boolean					:= 	"true"
 number					:=	integer
 						|	decimal
 						|	"(" number op_arithmetic number ")"
+						|	number op_arithmetic number
 					
 integer					:= [(0-9)+]
 

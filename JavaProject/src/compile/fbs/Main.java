@@ -32,7 +32,7 @@ public class Main {
 						break;
 					}
 					else {
-						Translation.exec("out.asm", wl);
+						//Translation.exec("out.asm", wl);
 						Rapport.addLineSuccess("La compilation s'est terminé avec succès!<br />Resultat : <br />");
 						Rapport.addLine(wl.toString());
 						System.out.println("La compilation s'est terminé avec succès!");
@@ -54,10 +54,11 @@ public class Main {
 		Rapport.close();
 		
 		//test en direct
-		
+		/*
 		String [] argsMain = new String[1];
 		argsMain[0] = "out.asm";
 		base.Main.main(argsMain);
+		*/
 	}
 
 }
