@@ -41,6 +41,7 @@ public class Words {
 	public WordList match(WordList wl, boolean infinite) {
 		Rapport.add("<ul><li>"+name+"("+words.size()+","+infinite+")=>"+wl+"</li>");
 		WordList retour = new WordList();
+		WordList maxRetour = new WordList();
 		String message = "";
 		//parcourir tout les choix
 		for(int i=0; i<words.size(); i++) {
@@ -78,7 +79,7 @@ public class Words {
 							tmp2 = words.get(i)[j].match(wl.part(cursorWl, cursorWl+1), this.infinite);
 						}							
 			
-						if(ok && oldCursorWl != cursorWl) {
+						if(ok && oldCursorWl != cursorWl && tmp2 != null) {
 							WordList tmp = words.get(i)[j-1].match(wl.part(oldCursorWl, cursorWl), this.infinite);
 							if(tmp == null) {
 								ok = false;
@@ -134,15 +135,28 @@ public class Words {
 					
 					}
 					undefinedSize = true;
-					if(ok && j == words.get(i).length-1) {
+					if(ok && j == words.get(i).length-1) { //si derniere de la regle
 						WordList tmp = words.get(i)[j].match(wl.part(cursorWl, wl.size()), this.infinite); 
 						if(tmp == null) {
 							ok = false;
 							message += "<li><span class=\"error\">pas de correspondance pour "+name+"("+i+") : [5]</span></li>";		
 						}
 						else {
-							retour.add(tmp);
-							message += "<li><span class=\"success\"><b>"+tmp+"(4)</b></span></li>";
+							if(tmp.size() < wl.size()-cursorWl) {//si envoie non complet
+								WordList tmp2 = words.get(i)[j].match(wl.part(cursorWl+tmp.size(), wl.size()), this.infinite);
+								if(tmp2 == null) {
+									ok = false;
+									message += "<li><span class=\"error\">pas de correspondance pour l'envoie incomplet "+name+"("+i+") : [5-1]</span></li>";		
+								}
+								else {
+									retour.add(tmp);
+									retour.add(tmp2);
+								}
+							}
+							else {
+								retour.add(tmp);
+								message += "<li><span class=\"success\"><b>"+tmp+"(4)</b></span></li>";
+							}
 						}
 						cursorWl = wl.size();
 					}
@@ -165,9 +179,14 @@ public class Words {
 					}
 					
 				}
-				else {
+				else { //retourner une partie de la wl
 					ok = false;
 					message += "<li><span class=\"error\">pas de correspondance pour "+name+"("+i+") : [7]</span></li>";
+					
+					if(retour.size() > maxRetour.size()) {
+						maxRetour.clear();
+						maxRetour.add(retour);
+					}
 				}
 			}
 			
@@ -180,9 +199,17 @@ public class Words {
 				return retour;
 			}
 		}
+		Rapport.add(message);
 		Rapport.addError("<li>[return] pas de correspondance pour "+name+"</li>");
-		Rapport.add("</ul>");
-		return null;
+		if(maxRetour.size() > 0) {
+			Rapport.add("<li><span class=\"error\">Retour d'une partie de la wl pour "+name+" : "+maxRetour);
+			Rapport.add("</ul>");
+			return maxRetour;
+		}
+		else {
+			Rapport.add("</ul>");
+			return null;
+		}
 	}
 	
 	public int sum(int [] i) {

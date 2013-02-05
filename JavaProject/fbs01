@@ -1,14 +1,19 @@
 int function main() {
 
-
+	int tmp = 5;
 	if(tmp == 5) {
 		display 6;
 	}
-	if(tmp == 6) {
-		display 7;
+	else if(tmp == 6) {
+		int tmp2 = 42;
+		display tmp;
 	}
 	else {
 		display 8;
 	}
+}
+
+void function display(int n) {
+	display n;
 }
 

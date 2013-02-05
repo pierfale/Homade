@@ -22,8 +22,10 @@ public class Rapport {
 					add("<meta charset= \"utf-8\">");
 					add("<style type= \"text/css\">");
 					add(".error { color: #F00; }");
-					add(".success { color: #0F0; }");
-					add("ul{ list-style-type: none; }");
+					add(".success { color: #0F0; }"); 
+					add("ul, ul ul { list-style-type: none; background: url(vline.png) repeat-y; margin: 0; padding: 0;  } ");
+					add("ul ul { margin-left: 20px; }");
+					add("ul li { margin: 0; padding: 0 12px; } ");
 					add("</style>");
 					add("</head>");
 					add("<body>");
