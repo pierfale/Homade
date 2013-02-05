@@ -35,11 +35,11 @@ public class Terminal implements Word {
 	
 
 
-	public WordList match(WordList wl, boolean infinite) {
+	public WordTree match(WordList wl, boolean infinite) {
 		if(preg_match) {
 			if(wl.size() == 1 && Match.equals(word, wl.get(0).getContents())) {
 				//System.out.println("match succes : "+wl.get(0).getContents()+"="+word);
-				return wl;
+				return new WordTree(wl.get(0).getContents());
 			}
 			else
 				return null;
@@ -47,7 +47,7 @@ public class Terminal implements Word {
 		else {
 			if(wl.size() == 1 && wl.get(0).getContents().equals(word)) {
 				//System.out.println("match succes : "+wl.get(0).getContents()+"="+word);
-				return wl;
+				return new WordTree(wl.get(0).getContents());
 			}
 			else
 				return null;

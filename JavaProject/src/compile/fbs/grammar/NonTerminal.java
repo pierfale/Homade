@@ -26,7 +26,7 @@ public class NonTerminal implements Word {
 		return false;
 	}
 
-	public WordList match(WordList wl, boolean infinite) {
+	public WordTree match(WordList wl, boolean infinite) {
 		return target.match(wl, infinite);
 	}
 

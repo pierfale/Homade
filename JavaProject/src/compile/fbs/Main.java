@@ -10,6 +10,7 @@ import compile.fbs.grammar.Match;
 import compile.fbs.grammar.Parser;
 import compile.fbs.grammar.Translation;
 import compile.fbs.grammar.WordList;
+import compile.fbs.grammar.WordTree;
 
 public class Main {
 	
@@ -25,8 +26,8 @@ public class Main {
 					ReadFile reader = new ReadFile(s);
 					
 					WordList wl = Lexer.exec(reader.getString());
-					wl = Parser.exec(wl);
-					if(wl == null) {
+					WordTree wt = Parser.exec(wl);
+					if(wt == null || wl.size() > wt.size()) {
 						Rapport.addLineError("La compilation a échoué");
 						System.out.println("La compilation a échoué");
 						break;
@@ -34,7 +35,7 @@ public class Main {
 					else {
 						//Translation.exec("out.asm", wl);
 						Rapport.addLineSuccess("La compilation s'est terminé avec succès!<br />Resultat : <br />");
-						Rapport.addLine(wl.toString());
+						Rapport.addLine(wt.display());
 						System.out.println("La compilation s'est terminé avec succès!");
 					}
 				}

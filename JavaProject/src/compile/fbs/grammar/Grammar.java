@@ -130,7 +130,7 @@ public class Grammar {
 		return true;
 	}
 	
-	public static WordList match(WordList wl) {
+	public static WordTree match(WordList wl) {
 		return words.get(0).match(wl, false);
 
 	}
