@@ -1,14 +1,14 @@
 int function main() {
 
-	int tmp = 5;
-	if(tmp == 5) {
+	int tmp = 42;
+	if(tmp == 5)
 		display 6;
-	}
 	else if(tmp == 6) {
-		int tmp2 = 42;
+		int tmp = 42;
 		display tmp;
 	}
 	else {
+		int tmp = 5;
 		display 8;
 	}
 }
