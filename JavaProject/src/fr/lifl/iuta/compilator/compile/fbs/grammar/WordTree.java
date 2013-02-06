@@ -106,6 +106,7 @@ public class WordTree {
 		String s = "<table style=\"border: 1px solid black;text-align: center\"><tr><td colspan=\""+span+"\">"+contents;
 		if(!function.equals(""))
 			s += " ("+function+")";
+		
 		s += "</td></tr>";
 		if(node.size() > 0) {
 			s += "<tr>";
