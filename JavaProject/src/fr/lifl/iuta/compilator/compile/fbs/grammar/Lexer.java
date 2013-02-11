@@ -43,7 +43,7 @@ public class Lexer {
 					String name = Grammar.existWord(line.substring(beg, end-1));
 					if(name != null) {
 						Rapport.addLine("mot detecté: "+line.substring(beg, end-1)+" ["+name+"]");
-						wl.add(line.substring(beg, end-1), name);
+						wl.add(line.substring(beg, end-1), nbLine);
 						beg = end-1;
 					}
 					else {

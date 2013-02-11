@@ -1,48 +1,48 @@
 package fr.lifl.iuta.compilator.compile.fbs.grammar;
 
 import java.util.ArrayList;
+import java.util.Map;
 
+import fr.lifl.iuta.compilator.compile.fbs.Config;
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
 
 public class WordTree {
 	
 	private ArrayList<WordTree> node;
-	private String contents;
+	private Token token;
 	private String function;
 	private ArrayList<String> varaible;
 	
 	public WordTree() {
 		node = new ArrayList<WordTree>();
 		varaible = new ArrayList<String>();
-		contents = "";
+		token = new Token("", 0);
 		function = "";
 	}
 	
-	public WordTree(String contents) {
+	public WordTree(Token token) {
 		node = new ArrayList<WordTree>();
-		this.contents = contents;
+		varaible = new ArrayList<String>();
+		this.token = token;
 		function = "";
 	}
 	
 	public WordTree cpy() {
-		WordTree retour = new WordTree(contents) ;
+		WordTree retour = new WordTree(token) ;
 		retour.setFunction(function);
 		for(int i=0; i<node.size(); i++) {
 			retour.addNode(node.get(i));
 		}
 		return retour;
 	}
-	
-	public void setContents(String contents) {
-		this.contents = contents;
-	}
+
 	
 	public void setFunction(String function) {
 		this.function = function;
 	}
 	
-	public String getContents() {
-		return contents;
+	public Token getToken() {
+		return token;
 	}
 	
 	public String getFunction() {
@@ -65,7 +65,7 @@ public class WordTree {
 	
 	public int size() {
 		int size = 0;
-		if(!contents.equals(""))
+		if(!token.getContents().equals(""))
 			size = 1;
 		for(int i=0; i<node.size(); i++)
 			size += node.get(i).size();
@@ -74,7 +74,7 @@ public class WordTree {
 	
 	public void clear() {
 		function = "";
-		contents = "";
+		token = new Token("", 0);
 		node = new ArrayList<WordTree>();
 	}
 	
@@ -87,7 +87,7 @@ public class WordTree {
 	}
 	
 	public String toString() {
-		String s = "+"+contents;
+		String s = "+"+token.getContents();
 		if(!function.equals("")) 
 			s += "("+function+")";
 		s += " => ";
@@ -103,7 +103,7 @@ public class WordTree {
 		int span = 1;
 		if(node.size() > 0)
 			span = node.size();
-		String s = "<table style=\"border: 1px solid black;text-align: center\"><tr><td colspan=\""+span+"\">"+contents;
+		String s = "<table style=\"border: 1px solid black;text-align: center\"><tr><td colspan=\""+span+"\">"+token.getContents();
 		if(!function.equals(""))
 			s += " ("+function+")";
 		
@@ -118,88 +118,166 @@ public class WordTree {
 		return s;
 	}
 	
-	public ArrayList<Object[]> varaibleChecker() {
-		ArrayList<Object[]> retour = new ArrayList<Object[]>();
-		Rapport.addLine(contents+" ("+function+") : ");
+	public ArrayList<Token> varaibleChecker(ArrayList<Token> variables) {
+		ArrayList<Token> retour = new ArrayList<Token>();
+		Rapport.addLine(token.getContents()+" ("+function+") : ");
 		if(function.equals("declaration_instruction")) {
-			String v = variableName();
-			Rapport.addLineSuccess("nouvelle déclaration variable : "+v+"<br />");
-			Object[] tab = new Object[2];
-			tab[0] = v;
-			tab[1] = new Boolean(true);
-			retour.add(tab);
+			Token t = variableName();
+			if(contains(variables, t)) {
+				Rapport.addLineError("variable redéclaré : "+t.getContents()+"<br />");
+				return null;	
+			}
+			Rapport.addLineSuccess("nouvelle déclaration variable : "+t.getContents()+"<br />");
+			retour.add(t);
 			return retour;
 		}
 		else if(function.equals("variable_name")) {
-			String v = variableName();
-			Rapport.addLineSuccess("nouvelle variable : "+v+"<br />");
-			Object[] tab = new Object[2];
-			tab[0] = v;
-			tab[1] = new Boolean(false);
-			retour.add(tab);
-			return retour;
-		}
-		else if(function.equals("block_instruction")) {
-			for(int i=0; i<node.size(); i++) {
-				ArrayList<Object[]> tmp = node.get(i).varaibleChecker();
-				if(tmp != null) {
-					for(int j=0; j<tmp.size(); j++) {
-						if(retour.contains(tmp.get(j)[0]) && ((Boolean)tmp.get(j)[1]).booleanValue()) {
-							Rapport.addLineError("déclaration de variable en double : "+tmp.get(j));
-							return null;
-						}
-						if(!retour.contains(tmp.get(j)[0]) && !((Boolean)tmp.get(j)[1]).booleanValue()) {
-							Rapport.addLineError("variable non déclaré : "+tmp.get(j));
-							return null;
-						}
-						retour.add(tmp.get(j));
-					}
-				}
-				else 
-					return null;
+			Token t = variableName();
+			if(!contains(variables, t)) {
+				Rapport.addLineError("variable non déclaré : "+t.getContents());
+				return null;
 			}
-			return new ArrayList<Object[]>();
+			Rapport.addLineSuccess("variable : "+t.getContents()+"<br />");
+			return new ArrayList<Token>();
 		}
 		else {
+			ArrayList<Token> variables2 = (ArrayList<Token>)variables.clone();
 			for(int i=0; i<node.size(); i++) {
-				ArrayList<Object[]> tmp = node.get(i).varaibleChecker();
-				if(tmp != null) {
-					for(int j=0; j<tmp.size(); j++) {
-						if(retour.contains(tmp.get(j))) {
-							Rapport.addLineError("variable en double : "+tmp.get(j));
-							return null;
-						}
-						retour.add(tmp.get(j));
+				ArrayList<Token> tmp = node.get(i).varaibleChecker(variables2);
+				if(tmp == null)
+					return null;
+				for(int j=0; j<tmp.size(); j++) {
+					if(!contains(variables2, tmp.get(j))) {
+						variables2.add(tmp.get(j));
 					}
 				}
-				else 
-					return null;
 			}
-			return retour;
+			if(function.equals("block_instruction"))  {
+				for(int i=0; i<variables2.size(); i++) {
+					if(contains(variables, variables2.get(i)))
+						varaible.add(variables2.get(i).getContents());
+				}
+				return variables;
+			}
+			else
+				return variables2;
 		}
 		
 	}
 	
-	public String variableName() {
+	public Token variableName() {
 		if(function.equals("declaration_instruction")) {
 			for(int i=0; i<node.size(); i++) {
-				String tmp = node.get(i).variableName();
+				Token tmp = node.get(i).variableName();
 				if(tmp != null) {
 					return tmp;
 				}
 			}
 		}
-		else if(function.equals("variable_name") && !contents.equals("")) {
-			return contents;
+		else if(function.equals("variable_name") && !token.getContents().equals("")) {
+			return token;
 		}
 		else {
 			for(int i=0; i<node.size(); i++) {
-				String tmp = node.get(i).variableName();
+				Token  tmp = node.get(i).variableName();
 				if(tmp != null) {
 					return tmp;
 				}
 			}
 		}	
 		return null;
+	}
+	
+	public boolean contains(ArrayList<Token> list, Token t) {
+		for(int i=0; i<list.size(); i++) {
+			if(list.get(i).getContents().equals(t.getContents()))
+				return true;
+		}
+		return false;
+	}
+	
+	public String translate(Map<String, MemoryBlock> addrVariable) {
+		String retour = "";
+		boolean through = true;
+		if(function.equals("block_instruction")) {
+			//xaxaxa...
+		}
+		if(function.equals("declaration_instruction")) {
+			Token t = variableName();
+			retour += "//Declaration variable "+t.getContents()+"\n";
+			retour += "LIT "+(addrVariable.size()+Config.variable_memory_zone)+"\n";
+			retour += "LIT 0\n";
+			retour += "IP 2 0 1 "+Config.IP_add_variable_RAM+"\n";
+			addrVariable.put(t.getContents(), addrVariable.size()+Config.variable_memory_zone);
+		}
+		if(function.equals("allocation_instruction")) {
+			Token t = variableName();
+			retour += "//Allocation variable "+t.getContents()+"\n";
+			retour += "LIT "+addrVariable.get(t.getContents())+"\n";
+			retour += node.get(2).translate(addrVariable);
+			retour += "IP 2 0 1 "+Config.IP_add_variable_RAM+"\n";
+			through = false;
+		}
+		if(function.equals("variable_name")) {
+			Token t = variableName();
+			retour += "//Recupération variable "+t.getContents()+"\n";
+			retour += "LIT "+addrVariable.get(t.getContents())+"\n";
+			retour += "IP 1 1 1 "+Config.IP_get_variable_RAM+"\n";
+			through = false;
+		}
+		if(function.equals("integer")) {
+			if(!token.getContents().equals("")) {
+				retour += "//Pose d'un integer sur la pile\n";
+				retour += "LIT "+token.getContents()+"\n" ;
+				through = false;
+			}
+		}
+		if(function.equals("structure_if")) {
+			if(node.size() > 0 && node.get(0).getToken().getContents().equals("if")) {
+				retour += "//Structure IF\n";
+				retour += node.get(2).translate(addrVariable);
+				retour += "BZ LABEL\n";
+			}
+		}
+		if(function.equals("boolean_expresion")) {
+			retour += "//Premier element du boolean_expresion\n";
+			retour += node.get(0).translate(addrVariable);
+			retour += "//Dexieme element du boolean_expresion\n";
+			retour += node.get(2).translate(addrVariable);
+			retour += node.get(1).translate(addrVariable);
+			through = false;
+		}
+		if(function.equals("op_compare")) {
+			retour += "//Comparaison\n";
+			if(node.size() > 0 && node.get(0).getToken().getContents().equals("<")) {
+				retour += "IP 2 1 1 "+Config.IP_compare_lower+"\n";
+			}
+			else if(node.size() > 0 && node.get(0).getToken().getContents().equals(">")) {
+				retour += "IP 2 1 1 "+Config.IP_compare_upper+"\n";
+			}
+			else if(node.size() > 0 && node.get(0).getToken().getContents().equals("==")) {
+				retour += "IP 2 1 1 "+Config.IP_compare_equals+"\n";
+			}
+			else if(node.size() > 0 && node.get(0).getToken().getContents().equals("<=")) {
+				retour += "IP 2 1 1 "+Config.IP_compare_lowerEquals+"\n";
+			}
+			else if(node.size() > 0 && node.get(0).getToken().getContents().equals(">=")) {
+				retour += "IP 2 1 1 "+Config.IP_compare_upperEquals+"\n";
+			}
+			through = false;
+		}		
+		if(function.equals("boolean")) {
+			if(token.getContents().equals("true"))
+				retour += "LIT 1\n";
+			if(token.getContents().equals("false"))
+				retour += "LIT 0\n";			
+		}		
+		if(through) {
+			for(int i=0; i<node.size(); i++) {
+				retour += node.get(i).translate(addrVariable);
+				
+			}
+		}
+		return retour;
 	}
 }

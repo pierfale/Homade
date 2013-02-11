@@ -10,13 +10,18 @@ parameter				:=	type variable_name
 list_instruction		:= 	* instruction
 		
 instruction				:=	structure
-						|	arithmetic_instruction ";"
+						|	singleLine_instruction ";"
 						|	special_instruction ";"
 						
 special_instruction		:=	"display" number
 						|	"display" variable_name
+						|	"display" string
+						|	return_instruction
 						
-arithmetic_instruction	:=	allocation_instruction
+return_instruction		:=	"return" number
+						|	"return" variable_name
+						
+singleLine_instruction	:=	allocation_instruction
 						|	declaration_instruction
 
 allocation_instruction 	:= 	variable_name "=" number
@@ -39,6 +44,10 @@ boolean_expresion		:= 	boolean
 						|	variable_name op_compare number
 						|	number op_compare variable_name
 						|	variable_name op_compare variable_name
+						|	"(" number op_compare number ")"
+						|	"(" variable_name op_compare number ")"
+						|	"(" number op_compare variable_name ")"
+						|	"(" variable_name op_compare variable_name ")"
 							
 op_compare				:= 	"<"
 						|	">"
@@ -62,13 +71,19 @@ boolean					:= 	"true"
 					
 number					:=	integer
 						|	decimal
-						|	"(" number op_arithmetic number ")"
 						|	number op_arithmetic number
-					
+						|	variable_name op_arithmetic variable_name
+						|	variable_name op_arithmetic number
+						|	number op_arithmetic variable_name
+						|	"(" number op_arithmetic number ")"
+						|	"(" variable_name op_arithmetic variable_name ")"
+						|	"(" variable_name op_arithmetic number ")"
+						|	"(" number op_arithmetic variable_name ")"		
 integer					:= [(0-9)+]
 
 decimal					:= [(0-9)+(.)(0-9)+]
 
+string					:= [(")(a-zA-Z0-9)*(")]
 
 variable_name			:= [(a-zA-Z)(a-zA-Z0-9_)*]
 

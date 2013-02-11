@@ -30,19 +30,15 @@ public class Match {
 					else {
 						if(cursor >= s.length() || !match(expr2, s.charAt(cursor)))
 							return false;
+					
 						cursor++;
 					}
-					
-					if(cursor == s.length())
+					if(cursor == s.length() && (expr.length() == j+1 || expr.length() == j+2))
 						return true;
 				}
 				
 			}
 			i++;
-		}
-		if(expr.length() == 3 && s.length() == 1) {
-			if(s.charAt(0) >= expr.charAt(0) && s.charAt(0) <= expr.charAt(2))
-				return true;
 		}
 		return false;
 	}

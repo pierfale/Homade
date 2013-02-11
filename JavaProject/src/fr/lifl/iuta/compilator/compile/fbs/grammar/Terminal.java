@@ -39,7 +39,7 @@ public class Terminal implements Word {
 		if(preg_match) {
 			if(wl.size() == 1 && Match.equals(word, wl.get(0).getContents())) {
 				//System.out.println("match succes : "+wl.get(0).getContents()+"="+word);
-				return new WordTree(wl.get(0).getContents());
+				return new WordTree(new Token(wl.get(0).getContents(), wl.get(0).getLine()));
 			}
 			else
 				return null;
@@ -47,7 +47,7 @@ public class Terminal implements Word {
 		else {
 			if(wl.size() == 1 && wl.get(0).getContents().equals(word)) {
 				//System.out.println("match succes : "+wl.get(0).getContents()+"="+word);
-				return new WordTree(wl.get(0).getContents());
+				return new WordTree(new Token(wl.get(0).getContents(), wl.get(0).getLine()));
 			}
 			else
 				return null;
@@ -56,10 +56,6 @@ public class Terminal implements Word {
 
 	public String getWord() {
 		return word;
-	}
-
-	public int getLength() {
-		return 1;
 	}
 	
 	public String toString() {

@@ -11,6 +11,7 @@ import fr.lifl.iuta.compilator.exception.UnknownInstructionException;
 import fr.lifl.iuta.compilator.exception.UnloadedRAMException;
 import fr.lifl.iuta.compilator.instruction.Decode;
 import fr.lifl.iuta.compilator.instruction.Instruction;
+import fr.lifl.iuta.compilator.ip.BusIP;
 import fr.lifl.iuta.compilator.ip.IP;
 import fr.lifl.iuta.compilator.ip.IPConfig;
 
@@ -24,12 +25,12 @@ import fr.lifl.iuta.compilator.ip.IPConfig;
 
 public class Processor {
 	
+	
 	private static boolean on;
 	private static int PC; //compteur ordinal
 	private static Core core;
-	private static IP [] ips_short;
-	private static IP [] ips_long;
 	private static Stack<Integer> stack;
+	private static Stack<Integer> stackFunction;
 	
 	/**
 	 * Singleton pattern
@@ -45,20 +46,15 @@ public class Processor {
 	 */
 	public static void init() {
 		core = new Core();
-		ips_short = new IP[1024];
-		ips_long = new IP[1024];
 		stack = new Stack<Integer>();
+		stackFunction = new Stack<Integer>();
 	}
 	
 	public static void loadIPS(IPConfig ips) {
 		Iterator<String> it = ips.getKeys().iterator();
 		while(it.hasNext()) {
 			String curr = it.next();
-			if(ips.isShort(curr))
-				ips_short[ips.getPosition(curr)] = ips.getIP(curr);
-			else
-				ips_long[ips.getPosition(curr)] = ips.getIP(curr);
-			
+			BusIP.addIP(ips.getIP(curr));
 		}
 	}
 	
@@ -128,7 +124,7 @@ public class Processor {
 	public static int getAddrInstr() {
 		return PC/4;
 	}
-	
+	/*
 	public static IP getIp(int i, boolean isShort) throws UnassignedIPException {
 		if(isShort) {
 			if(ips_short[i] != null)
@@ -142,7 +138,7 @@ public class Processor {
 			else
 				throw new UnassignedIPException("long ip "+i);			
 		}
-	}
+	}*/
 	
 	public static void stackPush(int value) {
 		stack.push(value);
@@ -153,5 +149,24 @@ public class Processor {
 			throw new EmptyStackException();
 		else 
 			return stack.pop();
+	}
+	
+	public static void stackFuncPush(int value) {
+		stackFunction.push(value);
+	}
+	
+	public static int stackFuncPop() throws EmptyStackException {
+		if(stackFunction.isEmpty())
+			throw new EmptyStackException();
+		else 
+			return stackFunction.pop();
+	}
+	
+	public static void setPC(int pc){
+		PC = pc;
+	}
+	
+	public static int getPC(){
+		return PC;
 	}
 }

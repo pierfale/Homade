@@ -105,18 +105,7 @@ public class Grammar {
 					}
 				}
 			}
-		}
-		if(ok) {
-			Rapport.addLineSuccess("done");
-			Rapport.addLine("<h2>Calcule de la longeur minimal des mots :</h2>");
-			for(int i=0; i<words.size(); i++) {
-				for(int j=0; j<words.get(i).size(); j++) {
-					for(Word w : words.get(i).get(j)) {
-						if(!w.isTerminal())
-							((NonTerminal)w).calculatesLength();
-					}
-				}
-			}
+			Rapport.addLineSuccess("terminé avec succès");
 		}
 		return ok;
 	}

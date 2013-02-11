@@ -17,26 +17,34 @@ public class Main {
 	
 	public static void main(String [] args) {
 		Date d = new Date();
-		
+
 		Rapport.newRapport("rapport-"+(new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss")).format(d)+".html");
 		long beg = System.currentTimeMillis();
 		try {
 			if(Grammar.load("fbsGrammar")) {
+				
+				if(args.length == 0) {
+					System.out.println("Aucun fichier en entré");
+				}
+				
 				for(String s : args) {
-					
 					ReadFile reader = new ReadFile(s);
-					
 					WordList wl = Lexer.exec(reader.getString());
+					if(wl == null) {
+						Rapport.addLineError("La reconnaissance de la lexical a échoué");
+						System.out.println("La reconnaissance de la lexical a échoué");
+						break;
+					}		
 					WordTree wt = Parser.exec(wl);
 					if(wt == null || wl.size() > wt.size()) {
-						Rapport.addLineError("La reconnaissance de la grammaire a échoué");
-						System.out.println("La reconnaissance de la grammaire a échoué");
+						Rapport.addLineError("La reconnaissance de la syntaxe a échoué");
+						System.out.println("La reconnaissance de la syntaxe a échoué");
 						break;
 					}
 					else {
 						Rapport.addLine(wt.display());
 						if(VariableChecker.exec(wt)) {
-							//Translation.exec("out.asm", wl);
+							Translation.exec("out.asm", wt);
 							Rapport.addLineSuccess("La compilation s'est terminé avec succès!<br />Resultat : <br />");
 							
 							System.out.println("La compilation s'est terminé avec succès!");

@@ -6,32 +6,19 @@ public class Token {
 													{"(", ")"},
 													{"[", "]"}};
 	private String contents;
-	private String function;
-	private String lex;
+	private int line;
 	
-	public Token(String contents) {
+	public Token(String contents, int line) {
 		this.contents = contents;
-		function = "";
-		lex = "";
+		this.line = line;
 	}
-	
-	public Token(String contents, String lex) {
-		this.contents = contents;
-		function = "";
-		this.lex = lex;
-	}
-	
 	
 	public String getContents() {
 		return contents;
 	}
 	
-	public String getFunction() {
-		return function;
-	}
-	
-	public String getLex() {
-		return lex;
+	public int getLine() {
+		return line;
 	}
 
 	public boolean isOpenBracket() {
@@ -57,10 +44,6 @@ public class Token {
 		}
 		return false;
 	}
-	
-	public void setFunction(String function) {
-		this.function = function;
-		
-	}
+
 
 }

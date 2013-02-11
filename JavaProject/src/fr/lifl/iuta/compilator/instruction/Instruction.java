@@ -5,4 +5,7 @@ import fr.lifl.iuta.compilator.exception.InstructionFailedException;
 public interface Instruction {
 	
 	public void exec() throws InstructionFailedException;
+	
+	public String toString();
+	
 }

@@ -1,19 +1,16 @@
 int function main() {
-
+	display "xaxaxa";
 	int tmp = 42;
-	if(tmp == 5)
+	if(tmp*5 == 5)
 		display 6;
 	else if(tmp == 6) {
-		int tmp = 42;
+		int tmp2 = 42;
 		display tmp;
 	}
 	else {
-		int tmp = 5;
+		int tmp2 = 5;
 		display 8;
 	}
 }
 
-void function display(int n) {
-	display n;
-}
 

@@ -4,7 +4,6 @@ public class NonTerminal implements Word {
 
 	private String targetS;
 	private Words target;
-	private int length;
 	
 	public NonTerminal(String target) {
 		this.targetS = target;
@@ -34,21 +33,7 @@ public class NonTerminal implements Word {
 		return false;
 	}
 	
-	public void calculatesLength() {
-		int min  = 99;
-		
-		for(int i=0; i<target.size(); i++) {
-			if(target.get(i).length < min &&target.get(i).length !=  0)
-				min = target.get(i).length;
-		}
-		length = min;
-	}
-	
 	public String toString() {
 		return "non terminal : "+target.getName();
-	}
-
-	public int getLength() {
-		return length;
 	}
 }
