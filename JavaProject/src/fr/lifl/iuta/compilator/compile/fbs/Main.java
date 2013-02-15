@@ -71,11 +71,11 @@ public class Main {
 		Rapport.close();
 		
 		//test en direct
-		/*
+		
 		String [] argsMain = new String[1];
 		argsMain[0] = "out.asm";
-		base.Main.main(argsMain);
-		*/
+		fr.lifl.iuta.compilator.base.Main.main(argsMain);
+		
 	}
 
 }

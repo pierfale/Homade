@@ -16,6 +16,7 @@ public class Translation {
 		File f = new File(out);
 		FileWriter writer = null;
 		Map<String, Integer> variableAddress = new HashMap<String, Integer>();
+		LabelManager.init();
 		try {
 			f.createNewFile();
 			writer = new FileWriter(f);
@@ -25,7 +26,9 @@ public class Translation {
 		}
 		if(ok) {
 			try {
-				writer.write(wt.translate(new HashMap<String, Integer>()));
+				String tmp1 = wt.translate(new HashMap<String, MemoryBlock>());
+				tmp1 = LabelManager.replace(tmp1);
+				writer.write(tmp1);
 				writer.flush();
 			} catch (IOException e) {
 				e.printStackTrace();

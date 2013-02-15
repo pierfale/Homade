@@ -1,3 +1,3 @@
-0: class(iP.IPAddInRAM) short
-32: class(iP.SumIP) short
-1: class(iP.DisplayIP) short
+8: class(fr.lifl.iuta.compilator.ip.IpStack) short
+32: class(fr.lifl.iuta.compilator.ip.IpAlu) short
+32: class(fr.lifl.iuta.compilator.ip.IpRAM) short

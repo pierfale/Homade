@@ -7,9 +7,8 @@ import fr.lifl.iuta.compilator.processor.Processor;
 public class Decode {
 	
 	public static Instruction decode(long instructions, int offset) throws UnknownInstructionException {
-
 		short instruction = (short) (instructions >> offset*16);
-		System.out.println("curr instr : "+String.format("%x", instruction)+"offset : "+offset);
+		System.out.println("["+Processor.getPC()+"] curr instr : "+String.format("%x", instruction)+" offset : "+offset);
 		if ((instruction & 0xFFFF) == 0xFFFF) {
 			return null;
 		}

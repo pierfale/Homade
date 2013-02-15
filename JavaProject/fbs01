@@ -1,16 +1,6 @@
 int function main() {
-	display "xaxaxa";
-	int tmp = 42;
-	if(tmp*5 == 5)
-		display 6;
-	else if(tmp == 6) {
-		int tmp2 = 42;
-		display tmp;
-	}
-	else {
-		int tmp2 = 5;
-		display 8;
-	}
+	int tmp = 10-(3+2*3)-(2+1);
+	display tmp;
 }
 
 

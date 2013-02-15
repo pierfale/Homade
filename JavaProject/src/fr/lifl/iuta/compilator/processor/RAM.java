@@ -32,6 +32,8 @@ public class RAM {
 			return memory[address]; 
 		else
 			throw new InvalideAdressException("0x"+String.format("%x", address));
+		
+		
 	}
 	
 	public static void set(int address, long value) throws InvalideAdressException, UnloadedRAMException {

@@ -86,6 +86,10 @@ public class WordTree {
 		return null;
 	}
 	
+	public int nodeSize() {
+		return node.size();
+	}
+	
 	public String toString() {
 		String s = "+"+token.getContents();
 		if(!function.equals("")) 
@@ -116,6 +120,15 @@ public class WordTree {
 		}
 		s += "</table>";
 		return s;
+	}
+	
+	public void displayText(int n) {
+		for(int i=0; i<n; i++)
+			System.out.print("| ");
+		if(!token.getContents().equals(""))
+			System.out.println(token.getContents());
+		for(int i=0; i<node.size(); i++)
+			node.get(i).displayText(n+1);
 	}
 	
 	public ArrayList<Token> varaibleChecker(ArrayList<Token> variables) {
@@ -204,51 +217,90 @@ public class WordTree {
 		}
 		if(function.equals("declaration_instruction")) {
 			Token t = variableName();
-			retour += "//Declaration variable "+t.getContents()+"\n";
-			retour += "LIT "+(addrVariable.size()+Config.variable_memory_zone)+"\n";
+			int addr = MemoryBlock.nextFreeBlock(addrVariable, addrVariable.size());
+			//retour += "//Declaration variable "+t.getContents()+"\n";
 			retour += "LIT 0\n";
+			retour += "LIT "+addr+"\n";
 			retour += "IP 2 0 1 "+Config.IP_add_variable_RAM+"\n";
-			addrVariable.put(t.getContents(), addrVariable.size()+Config.variable_memory_zone);
+			addrVariable.put(t.getContents(), new MemoryBlock(addr, addrVariable.size()));
 		}
 		if(function.equals("allocation_instruction")) {
 			Token t = variableName();
-			retour += "//Allocation variable "+t.getContents()+"\n";
-			retour += "LIT "+addrVariable.get(t.getContents())+"\n";
+			//retour += "//Allocation variable "+t.getContents()+"\n";
 			retour += node.get(2).translate(addrVariable);
+			retour += "LIT "+addrVariable.get(t.getContents()).getAddress()+"\n";
 			retour += "IP 2 0 1 "+Config.IP_add_variable_RAM+"\n";
 			through = false;
 		}
 		if(function.equals("variable_name")) {
 			Token t = variableName();
-			retour += "//Recupération variable "+t.getContents()+"\n";
-			retour += "LIT "+addrVariable.get(t.getContents())+"\n";
+			//retour += "//Recupération variable "+t.getContents()+"\n";
+			retour += "LIT "+addrVariable.get(t.getContents()).getAddress()+"\n";
 			retour += "IP 1 1 1 "+Config.IP_get_variable_RAM+"\n";
 			through = false;
 		}
 		if(function.equals("integer")) {
 			if(!token.getContents().equals("")) {
-				retour += "//Pose d'un integer sur la pile\n";
+				//retour += "//Pose d'un integer sur la pile\n";
 				retour += "LIT "+token.getContents()+"\n" ;
+				through = false;
+			}
+		}
+		if(function.equals("structure")) {
+			if(node.size() > 0 && node.get(0).getToken().getContents().equals("while")) {
+				int lbl1 = LabelManager.getNext();
+				retour += "_LBL"+lbl1+"\n";
+				retour += node.get(2).translate(addrVariable);
+				int lbl2 = LabelManager.getNext();
+				retour += "BZ _LBL"+lbl2+"\n";
+				retour += node.get(4).translate(addrVariable);
+				retour += "BA _LBL"+lbl1+"\n";
+				retour += "_LBL"+lbl2+"\n";
 				through = false;
 			}
 		}
 		if(function.equals("structure_if")) {
 			if(node.size() > 0 && node.get(0).getToken().getContents().equals("if")) {
-				retour += "//Structure IF\n";
+				//retour += "//Structure IF\n";
 				retour += node.get(2).translate(addrVariable);
-				retour += "BZ LABEL\n";
+				if(node.size() > 4) { // else
+					//retour += "//duplication de la valeur du bz\n";
+					retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
+				}
+				int lbl1 = LabelManager.getNext();
+				retour += "BZ _LBL"+lbl1+"\n";
+				//retour += "//Corps du if\n";
+				retour += node.get(4).translate(addrVariable);
+				retour += "_LBL"+lbl1+"\n";
+				if(node.size() > 4) { // else
+					int lbl2 = LabelManager.getNext();
+					retour += "BNZ _LBL"+lbl2+"\n";
+					//retour += "//Corps du else\n";
+					retour += node.get(6).translate(addrVariable);
+					retour += "_LBL"+lbl2+"\n";
+				}
 			}
+			through = false;
+		}
+		if(function.equals("number")) {
+			retour += NumberTranslate.exec(this, false);
+			through = false;
 		}
 		if(function.equals("boolean_expresion")) {
-			retour += "//Premier element du boolean_expresion\n";
-			retour += node.get(0).translate(addrVariable);
-			retour += "//Dexieme element du boolean_expresion\n";
-			retour += node.get(2).translate(addrVariable);
-			retour += node.get(1).translate(addrVariable);
+			if(node.size() == 1) {
+				retour += node.get(0).translate(addrVariable);
+			}
+			else {
+				//retour += "//Premier element du boolean_expresion\n";
+				retour += node.get(0).translate(addrVariable);
+				//retour += "//Dexieme element du boolean_expresion\n";
+				retour += node.get(2).translate(addrVariable);
+				retour += node.get(1).translate(addrVariable);
+			}
 			through = false;
 		}
 		if(function.equals("op_compare")) {
-			retour += "//Comparaison\n";
+			//retour += "//Comparaison\n";
 			if(node.size() > 0 && node.get(0).getToken().getContents().equals("<")) {
 				retour += "IP 2 1 1 "+Config.IP_compare_lower+"\n";
 			}
@@ -265,16 +317,25 @@ public class WordTree {
 				retour += "IP 2 1 1 "+Config.IP_compare_upperEquals+"\n";
 			}
 			through = false;
-		}		
+		}	
 		if(function.equals("boolean")) {
 			if(token.getContents().equals("true"))
 				retour += "LIT 1\n";
 			if(token.getContents().equals("false"))
 				retour += "LIT 0\n";			
-		}		
+		}
+		if(function.equals("special_instruction")) {
+			if(node.size() > 1 && node.get(0).getToken().getContents().equals("display")) {
+				retour += node.get(1).translate(addrVariable);
+				//retour += "//display\n";
+				retour += "IP 1 0 1 "+Config.IP_special_display+"\n";
+			}
+			through = false;
+		}
 		if(through) {
 			for(int i=0; i<node.size(); i++) {
 				retour += node.get(i).translate(addrVariable);
+
 				
 			}
 		}
