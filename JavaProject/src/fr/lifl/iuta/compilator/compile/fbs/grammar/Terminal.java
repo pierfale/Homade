@@ -3,6 +3,7 @@ package fr.lifl.iuta.compilator.compile.fbs.grammar;
 import java.util.regex.Pattern;
 
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
+import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
 
 public class Terminal implements Word {
 	

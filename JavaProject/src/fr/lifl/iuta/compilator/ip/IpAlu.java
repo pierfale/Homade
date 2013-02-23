@@ -24,7 +24,8 @@ public class IpAlu extends IP {
 			//tmp
 			case 8: out = this.multi(in);break;
 			case 9: out = this.divide(in);break;
-			case 10: out = this.modulo(in);break;
+			case 10: out = this.binaryLeftShift(in);break;
+			case 11: out = this.binaryRightShift(in);break;
 			
 			case 16:out = this.vrai(in);break;
 			case 17:out = this.faux(in);break;
@@ -222,6 +223,18 @@ public class IpAlu extends IP {
 		out[0] = in[1]%in[0];
 		return out;
 	}
+	
+	public int[] binaryLeftShift(int [] in){
+		int [] out = new int [1];
+		out[0] = in[1] << in [0];
+		return out;
+	}
+	
+	public int[] binaryRightShift(int [] in){
+		int [] out = new int [1];
+		out[0] = in[1] >> in [0];
+		return out;
+	}	
 	
 	public String toString() {return "IP ALU : "+this.numberOfInstr;}
 	

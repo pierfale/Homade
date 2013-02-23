@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
+import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
 
 public class Grammar {
 	
@@ -105,7 +106,8 @@ public class Grammar {
 					}
 				}
 			}
-			Rapport.addLineSuccess("terminé avec succès");
+			if(ok)
+				Rapport.addLineSuccess("terminé avec succès");
 		}
 		return ok;
 	}
@@ -121,7 +123,15 @@ public class Grammar {
 	
 	public static WordTree match(WordList wl) {
 		return words.get(0).match(wl, false);
-
+	}
+	
+	public static boolean match(WordList wl, String expr) {
+		for(int i=0; i<words.size(); i++) {
+			if(words.get(i).getName().equals(expr)) {
+				return words.get(i).match(wl, false) != null;
+			}
+		}
+		return false;
 	}
 	
 	public static String existWord(String word) {
@@ -138,5 +148,7 @@ public class Grammar {
 		}
 		return null;
 	}
+	
+
 
 }

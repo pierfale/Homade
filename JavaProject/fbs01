@@ -1,6 +1,7 @@
 int function main() {
-	int tmp = 10-(3+2*3)-(2+1);
-	display tmp;
+	int n = 5;
+	int n2 = 10;
+	display n;
+	display n2;
+	display n2*n;
 }
-
-

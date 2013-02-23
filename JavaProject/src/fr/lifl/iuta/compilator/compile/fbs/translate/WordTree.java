@@ -1,10 +1,11 @@
-package fr.lifl.iuta.compilator.compile.fbs.grammar;
+package fr.lifl.iuta.compilator.compile.fbs.translate;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 import fr.lifl.iuta.compilator.compile.fbs.Config;
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
+import fr.lifl.iuta.compilator.compile.fbs.grammar.Token;
 
 public class WordTree {
 	
@@ -201,6 +202,21 @@ public class WordTree {
 		return null;
 	}
 	
+	public Token functionName() {
+		 if(function.equals("function_name") && !token.getContents().equals("")) {
+			return token;
+		}
+		else {
+			for(int i=0; i<node.size(); i++) {
+				Token  tmp = node.get(i).functionName();
+				if(tmp != null) {
+					return tmp;
+				}
+			}
+		}	
+		return null;
+	}
+	
 	public boolean contains(ArrayList<Token> list, Token t) {
 		for(int i=0; i<list.size(); i++) {
 			if(list.get(i).getContents().equals(t.getContents()))
@@ -212,41 +228,69 @@ public class WordTree {
 	public String translate(Map<String, MemoryBlock> addrVariable) {
 		String retour = "";
 		boolean through = true;
-		if(function.equals("block_instruction")) {
-			//xaxaxa...
+		if(function.equals("function")) {
+			if(node.size() > 4) {
+				int lbl = LabelManager.getNext();
+				retour += "_LBL"+lbl+"\n";
+				FunctionManager.add(node.get(2).functionName().getContents(), lbl);
+				if(node.get(4).getToken().getContents().equals(")")) {
+					retour += node.get(6).translate(addrVariable);
+					retour += "RET\n";
+					if(node.size() == 9)
+						retour += node.get(8).translate(addrVariable);
+				}
+				else {
+					retour += node.get(4).translate(addrVariable);
+					retour += node.get(7).translate(addrVariable);
+					retour += "RET\n";
+					if(node.size() == 10)
+						retour += node.get(9).translate(addrVariable);
+				}
+			}
+			through = false;
 		}
-		if(function.equals("declaration_instruction")) {
+		else if(function.equals("parameter_init")) {/*
 			Token t = variableName();
-			int addr = MemoryBlock.nextFreeBlock(addrVariable, addrVariable.size());
-			//retour += "//Declaration variable "+t.getContents()+"\n";
-			retour += "LIT 0\n";
+			int addr = MemoryBlock.nextFreeSegment(addrVariable);
+			retour += "IP 2 0 1 "+Config.IP_add_variable_RAM+"\n";
 			retour += "LIT "+addr+"\n";
 			retour += "IP 2 0 1 "+Config.IP_add_variable_RAM+"\n";
-			addrVariable.put(t.getContents(), new MemoryBlock(addr, addrVariable.size()));
+			addrVariable.put(t.getContents(), new MemoryBlock(addr, 1));*/
 		}
-		if(function.equals("allocation_instruction")) {
+		else if(function.equals("block_instruction")) {
+			//xaxaxa...
+		}
+		else if(function.equals("declaration_instruction")) {
 			Token t = variableName();
-			//retour += "//Allocation variable "+t.getContents()+"\n";
-			retour += node.get(2).translate(addrVariable);
-			retour += "LIT "+addrVariable.get(t.getContents()).getAddress()+"\n";
-			retour += "IP 2 0 1 "+Config.IP_add_variable_RAM+"\n";
+			int addr = MemoryBlock.nextFreeSegment(addrVariable);
+			int size = 1;
+			
+			retour += VariableManager.create(addr, size);
+			addrVariable.put(t.getContents(), new MemoryBlock(addr, size));
+		}
+		else if(function.equals("allocation_instruction")) {
+			Token t = variableName();
+			String value = node.get(2).translate(addrVariable);
+			int offset = 0;
+			int address = addrVariable.get(t.getContents()).getAddress();
+			retour += VariableManager.set(address, offset, value);
 			through = false;
 		}
-		if(function.equals("variable_name")) {
+		else if(function.equals("variable_name")) {
 			Token t = variableName();
-			//retour += "//Recupération variable "+t.getContents()+"\n";
-			retour += "LIT "+addrVariable.get(t.getContents()).getAddress()+"\n";
-			retour += "IP 1 1 1 "+Config.IP_get_variable_RAM+"\n";
+			int offset = 0;
+			int address = addrVariable.get(t.getContents()).getAddress();
+			retour += VariableManager.get(address, offset);
 			through = false;
 		}
-		if(function.equals("integer")) {
+		else if(function.equals("integer")) {
 			if(!token.getContents().equals("")) {
 				//retour += "//Pose d'un integer sur la pile\n";
 				retour += "LIT "+token.getContents()+"\n" ;
 				through = false;
 			}
 		}
-		if(function.equals("structure")) {
+		else if(function.equals("structure")) {
 			if(node.size() > 0 && node.get(0).getToken().getContents().equals("while")) {
 				int lbl1 = LabelManager.getNext();
 				retour += "_LBL"+lbl1+"\n";
@@ -259,7 +303,7 @@ public class WordTree {
 				through = false;
 			}
 		}
-		if(function.equals("structure_if")) {
+		else if(function.equals("structure_if")) {
 			if(node.size() > 0 && node.get(0).getToken().getContents().equals("if")) {
 				//retour += "//Structure IF\n";
 				retour += node.get(2).translate(addrVariable);
@@ -282,11 +326,11 @@ public class WordTree {
 			}
 			through = false;
 		}
-		if(function.equals("number")) {
-			retour += NumberTranslate.exec(this, false);
+		else if(function.equals("number")) {
+			retour += NumberTranslate.exec(this, addrVariable);
 			through = false;
 		}
-		if(function.equals("boolean_expresion")) {
+		else if(function.equals("boolean_expresion")) {
 			if(node.size() == 1) {
 				retour += node.get(0).translate(addrVariable);
 			}
@@ -299,7 +343,7 @@ public class WordTree {
 			}
 			through = false;
 		}
-		if(function.equals("op_compare")) {
+		else if(function.equals("op_compare")) {
 			//retour += "//Comparaison\n";
 			if(node.size() > 0 && node.get(0).getToken().getContents().equals("<")) {
 				retour += "IP 2 1 1 "+Config.IP_compare_lower+"\n";
@@ -318,13 +362,13 @@ public class WordTree {
 			}
 			through = false;
 		}	
-		if(function.equals("boolean")) {
+		else if(function.equals("boolean")) {
 			if(token.getContents().equals("true"))
 				retour += "LIT 1\n";
 			if(token.getContents().equals("false"))
 				retour += "LIT 0\n";			
 		}
-		if(function.equals("special_instruction")) {
+		else if(function.equals("special_instruction")) {
 			if(node.size() > 1 && node.get(0).getToken().getContents().equals("display")) {
 				retour += node.get(1).translate(addrVariable);
 				//retour += "//display\n";
@@ -341,4 +385,5 @@ public class WordTree {
 		}
 		return retour;
 	}
+	
 }

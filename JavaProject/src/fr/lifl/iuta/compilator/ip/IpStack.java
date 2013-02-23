@@ -18,7 +18,6 @@ public class IpStack extends IP {
 	public boolean itsMe() {return ((this.number & 0xFFF8) == this.numberOfIp);}
 
 	public void exec() throws InstructionFailedException {
-		System.out.println("-->"+this.numberOfInstr);
 		int []in = new int[this.in];
 		int []out = null;
 		for (int i = 0 ; i < in.length ; i++)
@@ -31,8 +30,18 @@ public class IpStack extends IP {
 			case 4 : out = rot(in);break;
 			case 5 : out = invrot(in);break;
 			case 6 : out = nip(in);break;
+			//tmp
+			case 7 : out = pop1(in);break;
 			//default: out = display(in);break;
 		}
+		//tmp
+		System.out.print("in : ");
+		for (int i = 0 ; i < in.length ; i++)
+			System.out.print(in[i]+", ");
+		System.out.print(" out : ");
+		for (int i = 0 ; i < out.length ; i++)
+			System.out.print(out[i]+", ");
+		System.out.println();
 		if(this.out <= out.length)
 			for(int i=0; i<this.out; i++)
 				Processor.stackPush(out[i]);			
@@ -46,7 +55,7 @@ public class IpStack extends IP {
 	}
 	
 	public int[] swap(int [] in){
-		int[] out = {in[1],in[0]};
+		int[] out = {in[0],in[1]};
 		return out;
 	}
 	
@@ -61,17 +70,22 @@ public class IpStack extends IP {
 	}
 	
 	public int[] rot(int [] in){
-		int[] out = {in[1],in[2],in[0]};
+		int[] out = {in[1],in[0],in[2]};
 		return out;
 	}
 	
 	public int[] invrot(int [] in){
-		int[] out = {in[2],in[0],in[1]};
+		int[] out = {in[0],in[2],in[1]};
 		return out;
 	}
 	
 	public int[] nip(int [] in){
-		int[] out = {in[1]};
+		int[] out = {in[0]};
+		return out;
+	}
+	
+	public int[] pop1(int [] in){
+		int[] out = new int[0];
 		return out;
 	}
 	

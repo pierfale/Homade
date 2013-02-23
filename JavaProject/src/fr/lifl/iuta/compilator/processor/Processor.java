@@ -2,13 +2,17 @@ package fr.lifl.iuta.compilator.processor;
 
 import java.util.EmptyStackException;
 import java.util.Iterator;
+import java.util.Observable;
+import java.util.Scanner;
 import java.util.Stack;
 
+import fr.lifl.iuta.compilator.base.Util;
 import fr.lifl.iuta.compilator.exception.EndOfInstructionsException;
 import fr.lifl.iuta.compilator.exception.InvalideAdressException;
 import fr.lifl.iuta.compilator.exception.UnassignedIPException;
 import fr.lifl.iuta.compilator.exception.UnknownInstructionException;
 import fr.lifl.iuta.compilator.exception.UnloadedRAMException;
+import fr.lifl.iuta.compilator.graphics.MyObservable;
 import fr.lifl.iuta.compilator.instruction.Decode;
 import fr.lifl.iuta.compilator.instruction.Instruction;
 import fr.lifl.iuta.compilator.ip.BusIP;
@@ -23,7 +27,7 @@ import fr.lifl.iuta.compilator.ip.IPConfig;
  *
  */
 
-public class Processor {
+public class Processor extends MyObservable{
 	
 	
 	private static boolean on;
@@ -65,11 +69,22 @@ public class Processor {
 		while(on) {
 			pulse();
 		}
+		/*
+		long [] mem = RAM.getMemory();
+		for(int i=0; i<mem.length; i++) {
+			String tmp = String.format("%x",mem[i]);
+			tmp = Util.fill(tmp);
+			System.out.println(i+ "\t"+tmp);
+		}*/
 	}
 	
 	public static void stop() {
 		on = false;
 		System.out.println("Fin de l'execution (PC="+PC+")");
+	}
+	
+	public static void stepByStep() {
+		pulse();
 	}
 	
 
@@ -82,7 +97,12 @@ public class Processor {
 		} catch (EndOfInstructionsException e) {
 			stop();
 		}
-		
+		/*
+		//etat stack
+		for(int i = stack.size()-1; i>= 0; i--)
+			System.out.println((stack.size()-i)+" => "+stack.get(i));
+		Scanner sc = new Scanner(System.in);
+		sc.nextLine();*/
 		
 	}
 	
@@ -168,5 +188,13 @@ public class Processor {
 	
 	public static int getPC(){
 		return PC;
+	}
+	
+	public static Stack<Integer> getStack() {
+		return stack;
+	}
+	
+	public static Stack<Integer> getStackFunction() {
+		return stackFunction;
 	}
 }

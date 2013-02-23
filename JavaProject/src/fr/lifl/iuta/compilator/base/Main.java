@@ -20,6 +20,7 @@ public class Main {
 		for(long l : src)
 			System.out.println(String.format("%x", l));
 		System.out.println("===================");
+		System.out.println("length : "+src.length);
 		RAM.load(src);
 		Processor.init();
 		//chargement des IP

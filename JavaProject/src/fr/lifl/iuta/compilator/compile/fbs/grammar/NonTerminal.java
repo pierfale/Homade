@@ -1,5 +1,7 @@
 package fr.lifl.iuta.compilator.compile.fbs.grammar;
 
+import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
+
 public class NonTerminal implements Word {
 
 	private String targetS;

@@ -5,6 +5,7 @@ import java.util.Scanner;
 import java.util.Stack;
 
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
+import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
 
 public class Words {
 	

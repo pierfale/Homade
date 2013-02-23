@@ -9,7 +9,7 @@ public class InstructionCALL implements Instruction {
 	public InstructionCALL(int adr) {this.adr = adr;}
 
 	public void exec() {
-		Processor.stackFuncPush(Processor.getPC());
+		Processor.stackFuncPush(Processor.getPC()+2);
 		Processor.setPC(this.adr);
 	}
 	

@@ -1,4 +1,4 @@
-package fr.lifl.iuta.compilator.compile.fbs.grammar;
+package fr.lifl.iuta.compilator.compile.fbs.translate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,6 +27,7 @@ public class LabelManager {
 	
 	public static String replace(String in) {
 		String out = "";
+		String display = "";
 		Map<String, Integer> lbl = new HashMap<String, Integer>();
 		BufferedReader reader = new BufferedReader(new StringReader(in));
 		String line = "";
@@ -37,14 +38,25 @@ public class LabelManager {
 			e.printStackTrace();
 		}
 		while(line != null) {
+			if(line.length() > 4 && line.substring(0, 4).equals("CALL") || line.length() > 2 && line.substring(0, 2).equals("BA")) {
+				if(nbLine % 4 != 0)
+					nbLine += 4 - nbLine % 4;
+			}
 			
 			if(line.length() > 4 && line.substring(0, 4).equals("_LBL")) {
-				nbLine--;
 				lbl.put(line.substring(4), nbLine);
+				nbLine--;
+				display += " {"+line+"="+(nbLine)+"}";
 			}
-			else
+			else {
 				out += line+"\n";
-			nbLine++;
+				display += "\n["+nbLine+"] "+line;
+			}
+			
+			if(line.length() > 4 && line.substring(0, 4).equals("CALL") || line.length() > 2 && line.substring(0, 2).equals("BA"))
+				nbLine += 3;
+			else
+				nbLine++;
 			try {
 				line = reader.readLine();
 			} catch (IOException e) {
@@ -56,6 +68,7 @@ public class LabelManager {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		System.out.println("--------------------\n"+display);
 		String out2 = out;
 		reader = new BufferedReader(new StringReader(out2));
 		out = "";
@@ -67,17 +80,23 @@ public class LabelManager {
 			e.printStackTrace();
 		}
 		while(line != null) {
+			if(line.length() > 4 && line.substring(0, 4).equals("CALL") || line.length() > 2 && line.substring(0, 2).equals("BA")) {
+				if(nbLine % 4 != 0)
+					nbLine += 4 - nbLine % 4;
+			}
 			boolean absolute = false;
 			Scanner sc = new Scanner(line);
 			while(sc.hasNext()) {
 				String curr = sc.next();
-				if(curr.length() > 1 && curr.substring(0, 2).equals("BA"))
+				if((curr.length() > 1 && curr.substring(0, 2).equals("BA")) || (curr.length() > 3 && curr.substring(0, 4).equals("CALL")))
 					absolute = true;
 				if(curr.length() > 4 && curr.substring(0, 4).equals("_LBL")) {
 					if(absolute)
-						out += ""+(lbl.get(""+(curr.substring(4)))+1);
+						out += ""+(lbl.get(""+(curr.substring(4))));
 					else
-						out += ""+(lbl.get(""+(curr.substring(4)))-nbLine);
+						out += ""+(lbl.get(""+(curr.substring(4)))-nbLine-1);
+					System.out.println(curr+" : "+lbl.get(""+(curr.substring(4)))+" line : "+nbLine);
+					
 				}
 				else
 					out += curr;
@@ -86,7 +105,10 @@ public class LabelManager {
 				else
 					out += "\n";
 			}
-			nbLine++;
+			if(line.length() > 4 && line.substring(0, 4).equals("CALL") || line.length() > 2 && line.substring(0, 2).equals("BA"))
+				nbLine += 3;
+			else
+				nbLine++;
 			try {
 				line = reader.readLine();
 			} catch (IOException e) {

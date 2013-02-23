@@ -1,4 +1,4 @@
-package fr.lifl.iuta.compilator.compile.fbs.grammar;
+package fr.lifl.iuta.compilator.compile.fbs.translate;
 
 import java.util.ArrayList;
 

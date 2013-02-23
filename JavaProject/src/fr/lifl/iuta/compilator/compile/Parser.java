@@ -162,7 +162,7 @@ public class Parser {
 					else if(type.equals("LIT")){ // Ajouter une valeur au sommet de la pile.
 						instr = (short)0x2000;
 						short value = Short.parseShort(sc.next());
-						instr += value;
+						instr += value & 0x0FFF;
 					}
 					else if (type.equals("WIM")){
 						if(offsetLong > 0) {
@@ -209,6 +209,8 @@ public class Parser {
 				cpt-=2;
 			}
 		}
+		if(currLong != 0)
+			tmp.add(new Long(currLong));
 		long [] instrt = new long[tmp.size()];
 		for(int i=0; i<tmp.size(); i++)
 			instrt[i] = tmp.get(i);

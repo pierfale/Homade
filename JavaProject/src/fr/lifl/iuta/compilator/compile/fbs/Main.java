@@ -8,10 +8,10 @@ import fr.lifl.iuta.compilator.compile.fbs.grammar.Grammar;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Lexer;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Match;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Parser;
-import fr.lifl.iuta.compilator.compile.fbs.grammar.Translation;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.VariableChecker;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.WordList;
-import fr.lifl.iuta.compilator.compile.fbs.grammar.WordTree;
+import fr.lifl.iuta.compilator.compile.fbs.translate.Translation;
+import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
 
 public class Main {
 	
@@ -48,6 +48,13 @@ public class Main {
 							Rapport.addLineSuccess("La compilation s'est terminé avec succès!<br />Resultat : <br />");
 							
 							System.out.println("La compilation s'est terminé avec succès!");
+							
+							
+							//test en direct
+							
+							String [] argsMain = new String[1];
+							argsMain[0] = "out.asm";
+							fr.lifl.iuta.compilator.base.Main.main(argsMain);
 						}
 						else {
 							Rapport.addLineError("La vérification des types a échoué");
@@ -69,12 +76,7 @@ public class Main {
 
 		System.out.println("compilation terminé en "+((double)(System.currentTimeMillis()-beg)/1000.0)+" seconds");
 		Rapport.close();
-		
-		//test en direct
-		
-		String [] argsMain = new String[1];
-		argsMain[0] = "out.asm";
-		fr.lifl.iuta.compilator.base.Main.main(argsMain);
+
 		
 	}
 

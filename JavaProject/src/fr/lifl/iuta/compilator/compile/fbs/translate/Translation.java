@@ -1,13 +1,10 @@
-package fr.lifl.iuta.compilator.compile.fbs.grammar;
+package fr.lifl.iuta.compilator.compile.fbs.translate;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
-import fr.lifl.iuta.compilator.compile.fbs.Config;
 
 public class Translation {
 	
@@ -15,8 +12,8 @@ public class Translation {
 		boolean ok = true;
 		File f = new File(out);
 		FileWriter writer = null;
-		Map<String, Integer> variableAddress = new HashMap<String, Integer>();
 		LabelManager.init();
+		FunctionManager.init();
 		try {
 			f.createNewFile();
 			writer = new FileWriter(f);
@@ -27,6 +24,13 @@ public class Translation {
 		if(ok) {
 			try {
 				String tmp1 = wt.translate(new HashMap<String, MemoryBlock>());
+				if(FunctionManager.get("main") == -1) {
+					System.out.println("Fonction main introuvable");
+					return false;
+				}
+					
+				tmp1 = "CALL _LBL"+FunctionManager.get("main")+"\nHALT\n"+tmp1+VariableManager.createFunction();
+				tmp1 = FunctionManager.replace(tmp1);
 				tmp1 = LabelManager.replace(tmp1);
 				writer.write(tmp1);
 				writer.flush();
@@ -39,7 +43,6 @@ public class Translation {
 			try {
 				writer.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

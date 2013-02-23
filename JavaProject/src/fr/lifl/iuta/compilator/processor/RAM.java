@@ -62,5 +62,9 @@ public class RAM {
 		for(int i=0; i<mem.length; i++)
 			memory[addr+i] = mem[i];
 	}
+	
+	public static long[] getMemory() {
+		return memory;
+	}
 
 }
