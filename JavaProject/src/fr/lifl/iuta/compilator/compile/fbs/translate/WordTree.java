@@ -92,10 +92,13 @@ public class WordTree {
 	}
 	
 	public String toString() {
-		String s = "+"+token.getContents();
-		if(!function.equals("")) 
-			s += "("+function+")";
-		s += " => ";
+		String s = "";
+		if(!token.getContents().equals("")) {
+			s += token.getContents();
+			if(!function.equals("")) 
+				s += "("+function+")";
+			s += " => ";
+		}
 		for(int i=0; i<node.size(); i++) {
 			s += node.get(i).toString();
 			if(i+1 != node.size())

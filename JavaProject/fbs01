@@ -1,7 +1,6 @@
 int function main() {
 	int n = 5;
-	int n2 = 10;
-	display n;
-	display n2;
-	display n2*n;
+	while(false) {
+		display n;
+	}
 }

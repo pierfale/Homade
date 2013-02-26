@@ -24,28 +24,6 @@ public class VariableManager {
 	}
 	
 	public static String create(int address, int size) {
-		/*
-		int lbl1 = LabelManager.getNext();
-		int lbl2 = LabelManager.getNext();
-		String retour = "LIT "+Config.variable_memory_zone_segment+"\n";
-		retour += "_LBL"+lbl2+"\n";
-		retour += "IP 0 0 1 "+Config.IP_stack_duplication+"\n";
-		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
-		retour += "IP 0 0 1 "+Config.IP_stack_nip+"\n";
-		//0 ou 1
-		retour += "IP 0 0 1 "+Config.IP_stack_duplication+"\n";
-		retour += "IP 0 0 1 "+Config.IP_stack_duplication+"\n";
-		retour = "LIT 0\n";
-		retour += "IP 2 1 1 "+Config.IP_compare_equals+"\n";
-		retour = "LIT 1\n";
-		retour += "IP 2 1 1 "+Config.IP_compare_equals+"\n";
-		retour += "IP 2 1 1 "+Config.IP_operation_or+"\n";
-		retour += "BNZ _LBL"+lbl1+"\n";
-		retour += "LIT 1\n";
-		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
-		retour += "BA _LBL"+lbl2+"\n";
-		retour += "_LBL"+lbl1+"\n";
-		*/
 		String retour = "LIT "+address+"\n";
 		retour += "LIT "+Config.variable_memory_zone+"\n";
 		retour += "LIT "+size+"\n";
@@ -56,6 +34,21 @@ public class VariableManager {
 		retour += "LIT "+size+"\n";
 		retour += "IP 3 0 1 "+Config.IP_set_variable_RAM_64+"\n";
 		return retour;
+	}
+	
+	/*
+	 * il faut préalablement avoir crée la destination
+	 */
+	public static void copy(int origin, int destination) {
+		int lbl1 = LabelManager.getNext();
+		int lbl2 = LabelManager.getNext();
+		String retour = "LIT "+origin+"\n";
+		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
+		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
+		retour += "LIT "+destination+"\n";
+		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";		
+		retour += "IP 3 0 1 "+Config.IP_copy_RAM+"\n";
+
 	}
 	
 	public static String createFunction() {
@@ -223,134 +216,7 @@ public class VariableManager {
 		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
 		// segment
 		retour += "RET\n";
-		
-		/*
-		//old
 
-		
-		String retour = "_LBL"+lbl+"\n";
-		FunctionManager.add("_create_variable", lbl);
-		// size
-		retour += "LIT "+Config.variable_memory_zone+"\n";
-		// currAddr - size
-		retour += "_LBL"+lbl5+"\n";	
-		retour += "LIT "+Config.variable_memory_zone_segment+"\n";
-		// currSegment - currAddr - size
-
-		//while
-		retour += "_LBL"+lbl2+"\n";		
-		//while condition (addr == 0 || addr == 1)
-		retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
-		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
-		retour += "IP 1 2 1 "+Config.IP_stack_nip+"\n";
-		retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
-		retour += "LIT 0\n";
-		retour += "IP 2 1 1 "+Config.IP_compare_equals+"\n";
-		retour += "IP 2 2 1 "+Config.IP_stack_swap+"\n";
-		retour += "LIT 1\n";
-		retour += "IP 2 1 1 "+Config.IP_compare_equals+"\n";
-		retour += "IP 2 1 1 "+Config.IP_operation_or+"\n";
-		// boolean - currSegment - currAddr - size
-		retour += "BNZ _LBL"+lbl3+"\n";
-		//while contents
-		retour += "IP 2 2 1 "+Config.IP_stack_tuck+"\n";
-		// currAddr - currSegment - currAddr - size
-		retour += "IP 2 2 1 "+Config.IP_stack_over+"\n";
-		// currSegment - currAddr - currSegment - currAddr - size
-		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
-		// addr_real - size - curr_addr - ...
-		retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
-		// addr_real - addr_real - size - curr_addr
-		retour += "IP 3 3 1 "+Config.IP_stack_rot+"\n";
-		// addr_real - size - addr_real - curr_addr
-		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
-		// addr_real+size - addr_real - curr_addr
-		retour += "IP 3 3 1 "+Config.IP_stack_rot+"\n";
-		// curr_addr - addr_real+size - addr_real
-		retour += "IP 2 2 1 "+Config.IP_stack_swap+"\n";
-		// addr_real+size - curr_addr - addr_real
-		retour += "IP 2 3 1 "+Config.IP_stack_over+"\n";
-		// curr_addr - addr_real+size - curr_addr - addr_real
-		retour += "IP 2 1 1 "+Config.IP_compare_lowerEquals+"\n";
-		// curr_addr <= addr_real+size - curr_addr - addr_real
-		retour += "IP 3 3 1 "+Config.IP_stack_invrot+"\n";
-		// curr_addr - addr_real - curr_addr <= addr_real+size
-		retour += "IP 2 1 1 "+Config.IP_compare_upper+"\n";
-		// curr_addr > addr_real - curr_addr <= addr_real+size
-		retour += "IP 2 1 1 "+Config.IP_operation_and+"\n";
-		// curr_addr > addr_real && curr_addr <= addr_real+size
-		retour += "BNZ _LBL"+lbl1+"\n";
-		retour += "IP 0 1 1 "+Config.IP_pop1+"\n";
-		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
-		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
-		retour += "BA _LBL"+lbl5+"\n";
-		retour += "_LBL"+lbl1+"\n";	
-		// currSegment - currAddr - size
-		retour += "IP 2 3 1 "+Config.IP_stack_tuck+"\n";
-		// segment -  curr_addr - segment - size
-		retour += "IP 2 3 1 "+Config.IP_stack_over+"\n";
-		// curr_addr - segment -  curr_addr - segment - size
-		retour += "IP 2 2 1 "+Config.IP_stack_swap+"\n";
-		// curr_addr - segment - size
-		retour += "IP 3 3 1 "+Config.IP_stack_invrot+"\n";
-		// size - curr_addr - segment
-		retour += "IP 2 3 1 "+Config.IP_stack_over+"\n";
-		// curr_addr - size - curr_addr - segment
-		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
-		// curr_addr+size - curr_addr - segment
-		retour += "IP 3 3 1 "+Config.IP_stack_rot+"\n";
-		// segment - curr_addr+size - curr_addr
-		retour += "IP 2 3 1 "+Config.IP_stack_tuck+"\n";
-		// segment - curr_addr+size - segment - curr_addr
-		retour += "IP 2 3 1 "+Config.IP_stack_tuck+"\n";
-		// curr_addr+size - segment - curr_addr+size - segment - curr_addr
-		retour += "IP 2 2 1 "+Config.IP_stack_swap+"\n";
-		//  segment - curr_addr+size - curr_addr+size - segment - curr_addr
-		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
-		// real_address - size - curr_addr+size - curr_addr+size - segment - curr_addr
-		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
-		// real_address - curr_addr+size - curr_addr+size - segment - curr_addr
-		retour += "IP 2 1 1 "+Config.IP_compare_lower+"\n";
-		// real_address < curr_addr+size - curr_addr+size - segment - curr_addr
-		retour += "IP 3 3 1 "+Config.IP_stack_rot+"\n";
-		// curr_addr+size - segment - real_address < curr_addr+size - curr_addr
-		retour += "IP 2 3 1 "+Config.IP_stack_over+"\n";
-		// segment - curr_addr+size - segment - real_address < curr_addr+size - curr_addr
-		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
-		// real_address - size - curr_addr+size - segment - real_address < curr_addr+size - curr_addr
-		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
-		// real_address+size - curr_addr+size - segment - real_address < curr_addr+size - curr_addr
-		retour += "IP 2 1 1 "+Config.IP_compare_upperEquals+"\n";
-		// real_address+size >= curr_addr+size - segment - real_address < curr_addr+size - curr_addr
-		retour += "IP 3 3 1 "+Config.IP_stack_rot+"\n";
-		// real_address < curr_addr+size - real_address+size >= curr_addr+size - segment - curr_addr
-		retour += "IP 2 1 1 "+Config.IP_operation_and+"\n";
-		// real_address < curr_addr+size && real_address+size >= curr_addr+size - segment - curr_addr
-		retour += "BNZ _LBL"+lbl6+"\n";
-		retour += "IP 1 0 1 "+Config.IP_pop1+"\n";
-		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
-		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
-		retour += "BA _LBL"+lbl5+"\n";
-		retour += "_LBL"+lbl6+"\n";		
-		// segment -  curr_addr - size
-		retour += "LIT 1\n";
-		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
-		//inc
-		retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
-		retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
-		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
-		retour += "BA _LBL"+lbl2+"\n";
-		//end while
-		retour += "_LBL"+lbl3+"\n";
-		retour += "IP 1 0 1 "+Config.IP_pop1+"\n";
-		retour += "IP 1 0 1 "+Config.IP_pop1+"\n";
-		retour += "IP 1 0 1 "+Config.IP_pop1+"\n";
-		retour += "BNZ _LBL"+lbl4+"\n";
-		retour += "BA _LBL"+lbl5+"\n";
-		retour += "_LBL"+lbl4+"\n";
-		retour += "IP 1 0 1 "+Config.IP_pop1+"\n";
-		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
-		retour += "RET\n";*/
 		return retour;
 	}
 }

@@ -38,6 +38,10 @@ public class Words {
 	public void setInfinite(boolean state) {
 		this.infinite = state;
 	}
+	
+	public boolean isInfinite() {
+		return infinite;
+	}
 
 	public WordTree match(WordList wl, boolean infinite) {
 		Rapport.add("<ul><li>"+name+"("+words.size()+","+infinite+")=>"+wl+"</li>");
@@ -169,8 +173,7 @@ public class Words {
 			
 			if(ok && wl.size() > cursorWl) {
 				if(infinite) {
-					Rapport.add("==>"+wl.part(cursorWl, wl.size()));
-					WordTree tmp = this.match(wl.part(cursorWl, wl.size()), this.infinite);
+					WordTree tmp = this.match(wl.part(cursorWl, wl.size()), infinite);
 					
 					if(tmp == null) {
 						Rapport.add("<li><span class=\"error\">pas de correspondance pour "+name+"("+i+") : [6]</span></li>");
@@ -185,7 +188,7 @@ public class Words {
 				else { //retourner une partie de la wl
 					ok = false;
 					Rapport.add("<li><span class=\"error\">pas de correspondance pour "+name+"("+i+") : [7]</span></li>");
-					Rapport.add("<li><span class=\"error\">etour.size() : "+retour.size()+" maxRetour : "+maxRetour.size());
+					Rapport.add("<li><span class=\"error\">retour.size() : "+retour.size()+" maxRetour : "+maxRetour.size());
 					if(retour.size() > maxRetour.size()) {
 						maxRetour.clear();
 						maxRetour.addNode(retour);

@@ -19,6 +19,7 @@ public class IpRAM extends IP {
 			case 1: out = this.set64(in);break;
 			case 2: out = this.get32(in);break;
 			case 3: out = this.get64(in);break;
+			case 4: out = this.copy(in);break;
 		}
 		if(this.out <= out.length)
 			for(int i=0; i<this.out; i++)
@@ -118,41 +119,18 @@ public class IpRAM extends IP {
 
 	
 	/*
-	 * in  :	1.segment address
-	 * 			2.memory address
-	 * 			3.size
+	 * in  :	1.size
+	 * 			2.destination
+	 * 			3.origin
 	 * 
 	 * out :
 	 */
-	public int[] create(int [] in) {
+	public int [] copy(int [] in) {
 		int [] out = new int[0];
 		try {
-			boolean ok = false;
-			int address = in[1];
-			while(!ok) {
-				boolean ok2 = true;
-				int i = in[0];
-				long currSegment = RAM.get(i);
-				System.out.println("i : "+i+", ram : "+currSegment);
-				while(currSegment != 0 && ok2) {
-					int segAddr = (int) (currSegment >> 32);
-					int segSize = (int) currSegment;
-					System.out.println("segAddr : "+segAddr+", segSize : "+segSize);
-					if(address >= segAddr && address < segAddr+segSize) {
-						address = segAddr+segSize;
-						ok2 = false;
-					}
-					
-					i++;
-					currSegment = RAM.get(i);
-				}
-				if(ok2)
-					ok = true;
+			for(int i=0; i<in[0]; i++) {
+				RAM.set(in[1]+i, RAM.get(in[2]+i));
 			}
-			long segment = ((long)address << 32);
-			System.out.println("CREATE : "+address+" => "+segment);
-			segment += in[2];
-			RAM.set(in[0], segment);
 		} catch (InvalideAdressException e) {
 			e.printStackTrace();
 		} catch (UnloadedRAMException e) {
@@ -160,23 +138,7 @@ public class IpRAM extends IP {
 		}
 		return out;
 	}
-	
-	/*
-	 * in  :	1.segment address
-	 * 
-	 * out :	
-	 */
-	public int[] delete(int [] in) {
-		int [] out = new int[0];
-		try {
-			RAM.set(in[0], 0);
-		} catch (InvalideAdressException e) {
-			e.printStackTrace();
-		} catch (UnloadedRAMException e) {
-			e.printStackTrace();
-		}
-		return out;		
-	}
+
 	
 	public String toString() {return "IP RAM : "+this.numberOfInstr;}
 	

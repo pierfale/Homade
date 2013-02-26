@@ -46,4 +46,5 @@ public class Config {
 	public static final int IP_set_variable_RAM_64 = 65;
 	public static final int IP_get_variable_RAM_32 = 66;
 	public static final int IP_get_variable_RAM_64 = 67;
+	public static final int IP_copy_RAM = 68;
 }
