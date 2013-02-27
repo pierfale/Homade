@@ -27,14 +27,13 @@ public class MemoryBlock {
 	public static int nextFreeSegment(Map<String, MemoryBlock> memory) {
 		System.out.println("mem:");
 		MemoryBlock.display(memory);
-		int currAddr = Config.variable_memory_zone_segment;
+		int currAddr = 0;
 		boolean ok = true;
 		while(true) {
 			ok = true;
 			Iterator<String> it = memory.keySet().iterator();
 			while(ok && it.hasNext()) {
 				String curr = it.next();
-				System.out.println("==>addr : "+memory.get(curr).getAddress()+", size : "+memory.get(curr).getSize()+", curr : "+currAddr);
 				if(memory.get(curr).getAddress() == currAddr) {
 					currAddr = memory.get(curr).getAddress()+memory.get(curr).getSize();
 					ok = false;

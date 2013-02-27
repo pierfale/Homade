@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 
+import fr.lifl.iuta.compilator.compile.fbs.Config;
+
 
 public class Translation {
 	
@@ -28,8 +30,18 @@ public class Translation {
 					System.out.println("Fonction main introuvable");
 					return false;
 				}
-					
-				tmp1 = "CALL _LBL"+FunctionManager.get("main")+"\nHALT\n"+tmp1+VariableManager.createFunction();
+				String tmp2 = "";
+				//init ram segment
+				tmp2 += "LIT "+Config.ram_paging_adress+"\n";
+				tmp2 += "LIT "+Config.ram_frame_pointer+"\n";
+				tmp2 += "LIT "+(Config.ram_paging_adress+1)+"\n";
+				tmp2 += "IP 3 0 1 "+Config.IP_set_variable_RAM_64+"\n";
+				
+				//call main
+				tmp2 += "CALL _LBL"+FunctionManager.get("main")+"\n";
+				tmp2 += "HALT\n";
+				
+				tmp1 = tmp2+tmp1+VariableManager.createFunction();
 				tmp1 = FunctionManager.replace(tmp1);
 				tmp1 = LabelManager.replace(tmp1);
 				writer.write(tmp1);

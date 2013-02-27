@@ -7,17 +7,27 @@ import fr.lifl.iuta.compilator.compile.fbs.Config;
 public class VariableManager {
 
 	public static String get(int adress, int offset) {
-		String retour = "LIT "+adress+"\n";
+		String retour = "LIT "+Config.ram_paging_adress+"\n";
+		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
+		retour += "LIT "+adress+"\n";
+		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
 		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
 		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
+		retour = "LIT "+offset+"\n";
+		/*gérer offset : 1o*/
+		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
 		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
 		return retour;
 	}
 	
 	public static String set(int adress, int offset, String value) {
-		String retour = "LIT "+adress+"\n";
+		String retour = "LIT "+Config.ram_paging_adress+"\n";
+		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
+		retour += "LIT "+adress+"\n";
+		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
 		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
 		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
+		/*gérer offset : 1o*/
 		retour += value;
 		retour += "IP 2 0 1 "+Config.IP_set_variable_RAM_32+"\n";
 		return retour;

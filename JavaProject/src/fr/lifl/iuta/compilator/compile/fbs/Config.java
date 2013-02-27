@@ -1,11 +1,15 @@
 package fr.lifl.iuta.compilator.compile.fbs;
 
 public class Config {
-	public static final int variable_memory_zone_segment = 0x200;
-	public static final int variable_memory_zone = 0x400;
+	
+	//CONSTANTE
+	public static final int ram_end_of_stack = 0x0;
+	public static final int ram_free_varaible = 0x1;
+	public static final int ram_frame_pointer = 0x2;
+	public static final int	ram_paging_adress = 0x200;
+	public static final int ram_varaibles_adress = 0x400;
 	
 	//IPS
-	
 	public static final int IP_stack_duplication = 8;
 	public static final int IP_stack_swap = 9;
 	public static final int IP_stack_tuck = 10;
