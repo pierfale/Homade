@@ -34,14 +34,6 @@ public class IpStack extends IP {
 			case 7 : out = pop1(in);break;
 			//default: out = display(in);break;
 		}
-		//tmp
-		System.out.print("in : ");
-		for (int i = 0 ; i < in.length ; i++)
-			System.out.print(in[i]+", ");
-		System.out.print(" out : ");
-		for (int i = 0 ; i < out.length ; i++)
-			System.out.print(out[i]+", ");
-		System.out.println();
 		if(this.out <= out.length)
 			for(int i=0; i<this.out; i++)
 				Processor.stackPush(out[i]);			

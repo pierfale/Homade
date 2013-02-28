@@ -29,28 +29,29 @@ public class Lexer {
 				int beg = 0;
 				int end = 1;
 				while(beg < line.length()) {
-					while(isSpace(line.charAt(beg))) {
+					while(beg < line.length() && isSpace(line.charAt(beg))) {
 						beg++;
 						end++;
 					}
-					while(end <= line.length() && Grammar.existWord(line.substring(beg, end)) == null) {
-						end++;
-						
-					}	
-					while(end <= line.length() && Grammar.existWord(line.substring(beg, end)) != null) {
-						end++;
+					if(beg < line.length()) {
+						while(end <= line.length() && Grammar.existWord(line.substring(beg, end)) == null) {
+							end++;
+							
+						}	
+						while(end <= line.length() && Grammar.existWord(line.substring(beg, end)) != null) {
+							end++;
+						}
+						String name = Grammar.existWord(line.substring(beg, end-1));
+						if(name != null) {
+							Rapport.addLine("mot detecté: "+line.substring(beg, end-1)+" ["+name+"]");
+							wl.add(line.substring(beg, end-1), nbLine);
+							beg = end-1;
+						}
+						else {
+							Rapport.addLine("Mot inconnue : "+line+" ligne "+nbLine+" colonne "+beg);
+							return null;
+						}
 					}
-					String name = Grammar.existWord(line.substring(beg, end-1));
-					if(name != null) {
-						Rapport.addLine("mot detecté: "+line.substring(beg, end-1)+" ["+name+"]");
-						wl.add(line.substring(beg, end-1), nbLine);
-						beg = end-1;
-					}
-					else {
-						Rapport.addLine("Mot inconnue : "+line+" ligne "+nbLine+" colonne "+beg);
-						return null;
-					}
-					
 				}
 			}
 			

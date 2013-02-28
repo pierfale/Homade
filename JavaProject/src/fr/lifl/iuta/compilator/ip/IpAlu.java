@@ -155,7 +155,7 @@ public class IpAlu extends IP {
 		int [] out = new int [1];
 		long [] inLong = new long[in.length];
 		inLong = getUnsignedInt(in);
-		if (inLong[1] > inLong[0]) out[0] = 1; 
+		if (inLong[1] >= inLong[0]) out[0] = 1; 
 		else out[0] = 0;
 		return out;
 	}
@@ -164,7 +164,7 @@ public class IpAlu extends IP {
 		int [] out = new int [1];
 		long [] inLong = new long[in.length];
 		inLong = getUnsignedInt(in);
-		if (inLong[1] > inLong[0]) out[0] = 1; 
+		if (inLong[1] <= inLong[0]) out[0] = 1; 
 		else out[0] = 0;
 		return out;
 	}

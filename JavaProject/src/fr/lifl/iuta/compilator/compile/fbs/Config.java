@@ -30,19 +30,20 @@ public class Config {
 	public static final int IP_operation_xor = 39;
 	public static final int IP_operation_multiplie = 40;
 	public static final int IP_operation_divide = 41;
-	public static final int IP_operation_modulo = 42;
+	public static final int IP_operation_modulo = 42;//erreur
 	
-	public static final int IP_binary_leftShit = 43;
-	public static final int IP_binary_rightShit = 44;
+	public static final int IP_binary_leftShit = 42;
+	public static final int IP_binary_rightShit = 43;
 	
 	public static final int IP_true = 48;
 	public static final int IP_false = 49;
 	
-	public static final int IP_compare_lower = 57;
-	public static final int IP_compare_upper = 58;
+	public static final int IP_compare_lower = 53;
+	public static final int IP_compare_upper = 52;
 	public static final int IP_compare_equals = 54;
-	public static final int IP_compare_lowerEquals = 61;
-	public static final int IP_compare_upperEquals = 60;
+	public static final int IP_compare_lowerEquals = 56;
+	public static final int IP_compare_upperEquals = 55;
+	public static final int IP_compare_nonEquals = 57;
 	
 	public static final int IP_special_display = 63;
 	

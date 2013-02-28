@@ -1,6 +1,11 @@
 int function main() {
 	int n = 5;
-	while(false) {
-		display n;
+	while(n >= 0) {
+		display double(n);
+		n = n-1;
 	}
+}
+
+int function double(int n) {
+	return n*2;
 }

@@ -31,8 +31,8 @@ public class Main {
 					ReadFile reader = new ReadFile(s);
 					WordList wl = Lexer.exec(reader.getString());
 					if(wl == null) {
-						Rapport.addLineError("La reconnaissance de la lexical a échoué");
-						System.out.println("La reconnaissance de la lexical a échoué");
+						Rapport.addLineError("La reconnaissance du lexique a échoué");
+						System.out.println("La reconnaissance du lexique a échoué");
 						break;
 					}		
 					WordTree wt = Parser.exec(wl);
