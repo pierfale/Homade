@@ -8,10 +8,10 @@ public class FunctionTranslate {
 	
 	public static String translate(ExpressionTree tree, Map<String, MemoryBlock> addrVariable) {
 		String retour = "";
-		String beforeArg = "", afterArg = "", Args = "";
+		String beforeArg = "", afterArg = "", args = "";
 		for(int i=0; i<tree.nodeSize(); i++) {
 			if(tree.get(i).value().equals("_FUN_")) {
-				//nop
+				ParameterManager.init();
 			}
 			else if(!tree.get(i).value().equals("")) {
 				int lbl = LabelManager.getNext();
@@ -20,11 +20,15 @@ public class FunctionTranslate {
 				afterArg += VariableManager.deleteFrame();
 			}
 			else {
-				Args += NumberTranslate.translate(tree.get(i), addrVariable);
+				ParameterManager.add(NumberTranslate.translate(tree.get(i), addrVariable));
 			}
 			
+			
 		}
-		return Args+beforeArg+afterArg;
+		while(ParameterManager.hasNext()) {
+			args += ParameterManager.next();
+		}
+		return args+beforeArg+afterArg;
 	}
 	/*
 	public static String translate(WordTree tree, Map<String, MemoryBlock> addrVariable) {

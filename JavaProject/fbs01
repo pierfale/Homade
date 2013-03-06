@@ -1,11 +1,10 @@
 int function main() {
-	int n = 0;
-	while(n < 5) {
-		display double(n);
-		n = n+1;
-	}
+	display pow(2, 5);
 }
 
-int function double(int n) {
-	return n*2;
+int function pow(int n, int p) {
+	if(p <= 0)
+		return 1;
+	else
+		return n*pow(n, p-1);
 }

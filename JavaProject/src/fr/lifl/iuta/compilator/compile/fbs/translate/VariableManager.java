@@ -104,17 +104,31 @@ public class VariableManager {
 		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
 		retour += "LIT 0\n";
 		retour += "IP 2 1 1 "+Config.IP_compare_equals+"\n";
-		retour += "BNZ _LBL"+lbl1+"\n";
+		retour += "BNZ _LBL"+lbl7+"\n";
 		
 		// currSegment - segment
 		
-		// --if currSegment != segment
+		// --if currSegment == segment || currSegment.value == 2
 		retour += "IP 2 3 1 "+Config.IP_stack_over+"\n";
 		// segment - currSegment - segment
 		retour += "IP 2 3 1 "+Config.IP_stack_over+"\n";
 		// currSegment - segment - currSegment - segment
 		retour += "IP 2 1 1 "+Config.IP_compare_equals+"\n";
-		retour += "BNZ _LBL"+lbl7+"\n";
+		// currSegment == segment - currSegment - segment
+		retour += "IP 2 3 1 "+Config.IP_stack_over+"\n";
+		// currSegment  - currSegment == segment - currSegment - segment
+		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
+		// currSegment.value - currSegment.size - currSegment == segment - currSegment - segment
+		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
+		// currSegment.value - currSegment == segment - currSegment - segment
+		retour += "LIT "+Config.ram_frame_pointer+"\n";
+		// frame - currSegment.value - currSegment == segment - currSegment - segment
+		retour += "IP 2 1 1 "+Config.IP_compare_equals+"\n";
+		// frame == currSegment.value - currSegment == segment - currSegment - segment
+		retour += "IP 2 1 1 "+Config.IP_operation_or+"\n";
+		// frame == currSegment.value || currSegment == segment - currSegment - segment
+		retour += "BNZ _LBL"+lbl6+"\n";
+		
 		
 		// currSegment - segment
 		
@@ -137,7 +151,7 @@ public class VariableManager {
 		// segment.value - segment.size - currSegment.value - currSegment - segment - currSegment - segment
 		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
 		// segment.value - currSegment.value - currSegment - segment - currSegment - segment
-		retour += "IP 2 1 1 "+Config.IP_compare_upperEquals+"\n";
+		retour += "IP 2 1 1 "+Config.IP_compare_lowerEquals+"\n";
 		// segment.value >= currSegment.value - currSegment - segment - currSegment - segment
 		retour += "IP 3 3 1 "+Config.IP_stack_invrot+"\n";
 		// currSegment - segment - segment.value >= currSegment.value - currSegment - segment
@@ -151,7 +165,7 @@ public class VariableManager {
 		// segment.value - segment.size - currSegment.value + currSegment.size - segment.value >= currSegment.value - currSegment - segment
 		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
 		// segment.value - currSegment.value + currSegment.size - segment.value >= currSegment.value - currSegment - segment
-		retour += "IP 2 1 1 "+Config.IP_compare_lower+"\n";
+		retour += "IP 2 1 1 "+Config.IP_compare_upper+"\n";
 		// segment.value < currSegment.value + currSegment.size - segment.value >= currSegment.value - currSegment - segment
 		retour += "IP 2 1 1 "+Config.IP_operation_and+"\n";
 		// segment.value < currSegment.value + currSegment.size && segment.value >= currSegment.value - currSegment - segment
@@ -209,7 +223,7 @@ public class VariableManager {
 		// segment.value - segment.size - currSegment.value - currSegment - segment - currSegment - segment
 		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
 		// segment.value + segment.size - currSegment.value - currSegment - segment - currSegment - segment
-		retour += "IP 2 1 1 "+Config.IP_compare_upper+"\n";
+		retour += "IP 2 1 1 "+Config.IP_compare_lower+"\n";
 		// segment.value + segment.size > currSegment.value - currSegment - segment - currSegment - segment
 		retour += "IP 3 3 1 "+Config.IP_stack_invrot+"\n";
 		// currSegment - segment - segment.value + segment.size > currSegment.value - currSegment - segment
@@ -223,7 +237,7 @@ public class VariableManager {
 		// segment.value - segment.size - currSegment.value + currSegment.size - segment.value + segment.size > currSegment.value - currSegment - segment
 		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
 		// segment.value + segment.size - currSegment.value + currSegment.size - segment.value + segment.size > currSegment.value - currSegment - segment
-		retour += "IP 2 1 1 "+Config.IP_compare_lowerEquals+"\n";
+		retour += "IP 2 1 1 "+Config.IP_compare_upperEquals+"\n";
 		// segment.value + segment.size <= currSegment.value + currSegment.size - segment.value + segment.size > currSegment.value - currSegment - segment
 		retour += "IP 2 1 1 "+Config.IP_operation_and+"\n";
 		// segment.value + segment.size <= currSegment.value + currSegment.size && segment.value + segment.size > currSegment.value - currSegment - segment
