@@ -19,6 +19,19 @@ public class VariableManager {
 		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
 		return retour;
 	}
+	//first value of stack
+	public static String set(int adress, int offset) {
+		String retour = "LIT "+Config.ram_paging_adress+"\n";
+		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
+		retour += "LIT "+adress+"\n";
+		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
+		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
+		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
+		/*gérer offset : 1o*/
+		retour += "IP 2 2 1 "+Config.IP_stack_swap+"\n";
+		retour += "IP 2 0 1 "+Config.IP_set_variable_RAM_32+"\n";
+		return retour;
+	}
 	
 	public static String set(int adress, int offset, String value) {
 		String retour = "LIT "+Config.ram_paging_adress+"\n";
@@ -238,6 +251,7 @@ public class VariableManager {
 	
 	public static String createFrame(int address) {
 		String retour = "LIT "+Config.ram_paging_adress+"\n";
+		retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
 		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
 		retour += "LIT "+address+"\n";
 		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
@@ -248,8 +262,9 @@ public class VariableManager {
 		retour += "IP 3 0 1 "+Config.IP_set_variable_RAM_64+"\n";
 		retour += "LIT 1\n";
 		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
-		retour += "LIT "+Config.ram_paging_adress+"\n";
+		retour += "LIT "+Config.ram_frame_pointer+"\n";
 		retour += "IP 2 2 1 "+Config.IP_stack_swap+"\n";
+		retour += "IP 3 0 1 "+Config.IP_set_variable_RAM_64+"\n";
 		return retour;
 	}
 	
@@ -273,24 +288,27 @@ public class VariableManager {
 		retour += "IP 1 1 1 "+Config.IP_operation_inc+"\n";
 		
 		retour += "BA _LBL"+lbl2+"\n";
-		retour = "_LBL"+lbl1+"\n";
+		retour += "_LBL"+lbl1+"\n";
 		
 		// --end while
 		
 		retour += "IP 1 0 1 "+Config.IP_pop1+"\n";
+		
+		// --switch frame address
 		retour += "LIT "+Config.ram_paging_adress+"\n";
-		retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
-		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
-		retour += "IP 2 2 1 "+Config.IP_stack_swap+"\n";
-		retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
 		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
 		retour += "LIT 1\n";
 		retour += "IP 2 1 1 "+Config.IP_operation_subtract+"\n";
+		retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
 		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
+		retour += "IP 2 2 1 "+Config.IP_stack_swap+"\n";
+		retour += "LIT "+Config.ram_paging_adress+"\n";
+		retour += "IP 3 3 1 "+Config.IP_stack_invrot+"\n";
 		retour += "IP 3 0 1 "+Config.IP_set_variable_RAM_64+"\n";
 		retour += "LIT 0\n";
 		retour += "LIT 0\n";
 		retour += "IP 3 0 1 "+Config.IP_set_variable_RAM_64+"\n";
+		
 		
 		return retour;
 	}

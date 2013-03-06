@@ -35,6 +35,7 @@ public class FunctionManager {
 	}
 	
 	public static String replace(String in) {
+		System.out.println(in);
 		String out = "";
 		BufferedReader reader = new BufferedReader(new StringReader(in));
 		String line = "";

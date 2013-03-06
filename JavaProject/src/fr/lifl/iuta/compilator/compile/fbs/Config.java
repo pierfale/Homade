@@ -45,11 +45,11 @@ public class Config {
 	public static final int IP_compare_upperEquals = 55;
 	public static final int IP_compare_nonEquals = 57;
 	
-	public static final int IP_special_display = 63;
-	
 	public static final int IP_set_variable_RAM_32 = 64;
 	public static final int IP_set_variable_RAM_64 = 65;
 	public static final int IP_get_variable_RAM_32 = 66;
 	public static final int IP_get_variable_RAM_64 = 67;
 	public static final int IP_copy_RAM = 68;
+	
+	public static final int IP_buffer_out = 96;
 }

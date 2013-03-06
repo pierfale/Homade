@@ -2,15 +2,16 @@ package fr.lifl.iuta.compilator.processor;
 
 import fr.lifl.iuta.compilator.exception.InvalideAdressException;
 import fr.lifl.iuta.compilator.exception.UnloadedRAMException;
+import fr.lifl.iuta.compilator.graphics.MyObservable;
 
-public class RAM {
+public class RAM extends MyObservable{
 	
 	private static final int blockMemoryAllocSize = 1024;
 	
 	private static long [] memory;
 	
 	/*
-	 * Singleton
+	 * Singleton pattern
 	 */
 	private RAM() {
 		
@@ -32,8 +33,6 @@ public class RAM {
 			return memory[address]; 
 		else
 			throw new InvalideAdressException("0x"+String.format("%x", address));
-		
-		
 	}
 	
 	public static void set(int address, long value) throws InvalideAdressException, UnloadedRAMException {
@@ -45,6 +44,7 @@ public class RAM {
 			memory = memoryTmp;
 		}
 		memory[address] = value;
+		notifyObserver(address);
 	}
 	
 	public static int size() throws UnloadedRAMException {

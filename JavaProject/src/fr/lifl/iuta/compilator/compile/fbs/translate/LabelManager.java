@@ -68,6 +68,7 @@ public class LabelManager {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		
 		System.out.println("--------------------\n"+display);
 		String out2 = out;
 		reader = new BufferedReader(new StringReader(out2));

@@ -1,3 +1,4 @@
-8: class(fr.lifl.iuta.compilator.ip.IpStack) short
-32: class(fr.lifl.iuta.compilator.ip.IpAlu) short
-32: class(fr.lifl.iuta.compilator.ip.IpRAM) short
+8 0xFFF8 class(fr.lifl.iuta.compilator.ip.IpStack) short
+32 0xFFE0 class(fr.lifl.iuta.compilator.ip.IpAlu) short
+64 0x03F0 class(fr.lifl.iuta.compilator.ip.IpRAM) short
+96 0x03F0 class(fr.lifl.iuta.compilator.ip.IpOut) short

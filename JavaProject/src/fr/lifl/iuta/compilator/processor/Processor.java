@@ -16,7 +16,7 @@ import fr.lifl.iuta.compilator.graphics.MyObservable;
 import fr.lifl.iuta.compilator.instruction.Decode;
 import fr.lifl.iuta.compilator.instruction.Instruction;
 import fr.lifl.iuta.compilator.ip.BusIP;
-import fr.lifl.iuta.compilator.ip.IP;
+import fr.lifl.iuta.compilator.ip.AbstractIP;
 import fr.lifl.iuta.compilator.ip.IPConfig;
 
 /**
@@ -62,20 +62,19 @@ public class Processor extends MyObservable{
 		}
 	}
 	
-	
 	public static void start() {
 		on = true;
 		PC = 0;
 		while(on) {
 			pulse();
 		}
-		
+		/*
 		long [] mem = RAM.getMemory();
 		for(int i=0; i<mem.length; i++) {
 			String tmp = String.format("%x",mem[i]);
 			tmp = Util.fill(tmp);
 			System.out.println(i+ "\t"+tmp);
-		}
+		}*/
 	}
 	
 	public static void stop() {
@@ -84,9 +83,11 @@ public class Processor extends MyObservable{
 	}
 	
 	public static void stepByStep() {
-		pulse();
+		if (on)
+			pulse();
+		else 
+			stop();
 	}
-	
 
 	/**
 	 * fonction appeler a chaque pulsation du processeur
@@ -162,24 +163,30 @@ public class Processor extends MyObservable{
 	
 	public static void stackPush(int value) {
 		stack.push(value);
+		notifyObserver();
 	}
 	
 	public static int stackPop() throws EmptyStackException {
 		if(stack.isEmpty())
 			throw new EmptyStackException();
-		else 
+		else {
+			notifyObserver();
 			return stack.pop();
+		}
 	}
 	
 	public static void stackFuncPush(int value) {
 		stackFunction.push(value);
+		notifyObserver();
 	}
 	
 	public static int stackFuncPop() throws EmptyStackException {
 		if(stackFunction.isEmpty())
 			throw new EmptyStackException();
-		else 
+		else {
+			notifyObserver();
 			return stackFunction.pop();
+		}
 	}
 	
 	public static void setPC(int pc){
@@ -196,5 +203,13 @@ public class Processor extends MyObservable{
 	
 	public static Stack<Integer> getStackFunction() {
 		return stackFunction;
+	}
+
+	public static void setOn(boolean b) {
+		on = b;
+	}
+
+	public static boolean isOn() {
+		return on;
 	}
 }

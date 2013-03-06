@@ -6,8 +6,7 @@ import fr.lifl.iuta.compilator.exception.UnloadedRAMException;
 import fr.lifl.iuta.compilator.processor.Processor;
 import fr.lifl.iuta.compilator.processor.RAM;
 
-public class IpRAM extends IP {
-	private final int numberOfIp = 64;
+public class IpRAM extends AbstractIP {
 	
 	public void exec() throws InstructionFailedException {
 		int []in = new int[this.in];
@@ -36,8 +35,6 @@ public class IpRAM extends IP {
 		this.number = (instruction & 0x03FF);
 		this.numberOfInstr = (instruction & 0x000F);
 	}
-
-	public boolean itsMe() {return ((this.number & 0x03F0) == this.numberOfIp);}
 	
 	/*
 	 * in  :	1.value
@@ -48,8 +45,8 @@ public class IpRAM extends IP {
 	public int [] set32(int [] in){
 		int [] out = new int[0];
 		try {
-			RAM.set(in[1], in[0]);
 			System.out.println("Inserstion de "+String.format("%x", in[0])+" à l'adresse "+in[1]);
+			RAM.set(in[1], in[0]);
 		} catch (InvalideAdressException e) {
 			e.printStackTrace();
 		} catch (UnloadedRAMException e) {
@@ -70,8 +67,8 @@ public class IpRAM extends IP {
 
 			long value = ((long)in[1] << 32);
 			value += in[0];
-			RAM.set(in[2], value);
 			System.out.println("Inserstion de "+String.format("%x", value)+" à l'adresse "+in[2]);
+			RAM.set(in[2], value);
 		} catch (InvalideAdressException e) {
 			e.printStackTrace();
 		} catch (UnloadedRAMException e) {

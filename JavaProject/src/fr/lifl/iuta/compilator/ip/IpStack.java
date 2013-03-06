@@ -3,9 +3,7 @@ package fr.lifl.iuta.compilator.ip;
 import fr.lifl.iuta.compilator.exception.InstructionFailedException;
 import fr.lifl.iuta.compilator.processor.Processor;
 
-public class IpStack extends IP {
-	
-	private final int numberOfIp = 8;
+public class IpStack extends AbstractIP {
 
 	public void exec(short instruction) {
 		this.in = (instruction & 0x6000)>>13;
@@ -14,8 +12,6 @@ public class IpStack extends IP {
 		this.number = (instruction & 0x03FF);
 		this.numberOfInstr = (instruction & 0x0007);
 	}
-
-	public boolean itsMe() {return ((this.number & 0xFFF8) == this.numberOfIp);}
 
 	public void exec() throws InstructionFailedException {
 		int []in = new int[this.in];
@@ -34,12 +30,15 @@ public class IpStack extends IP {
 			case 7 : out = pop1(in);break;
 			//default: out = display(in);break;
 		}
+		//tmp
 		if(this.out <= out.length)
 			for(int i=0; i<this.out; i++)
 				Processor.stackPush(out[i]);			
 		else
 			throw new InstructionFailedException("IP ne retourne pas assez de valeur");
 	}
+	
+	public static int getNumberOfIP() {return 0;}
 	
 	public int[] dup(int [] in){
 		int[] out = {in[0],in[0]};
@@ -87,5 +86,5 @@ public class IpStack extends IP {
 	}
 	
 	public String toString() {return "IP STACK : "+this.numberOfInstr;}
-	
+
 }

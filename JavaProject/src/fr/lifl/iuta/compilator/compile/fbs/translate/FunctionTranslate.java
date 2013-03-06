@@ -8,23 +8,23 @@ public class FunctionTranslate {
 	
 	public static String translate(ExpressionTree tree, Map<String, MemoryBlock> addrVariable) {
 		String retour = "";
-		String tmp = "";
+		String beforeArg = "", afterArg = "", Args = "";
 		for(int i=0; i<tree.nodeSize(); i++) {
 			if(tree.get(i).value().equals("_FUN_")) {
 				//nop
 			}
 			else if(!tree.get(i).value().equals("")) {
 				int lbl = LabelManager.getNext();
-				tmp += VariableManager.createFrame(MemoryBlock.nextFreeSegment(addrVariable));
-				tmp += "CALL _FUN_"+tree.get(i).value()+"\n";
-				tmp += VariableManager.deleteFrame();
+				beforeArg += VariableManager.createFrame(MemoryBlock.nextFreeSegment(addrVariable));
+				afterArg += "CALL _FUN_"+tree.get(i).value()+"\n";
+				afterArg += VariableManager.deleteFrame();
 			}
 			else {
-				retour += NumberTranslate.translate(tree.get(i), addrVariable);
+				Args += NumberTranslate.translate(tree.get(i), addrVariable);
 			}
 			
 		}
-		return retour+tmp;
+		return Args+beforeArg+afterArg;
 	}
 	/*
 	public static String translate(WordTree tree, Map<String, MemoryBlock> addrVariable) {

@@ -15,13 +15,13 @@ import fr.lifl.iuta.compilator.exception.IncorrectFormatSourceException;
 public class IPConfig {
 	
 	private Map<String, Integer> positions;
-	private Map<String, IP> ips;
+	private Map<String, AbstractIP> ips;
 	private Map<String, Boolean> shorts;
 	
 	public IPConfig(String pathname) throws FileNotFoundException, IncorrectFormatSourceException {
 		
 		positions = new HashMap<String, Integer>();
-		ips = new HashMap<String, IP>();
+		ips = new HashMap<String, AbstractIP>();
 		shorts = new HashMap<String, Boolean>();
 		File file = new File(pathname);
 		if(!file.exists())
@@ -40,18 +40,20 @@ public class IPConfig {
 			int number = 0;
 			String sn = sc.next();
 			try {
-				number = Integer.parseInt(sn.substring(0, sn.length()-1));
+				number = Integer.parseInt(sn);
 			} catch(NumberFormatException e) {
 				throw new IncorrectFormatSourceException("Numero d'IP incorrecte", i);
 			}
-			
+			int mask = Integer.decode(sc.next());
 			String sf = sc.next();
 			if(sf.substring(0, 5).equals("class")) {
 				String sf2 = sf.substring(6, sf.length()-1).trim();
 				try {
 					Class c = Class.forName(sf2);
 					positions.put(sf2, number);
-					ips.put(sf2, (IP)c.newInstance());
+					ips.put(sf2, (AbstractIP)c.newInstance());
+					ips.get(sf2).putNumberOfIP(Integer.parseInt(sn));
+					ips.get(sf2).setMask(mask);
 					if(sc.hasNext()) {
 						if(sc.next().equals("short"))
 							shorts.put(sf2, true);
@@ -88,7 +90,7 @@ public class IPConfig {
 		return positions.get(key);
 	}
 	
-	public IP getIP(String key) {
+	public AbstractIP getIP(String key) {
 		return ips.get(key);
 	}
 	

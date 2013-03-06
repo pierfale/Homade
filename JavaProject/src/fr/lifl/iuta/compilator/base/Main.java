@@ -6,6 +6,7 @@ import fr.lifl.iuta.compilator.compile.Compile;
 import fr.lifl.iuta.compilator.compile.Parser;
 import fr.lifl.iuta.compilator.exception.IncorrectFormatSourceException;
 import fr.lifl.iuta.compilator.ip.IPConfig;
+import fr.lifl.iuta.compilator.processor.BufferOut;
 import fr.lifl.iuta.compilator.processor.Processor;
 import fr.lifl.iuta.compilator.processor.RAM;
 
@@ -15,6 +16,8 @@ public class Main {
 	public static void main(String [] args) {
 		
 		//Genere binaire
+		if(args.length > 0)
+		System.out.println(args[0]);
 		long[] src = Compile.exec(args);
 		System.out.println("====Code Source====");
 		for(long l : src)
@@ -32,7 +35,8 @@ public class Main {
 		} catch (IncorrectFormatSourceException e) {
 			e.printStackTrace();
 		}
+		Processor.setOn(true);
 		//lancement du processeur
-		Processor.start();
+		//Processor.start();
 	}
 }

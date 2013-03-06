@@ -11,18 +11,18 @@ import fr.lifl.iuta.compilator.instruction.Instruction;
 
 public class BusIP {
 	
-	private static ArrayList<IP> observer = new ArrayList<IP>();
+	private static ArrayList<AbstractIP> observer = new ArrayList<AbstractIP>();
 	
 	public static Instruction out(short instruction) {
-		Iterator<IP> it = observer.iterator();
+		Iterator<AbstractIP> it = observer.iterator();
 		while(it.hasNext()) {
-			IP tmp = it.next();
+			AbstractIP tmp = it.next();
 			tmp.exec(instruction);
 			if (tmp.itsMe() && tmp != null) return tmp;
 		}
 		return null;
 	}
 	
-	public static void addIP(IP ip) { observer.add(ip); }
+	public static void addIP(AbstractIP ip) { observer.add(ip); }
 	
 }

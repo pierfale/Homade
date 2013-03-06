@@ -1,8 +1,8 @@
 int function main() {
-	int n = 5;
-	while(n >= 0) {
+	int n = 0;
+	while(n < 5) {
 		display double(n);
-		n = n-1;
+		n = n+1;
 	}
 }
 

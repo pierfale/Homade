@@ -3,9 +3,7 @@ package fr.lifl.iuta.compilator.ip;
 import fr.lifl.iuta.compilator.exception.InstructionFailedException;
 import fr.lifl.iuta.compilator.processor.Processor;
 
-public class IpAlu extends IP {
-	
-	private final int numberOfIp = 32;
+public class IpAlu extends AbstractIP {
 	
 	public void exec() throws InstructionFailedException {
 		int []in = new int[this.in];
@@ -21,12 +19,10 @@ public class IpAlu extends IP {
 			case 5: out = this.and(in);break;
 			case 6: out = this.or(in);break;
 			case 7: out = this.xor(in);break;
-			//tmp
 			case 8: out = this.multi(in);break;
 			case 9: out = this.divide(in);break;
 			case 10: out = this.binaryLeftShift(in);break;
 			case 11: out = this.binaryRightShift(in);break;
-			
 			case 16:out = this.vrai(in);break;
 			case 17:out = this.faux(in);break;
 			case 18:out = this.ez(in);break;
@@ -58,8 +54,6 @@ public class IpAlu extends IP {
 		this.numberOfInstr = (instruction & 0x001F);
 	}
 	
-	public boolean itsMe() {return ((this.number & 0xFFE0) == this.numberOfIp);}
-	
 	public int [] add(int [] in){
 		int [] out = new int[1];
 		out[0] = in[0] + in[1];
@@ -67,7 +61,6 @@ public class IpAlu extends IP {
 	}
 	
 	public int[] display(int [] in){
-		System.out.println(in[0]);
 		return in;
 	}
 	
@@ -155,7 +148,7 @@ public class IpAlu extends IP {
 		int [] out = new int [1];
 		long [] inLong = new long[in.length];
 		inLong = getUnsignedInt(in);
-		if (inLong[1] >= inLong[0]) out[0] = 1; 
+		if (inLong[1] > inLong[0]) out[0] = 1; 
 		else out[0] = 0;
 		return out;
 	}
@@ -164,7 +157,7 @@ public class IpAlu extends IP {
 		int [] out = new int [1];
 		long [] inLong = new long[in.length];
 		inLong = getUnsignedInt(in);
-		if (inLong[1] <= inLong[0]) out[0] = 1; 
+		if (inLong[1] > inLong[0]) out[0] = 1; 
 		else out[0] = 0;
 		return out;
 	}
