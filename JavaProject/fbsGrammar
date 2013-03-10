@@ -9,9 +9,9 @@ list_parameter_init		:= 	parameter_init
 list_parameter			:= 	parameter
 						|	parameter "," list_parameter
 
-parameter_init			:=	type variable_name
+parameter_init			:=	type variable
 
-parameter				:=	variable_name
+parameter				:=	variable
 						|	number
 
 list_instruction		:= 	* instruction
@@ -22,20 +22,20 @@ instruction				:=	structure
 						
 special_instruction		:=	"display" number
 						|	"display" string
-						|	return_instruction
 						
 return_instruction		:=	"return" number
 						
-singleLine_instruction	:=	allocation_instruction
-						|	declaration_instruction
+singleLine_instruction	:=	declaration_instruction
+						|	allocation_instruction
 						|	call_function
+						|	return_instruction
 
-allocation_instruction 	:= 	variable_name "=" number
-						|	variable_name "=" variable_name
-						|	variable_name "=" call_function
+allocation_instruction 	:= 	variable "=" number
+						|	variable "=" array
+
 						
 declaration_instruction := 	type allocation_instruction
-						|	type variable_name
+						|	type variable
 				
 call_function			:=	function_name "(" ")"
 						|	function_name "(" list_parameter ")"		
@@ -50,21 +50,19 @@ structure_if			:= 	"if" "(" boolean_expresion ")" block_instruction
 						|	"if" "(" boolean_expresion ")" block_instruction "else" block_instruction
 						|	"if" "(" boolean_expresion ")" block_instruction "else"	structure
 
-boolean_expresion		:= 	boolean
+boolean_expresion		:= 	"(" boolean_expresion ")"
+						|	boolean
 						|	number op_compare number
-						|	variable_name op_compare number
-						|	number op_compare variable_name
-						|	variable_name op_compare variable_name
-						|	"(" number op_compare number ")"
-						|	"(" variable_name op_compare number ")"
-						|	"(" number op_compare variable_name ")"
-						|	"(" variable_name op_compare variable_name ")"
+						|	boolean_expresion op_logic boolean_expresion
 							
 op_compare				:= 	"<"
 						|	">"
 						|	"=="
 						|	">="
 						|	"<="
+						
+op_logic				:=  "&&"
+						|	"||"
 					
 op_arithmetic			:=	"+"
 						|	"-"
@@ -76,21 +74,36 @@ type 					:=	"int"
 						|	"float"
 						|	"boolean"
 						|	"void"
+						|	type "[]"
 
 boolean					:= 	"true"
 						|	"false"
 					
-number					:=	integer
+number					:=	"(" number ")"
+						|	integer
 						|	decimal
-						|	variable_name
+						|	variable
 						|	call_function
 						|	number op_arithmetic number
+						
+variable				:=	variable_name
+						|	"*" variable
+						|	"&" variable
+						|	variable "[" number "]"
+
+array					:=	"{" list_entities "}"
 
 integer					:= [(0-9)+]
 
 decimal					:= [(0-9)+(.)(0-9)+]
 
 string					:= [(")(a-zA-Z0-9)*(")]
+
+entities				:=	number
+						|	string
+						
+list_entities			:=	list_entities "," entities
+						|	entities
 
 variable_name			:= [(a-zA-Z)(a-zA-Z0-9_)*]
 

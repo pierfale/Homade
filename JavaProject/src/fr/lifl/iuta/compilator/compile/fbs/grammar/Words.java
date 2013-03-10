@@ -124,25 +124,37 @@ public class Words {
 					if(undefinedSize) {
 					
 						int k = cursorWl +1;
-						WordTree tmp = words.get(i)[j-1].match(wl.part(cursorWl, k), this.infinite); 
-						while(k <= wl.size()-(words.get(i).length-j) &&  tmp == null) {
+						WordTree tmp = words.get(i)[j-1].match(wl.part(cursorWl, k), this.infinite);
+						WordTree lastTmp = null;
+						
+						while(k <= wl.size()-(words.get(i).length-j) && (tmp != null || lastTmp == null)) {
 							k++;
-							tmp = words.get(i)[j-1].match(wl.part(cursorWl, k), this.infinite); 
+							lastTmp = tmp;
+							tmp = words.get(i)[j-1].match(wl.part(cursorWl, k), this.infinite);
+							if(tmp != null && tmp.size() < wl.part(cursorWl, k).size())
+								tmp = null;
+							Rapport.add("<li>SEND : "+wl.part(cursorWl, k)+", RECEIVE : "+tmp+"</li>");
+							Rapport.add("<li>WHILE : k="+k+", tmp : "+(tmp == null)+" lastTmp : "+(lastTmp == null)+"</li>");
 						}
-						if(k == wl.size()-(words.get(i).length-j)+1) {
+						Rapport.add("<li>FIN WHILE : k="+k+"/"+(wl.size()-(words.get(i).length-j) )+"</li>");
+						if(k > wl.size()-(words.get(i).length-j)+1 || lastTmp == null) {
 							//Rapport.addLine(wl.get(cursorWl).getContents()+"-"+wl.get(k).getContents());
 							ok = false;
 							Rapport.add("<li><span class=\"error\">pas de correspondance pour "+name+"("+i+") : [4]</span></li>");
 						}
 						else {
-							Rapport.add("<li><span class=\"success\"><b>"+tmp+"(3)</b></span></li>");
-							retour.addNode(tmp);
-							cursorWl = k;
+							Rapport.add("<li><span class=\"success\"><b>"+lastTmp+"(3)</b></span></li>");
+							retour.addNode(lastTmp);
+							cursorWl = k-1;
 						}
 					
 					}
+					
 					undefinedSize = true;
+					Rapport.add("<li>LAST : k=>"+j+"/"+(words.get(i).length-1)+"</li>");
+					Rapport.add("<li>CURR : "+retour+" / "+wl);
 					if(ok && j == words.get(i).length-1) { //si derniere de la regle
+
 						WordTree tmp = words.get(i)[j].match(wl.part(cursorWl, wl.size()), this.infinite); 
 						if(tmp == null) {
 							ok = false;
@@ -199,9 +211,7 @@ public class Words {
 			if(ok) {
 				Rapport.add(message);
 				Rapport.addSuccess("<li>[return] correspondance trouvé pour "+name+"("+i+")<br />Valeur : "+retour+"</span></li>");
-				Rapport.add("Retour : "+retour);
 				Rapport.add("</ul>");
-				
 				return retour;
 			}
 		}

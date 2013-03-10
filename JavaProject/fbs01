@@ -1,10 +1,8 @@
 int function main() {
-	display pow(2, 5);
-}
-
-int function pow(int n, int p) {
-	if(p <= 0)
-		return 1;
-	else
-		return n*pow(n, p-1);
+	int[] n = {2, 3};
+	int cpt = 0;
+	while(cpt < 2) {
+		display n[cpt];
+		cpt = cpt +1;
+	}
 }

@@ -51,10 +51,10 @@ public class Main {
 							
 							
 							//test en direct
-							
+							/*
 							String [] argsMain = new String[1];
 							argsMain[0] = "out.asm";
-							fr.lifl.iuta.compilator.base.Main.main(argsMain);
+							fr.lifl.iuta.compilator.base.Main.main(argsMain);*/
 						}
 						else {
 							Rapport.addLineError("La vérification des types a échoué");
