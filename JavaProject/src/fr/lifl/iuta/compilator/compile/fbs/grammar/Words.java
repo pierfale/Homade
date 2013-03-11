@@ -133,10 +133,10 @@ public class Words {
 							tmp = words.get(i)[j-1].match(wl.part(cursorWl, k), this.infinite);
 							if(tmp != null && tmp.size() < wl.part(cursorWl, k).size())
 								tmp = null;
-							Rapport.add("<li>SEND : "+wl.part(cursorWl, k)+", RECEIVE : "+tmp+"</li>");
-							Rapport.add("<li>WHILE : k="+k+", tmp : "+(tmp == null)+" lastTmp : "+(lastTmp == null)+"</li>");
+							//Rapport.add("<li>SEND : "+wl.part(cursorWl, k)+", RECEIVE : "+tmp+"</li>");
+							//Rapport.add("<li>WHILE : k="+k+", tmp : "+(tmp == null)+" lastTmp : "+(lastTmp == null)+"</li>");
 						}
-						Rapport.add("<li>FIN WHILE : k="+k+"/"+(wl.size()-(words.get(i).length-j) )+"</li>");
+						//Rapport.add("<li>FIN WHILE : k="+k+"/"+(wl.size()-(words.get(i).length-j) )+"</li>");
 						if(k > wl.size()-(words.get(i).length-j)+1 || lastTmp == null) {
 							//Rapport.addLine(wl.get(cursorWl).getContents()+"-"+wl.get(k).getContents());
 							ok = false;
@@ -151,8 +151,8 @@ public class Words {
 					}
 					
 					undefinedSize = true;
-					Rapport.add("<li>LAST : k=>"+j+"/"+(words.get(i).length-1)+"</li>");
-					Rapport.add("<li>CURR : "+retour+" / "+wl);
+					//Rapport.add("<li>LAST : k=>"+j+"/"+(words.get(i).length-1)+"</li>");
+					//Rapport.add("<li>CURR : "+retour+" / "+wl);
 					if(ok && j == words.get(i).length-1) { //si derniere de la regle
 
 						WordTree tmp = words.get(i)[j].match(wl.part(cursorWl, wl.size()), this.infinite); 

@@ -1,5 +1,6 @@
 int function main() {
-	int[] n = {2, 3};
+	int[] n = array 2;
+	n[0] = 10;
 	int cpt = 0;
 	while(cpt < 2) {
 		display n[cpt];

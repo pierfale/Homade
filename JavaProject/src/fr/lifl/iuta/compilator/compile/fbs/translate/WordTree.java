@@ -306,7 +306,6 @@ public class WordTree {
 		else if(function.equals("declaration_instruction")) {
 			Token t = variableName();
 			int addr = MemoryBlock.nextFreeSegment(addrVariable);
-			//array
 			int size = 1;
 			
 			retour += VariableManager.create(addr, size);
@@ -419,11 +418,8 @@ public class WordTree {
 			
 		}
 		else if(function.equals("array")) {
-			int addr = MemoryBlock.nextFreeSegment(addrVariable);
-			int size = ArrayManager.countArrayAssignment(this);
-			
-			retour += VariableManager.create(addr, size);
-			addrVariable.put("_array", new MemoryBlock(addr, size));
+			retour += ArrayManager.createArray(this, addrVariable);
+			through = false;
 			
 		}	
 		else if(function.equals("return_instruction")) {

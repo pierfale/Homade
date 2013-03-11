@@ -92,7 +92,8 @@ variable				:=	variable_name
 						|	variable "[" number "]"
 
 array					:=	"{" list_entities "}"
-
+						|	"array" number
+						
 integer					:= [(0-9)+]
 
 decimal					:= [(0-9)+(.)(0-9)+]
