@@ -1,9 +1,7 @@
 int function main() {
-	int[] n = array 2;
-	n[0] = 10;
-	int cpt = 0;
-	while(cpt < 2) {
-		display n[cpt];
-		cpt = cpt +1;
-	}
+	display 10*multi(2*2, 5)+1;
+}
+
+int function multi(int n, int n2) {
+	return n*n2;
 }

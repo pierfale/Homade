@@ -54,5 +54,22 @@ public class ExpressionTree {
 		for(int i=0; i<node.size(); i++)
 			node.get(i).display(n+1);
 	}
+	
+	public String display() {
+		int span = 1;
+		if(node.size() > 0)
+			span = node.size();
+		String s = "<table style=\"border: 1px solid black;text-align: center\"><tr><td colspan=\""+span+"\">"+value;
+
+		s += "</td></tr>";
+		if(node.size() > 0) {
+			s += "<tr>";
+			for(int i=0; i<node.size(); i++)
+				s += "<td>"+node.get(i).display()+"</td>";
+			s += "</tr>";
+		}
+		s += "</table>";
+		return s;
+	}
 
 }

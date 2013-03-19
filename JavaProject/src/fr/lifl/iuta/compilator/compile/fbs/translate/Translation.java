@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import fr.lifl.iuta.compilator.compile.fbs.Config;
+import fr.lifl.iuta.compilator.compile.fbs.Rapport;
 
 
 public class Translation {
 	
 	public static boolean exec(String out, WordTree wt) {
+		Rapport.addLine("<h2>Traduction</h2>");
 		boolean ok = true;
 		File f = new File(out);
 		FileWriter writer = null;

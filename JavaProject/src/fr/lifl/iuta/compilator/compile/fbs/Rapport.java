@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class Rapport {
 	
-	public static boolean gen = false;
+	public static boolean gen = true;
 	private static FileWriter writer;
 	
 	public static void newRapport(String pathname) {

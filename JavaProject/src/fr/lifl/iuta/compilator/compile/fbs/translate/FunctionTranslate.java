@@ -1,32 +1,39 @@
 package fr.lifl.iuta.compilator.compile.fbs.translate;
 
 import java.util.Map;
+import java.util.Stack;
 
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Token;
 
 public class FunctionTranslate {
 	
-	public static String translate(ExpressionTree tree, Map<String, MemoryBlock> addrVariable) {
-		String retour = "";
+	public static String translate(WordTree tree, Map<String, MemoryBlock> addrVariable) {
 		String beforeArg = "", afterArg = "", args = "";
-		for(int i=0; i<tree.nodeSize(); i++) {
-			if(tree.get(i).value().equals("_FUN_")) {
-				ParameterManager.init();
+		ParameterManager.init();
+		beforeArg += VariableManager.createFrame(MemoryBlock.nextFreeSegment(addrVariable));
+		afterArg += "CALL _FUN_"+tree.getNode(0).getToken().getContents()+"\n";
+		afterArg += VariableManager.deleteFrame();
+		
+		//parameter
+		if(tree.nodeSize() == 4) {
+			Stack<WordTree> stack = new Stack<WordTree>();
+			stack.push(tree.getNode(2));
+			while(!stack.empty()) {
+				if(stack.peek().getFunction().equals("list_parameter")) {
+					if(stack.peek().nodeSize() == 1) {
+						WordTree curr = stack.pop();
+						stack.push(curr.getNode(0));
+					}
+					if(stack.peek().nodeSize() == 3) {
+						WordTree curr = stack.pop();
+						stack.push(curr.getNode(2));
+						stack.push(curr.getNode(0));
+					}
+				}
+				else if(stack.peek().getFunction().equals("parameter")) {
+					args += NumberTranslate.exec(stack.pop().getNode(0), addrVariable);
+				}
 			}
-			else if(!tree.get(i).value().equals("")) {
-				int lbl = LabelManager.getNext();
-				beforeArg += VariableManager.createFrame(MemoryBlock.nextFreeSegment(addrVariable));
-				afterArg += "CALL _FUN_"+tree.get(i).value()+"\n";
-				afterArg += VariableManager.deleteFrame();
-			}
-			else {
-				ParameterManager.add(NumberTranslate.translate(tree.get(i), addrVariable));
-			}
-			
-			
-		}
-		while(ParameterManager.hasNext()) {
-			args += ParameterManager.next();
 		}
 		return args+beforeArg+afterArg;
 	}

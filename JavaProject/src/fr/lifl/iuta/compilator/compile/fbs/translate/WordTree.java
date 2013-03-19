@@ -13,7 +13,7 @@ public class WordTree {
 	private ArrayList<WordTree> node;
 	private Token token;
 	private String function;
-	private ArrayList<String> deleteVar;
+	public ArrayList<String> deleteVar;
 	
 	
 	public WordTree() {
@@ -28,6 +28,13 @@ public class WordTree {
 		deleteVar = new ArrayList<String>();
 		this.token = token;
 		function = "";
+	}
+	
+	public WordTree(Token token, String function) {
+		node = new ArrayList<WordTree>();
+		deleteVar = new ArrayList<String>();
+		this.token = token;
+		this.function = function;
 	}
 	
 	public WordTree cpy() {
@@ -136,70 +143,6 @@ public class WordTree {
 		for(int i=0; i<node.size(); i++)
 			node.get(i).displayText(n+1);
 	}
-	
-	public ArrayList<Token> varaibleChecker(ArrayList<Token> variables) {
-		ArrayList<Token> retour = new ArrayList<Token>();
-		Rapport.addLine(token.getContents()+" ("+function+") [nb var="+variables.size()+"] : ");
-		if(function.equals("declaration_instruction")) {
-			Token t = variableName();
-			if(contains(variables, t)) {
-				Rapport.addLineError("variable redéclaré : "+t.getContents()+"<br />");
-				return null;	
-			}
-			Rapport.addLineSuccess("nouvelle déclaration variable : "+t.getContents()+"<br />");
-			retour.add(t);
-			return retour;
-		}
-		if(function.equals("parameter_init")) {
-			Token t = variableName();
-			if(contains(variables, t)) {
-				Rapport.addLineError("variable redéclaré : "+t.getContents()+"<br />");
-				return null;	
-			}
-			Rapport.addLineSuccess("nouvelle déclaration variable : "+t.getContents()+"<br />");
-			retour.add(t);
-			return retour;
-		}
-		else if(function.equals("variable_name")) {
-			Token t = variableName();
-			if(!contains(variables, t)) {
-				Rapport.addLineError("variable non déclaré : "+t.getContents());
-				return null;
-			}
-			Rapport.addLineSuccess("variable : "+t.getContents()+"<br />");
-			return new ArrayList<Token>();
-		}
-		else {
-			ArrayList<Token> variables2 = (ArrayList<Token>)variables.clone();
-			for(int i=0; i<node.size(); i++) {
-				
-				if(node.get(i).getToken().getContents().equals("") && (node.get(i).function.equals("block_instruction") || node.get(i).function.equals("function"))) {
-					variables2 = (ArrayList<Token>)variables.clone();
-				}
-				
-				ArrayList<Token> tmp = node.get(i).varaibleChecker(variables2);
-				if(tmp == null)
-					return null;
-				for(int j=0; j<tmp.size(); j++) {
-					if(!contains(variables2, tmp.get(j))) {
-						variables2.add(tmp.get(j));
-					}
-				}
-
-			}
-			if(function.equals("block_instruction"))  {
-				for(int i=0; i<variables2.size(); i++) {
-					if(contains(variables, variables2.get(i)))
-						deleteVar.add(variables2.get(i).getContents());
-				}
-				return variables;
-			}
-			else
-				return variables2;
-		}
-		
-	}
-
 	
 	public Token variableName() {
 		if(function.equals("declaration_instruction")) {

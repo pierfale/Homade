@@ -80,11 +80,11 @@ boolean					:= 	"true"
 						|	"false"
 					
 number					:=	"(" number ")"
+						|	number op_arithmetic number
 						|	integer
 						|	decimal
 						|	variable
 						|	call_function
-						|	number op_arithmetic number
 						
 variable				:=	variable_name
 						|	"*" variable

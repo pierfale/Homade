@@ -4,11 +4,11 @@ import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import fr.lifl.iuta.compilator.compile.fbs.check.Check;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Grammar;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Lexer;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Match;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Parser;
-import fr.lifl.iuta.compilator.compile.fbs.grammar.VariableChecker;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.WordList;
 import fr.lifl.iuta.compilator.compile.fbs.translate.Translation;
 import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
@@ -43,7 +43,7 @@ public class Main {
 					}
 					else {
 						Rapport.addLine(wt.display());
-						if(VariableChecker.exec(wt)) {
+						if(Check.exec(wt)) {
 							Translation.exec("out.asm", wt);
 							Rapport.addLineSuccess("La compilation s'est terminé avec succès!<br />Resultat : <br />");
 							

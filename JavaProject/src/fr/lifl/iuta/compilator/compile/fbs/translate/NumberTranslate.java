@@ -4,145 +4,169 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import fr.lifl.iuta.compilator.compile.fbs.Config;
+import fr.lifl.iuta.compilator.compile.fbs.Rapport;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Grammar;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Token;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.WordList;
 
 public class NumberTranslate {
 	
-	private static ArrayList<Token> createList(WordTree node) {
-		ArrayList<Token> retour = new ArrayList<Token>();
+	private static WordTree createList(WordTree node) {
+		WordTree retour = new WordTree();
 		if(node == null)
-			return new ArrayList<Token>();
-		if(!node.getToken().getContents().equals(""))
-			retour.add(node.getToken());
-		for(int i=0; i<node.nodeSize(); i++) {
-			ArrayList<Token> tmp = createList(node.getNode(i));
-			for(int j=0; j<tmp.size(); j++)
-				retour.add(tmp.get(j));
+			return new WordTree();
+		if(node.getFunction().equals("variable") && node.size() == 4) {
+			WordTree tmp2 = new WordTree();
+			for(int i=0; i<node.nodeSize(); i++) {
+				if(i == 2) {
+					tmp2.addNode(node.getNode(2));
+				}
+				else {
+					WordTree tmp = createList(node.getNode(i));
+					for(int j=0; j<tmp.nodeSize(); j++)
+						tmp2.addNode(tmp.getNode(j));
+				}
+			}
+			retour.addNode(tmp2);
+		}
+		else if(node.getFunction().equals("call_function") && node.size() >= 3) {
+			WordTree tmp2 = new WordTree();
+			for(int i=0; i<node.nodeSize(); i++) {
+				if(node.nodeSize() == 4 && i == 2) {
+					tmp2.addNode(node.getNode(2));
+				}
+				else {
+					WordTree tmp = createList(node.getNode(i));
+					for(int j=0; j<tmp.nodeSize(); j++)
+						tmp2.addNode(tmp.getNode(j));
+				}
+			}
+			retour.addNode(tmp2);			
+		}
+		else {
+			if(!node.getToken().getContents().equals(""))
+				retour.addNode(new WordTree(node.getToken(), node.getFunction()));
+			for(int i=0; i<node.nodeSize(); i++) {
+				WordTree tmp = createList(node.getNode(i));
+				for(int j=0; j<tmp.nodeSize(); j++)
+					retour.addNode(tmp.getNode(j));
+			}
 		}
 		return retour;
 	}
 
-	private static ExpressionTree createTree(ArrayList<Token> list, int currPriority) {
-		ExpressionTree retour = new ExpressionTree();
-		int i=0; 
-		while(i<list.size()) {
-			if(list.get(i).getContents().equals("(")) {
-				ArrayList<Token> tmp = new ArrayList<Token>();
-				i++;
-				int parenthese = 0;
-				while(!list.get(i).getContents().equals(")") || parenthese > 0) {
-					tmp.add(list.get(i));
-					if(list.get(i).getContents().equals("("))
-						parenthese++;
-					else if(list.get(i).getContents().equals(")"))
-						parenthese--;
+	private static WordTree createTree(WordTree list, int currPriority) {
+		WordTree retour = new WordTree();
+		if(list.nodeSize() >= 3 && isFunction(list.getNode(0).getToken().getContents()) && list.getNode(1).getToken().getContents().equals("(")) { //function
+			for(int i = 0; i<list.nodeSize();i++)
+				retour.addNode(list.getNode(i));
+		}
+		else if(list.nodeSize() >= 4 && isVariable(list.getNode(0).getToken().getContents()) && list.getNode(1).getToken().getContents().equals("[")) { // array
+			for(int i = 0; i<list.nodeSize();i++)
+				retour.addNode(list.getNode(i));
+		}
+		else {
+			int i=0; 
+			while(i<list.nodeSize()) {
+				if(list.getNode(i).nodeSize() > 1) {
+					retour.addNode(createTree(list.getNode(i), 1));
+				}
+				else if(list.getNode(i).getToken().getContents().equals("(")) {
+					WordTree tmp = new WordTree();
 					i++;
-				}
-				retour.add(createTree(tmp, 1));
-			}
-			else {
-				if(isNumber(list.get(i).getContents()) || isVariable(list.get(i).getContents())|| isFunction(list.get(i).getContents())) {
-					if(i == list.size()-1)
-						retour.add(new ExpressionTree(list.get(i).getContents()));
-					else if(priority(list.get(i+1).getContents()) == currPriority) {
-						retour.add(new ExpressionTree(list.get(i).getContents()));
+					int parenthese = 0;
+					while(!list.getNode(i).getToken().getContents().equals(")") || parenthese > 0) {
+						tmp.addNode(list.getNode(i));
+						if(list.getNode(i).getToken().getContents().equals("("))
+							parenthese++;
+						else if(list.getNode(i).getToken().getContents().equals(")"))
+							parenthese--;
+						i++;
 					}
-					else if(isFunction(list.get(i).getContents()) && i+1 < list.size() && list.get(i+1).getContents().equals("(")) {
-						ExpressionTree tmp = new ExpressionTree();
-						tmp.add(new ExpressionTree("_FUN_"));
-						tmp.add(new ExpressionTree(list.get(i).getContents()));
-						i += 2;
-						int parenthese = 0;
-						ArrayList<Token> curr = new ArrayList<Token>();
-						while(i+1<list.size()  && (parenthese > 0 || !list.get(i).getContents().equals(")"))) {
-							if(parenthese == 0 && list.get(i).getContents().equals(",")) {
-								tmp.add(createTree(curr, 1));
-								curr.clear();
+					retour.addNode(createTree(tmp, 1));
+				}
+				else {
+					if(isNumber(list.getNode(i).getToken().getContents()) || isVariable(list.getNode(i).getToken().getContents())|| isFunction(list.getNode(i).getToken().getContents())) {
+						if(i == list.nodeSize()-1)
+							retour.addNode(new WordTree(list.getNode(i).getToken(), list.getNode(i).getFunction()));
+						else if(priority(list.getNode(i+1).getToken().getContents()) == currPriority) {
+							retour.addNode(new WordTree(list.getNode(i).getToken(), list.getNode(i).getFunction()));
+						}
+						else {
+							int priority = priority(list.getNode(i+1).getToken().getContents());
+							WordTree tmp = new WordTree();
+							int parenthese = 0;
+							while(i+1<list.nodeSize()  && (parenthese > 0 || list.getNode(i).getToken().getContents().equals("(") || isNumber(list.getNode(i).getToken().getContents())|| isVariable(list.getNode(i).getToken().getContents()) || priority(list.getNode(i).getToken().getContents()) > currPriority)) {
+								tmp.addNode(list.getNode(i));
+								if(list.getNode(i).getToken().getContents().equals("("))
+									parenthese++;
+								else if(list.getNode(i).getToken().getContents().equals(")"))
+									parenthese--;
+								i++;
 							}
+							if(i+1 == list.nodeSize())
+								tmp.addNode(list.getNode(i));
 							else
-								curr.add(list.get(i));
-							if(list.get(i).getContents().equals("("))
-								parenthese++;
-							else if(list.get(i).getContents().equals(")"))
-								parenthese--;
-							i++;
+								i--;
+							retour.addNode(createTree(tmp, priority));
+							
 						}
-						if(curr.size() > 0)
-							tmp.add(createTree(curr, 1));
-						retour.add(tmp);
-					}
-					else {
-						int priority = priority(list.get(i+1).getContents());
-						ArrayList<Token> tmp = new ArrayList<Token>();
-						int parenthese = 0;
-						while(i+1<list.size()  && (parenthese > 0 || list.get(i).getContents().equals("(") || isNumber(list.get(i).getContents())|| isVariable(list.get(i).getContents()) || priority(list.get(i).getContents()) > currPriority)) {
-							tmp.add(list.get(i));
-							if(list.get(i).getContents().equals("("))
-								parenthese++;
-							else if(list.get(i).getContents().equals(")"))
-								parenthese--;
-							i++;
-						}
-						if(i+1 == list.size())
-							tmp.add(list.get(i));
-						else
-							i--;
-						retour.add(createTree(tmp, priority));
 						
+					} else {
+						retour.addNode(new WordTree(list.getNode(i).getToken(), list.getNode(i).getFunction()));
 					}
-					
-				} else {
-					retour.add(new ExpressionTree(list.get(i).getContents()));
+	
 				}
-
+				
+				i++;
 			}
-			
-			i++;
 		}
 		return retour;
 	}
 	
-	public static String translate(ExpressionTree tree, Map<String, MemoryBlock> addrVariable) {
+	public static String translate(WordTree tree, Map<String, MemoryBlock> addrVariable) {
 		String retour = "";
-		if(tree.nodeSize() > 0 && tree.get(0).value().equals("_FUN_")) {
+		if(tree.nodeSize() >= 3 && isFunction(tree.getNode(0).getToken().getContents()) && tree.getNode(1).getToken().getContents().equals("(")) { //function
 			retour += FunctionTranslate.translate(tree, addrVariable);
 		}
 		else {
-			if(tree.value().equals("+"))
+			if(tree.getToken().getContents().equals("+"))
 				retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
-			else if(tree.value().equals("-"))
+			else if(tree.getToken().getContents().equals("-"))
 				retour += "IP 2 1 1 "+Config.IP_operation_subtract+"\n";
-			else if(tree.value().equals("/"))
+			else if(tree.getToken().getContents().equals("/"))
 				retour += "IP 2 1 1 "+Config.IP_operation_divide+"\n";
-			else if(tree.value().equals("*"))
+			else if(tree.getToken().getContents().equals("*"))
 				retour += "IP 2 1 1 "+Config.IP_operation_multiplie+"\n";
-			else if(tree.value().equals("%"))
+			else if(tree.getToken().getContents().equals("%"))
 				retour += "IP 2 1 1 "+Config.IP_operation_modulo+"\n";
-			else if(isNumber(tree.value()))
-				retour += "LIT "+tree.value()+"\n";
-			else if(addrVariable.get(tree.value()) != null){
+			else if(isNumber(tree.getToken().getContents()))
+				retour += "LIT "+tree.getToken().getContents()+"\n";
+			else if(addrVariable.get(tree.getToken().getContents()) != null){
 				int offset = 0;
-				int address = addrVariable.get(tree.value()).getAddress();
+				int address = addrVariable.get(tree.getToken().getContents()).getAddress();
 				retour += VariableManager.get(address, offset);
 			}
 			
 			for(int i=0; i<tree.nodeSize(); i++) {
 				if(i == 0)
-					retour +=  translate(tree.get(i), addrVariable);		
+					retour +=  translate(tree.getNode(i), addrVariable);		
 				if(i%2 == 1 && i+1<tree.nodeSize())
-					retour +=  translate(tree.get(i+1), addrVariable);
+					retour +=  translate(tree.getNode(i+1), addrVariable);
 				else if(i%2 == 0 &&  i-1 >= 0)
-					retour +=  translate(tree.get(i-1), addrVariable);
+					retour +=  translate(tree.getNode(i-1), addrVariable);
 			}
 		}
 		return retour;
 	}
 	
 	public static String exec(WordTree node, Map<String, MemoryBlock> addrVariable) {
-		ArrayList<Token> tmp = createList(node);
-		return translate(createTree(createList(node), 1), addrVariable);
+		Rapport.add("Traduction chaine numérique "+node.display());
+		WordTree tmp = createList(node);
+		Rapport.add("Etape intermédiare"+tmp.display());
+		WordTree tmp2 = createTree(createList(node), 1);
+		Rapport.add("Etape Final"+tmp2.display()+"<br />");
+		return translate(tmp2, addrVariable);
 	}
 	
 	public static int priority(String op) {
@@ -172,14 +196,23 @@ public class NumberTranslate {
 	}
 	
 	public static boolean isVariable(String s) {
+		boolean save = Rapport.gen;
+		Rapport.gen = false;
 		WordList tmp = new WordList();
 		tmp.add(s, 0);
-		return Grammar.match(tmp, "variable_name");
+		boolean r = Grammar.match(tmp, "variable_name");
+		Rapport.gen = save;
+		return r;
+		
 	}
 
 	public static boolean isFunction(String s) {
+		boolean save = Rapport.gen;
+		Rapport.gen = false;
 		WordList tmp = new WordList();
 		tmp.add(s, 0);
-		return Grammar.match(tmp, "function_name");
+		boolean r = Grammar.match(tmp, "function_name");
+		Rapport.gen = save;
+		return r;
 	}
 }
