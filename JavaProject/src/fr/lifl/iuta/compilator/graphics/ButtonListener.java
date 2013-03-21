@@ -44,22 +44,22 @@ public class ButtonListener implements ActionListener, Runnable{
 		DefaultHighlighter.DefaultHighlightPainter hl = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
 		try {
 			if(Processor.isOn()) {
+				Processor.stepByStep();
 				this.code.getHighlighter().removeAllHighlights();
 				this.code.getHighlighter().addHighlight(beg, end, hl);
 				this.code.setCaretPosition(beg);
 				this.code.getParent().repaint();
-			}Processor.stepByStep();
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		}
+			}
+		} catch (BadLocationException e) {e.printStackTrace();}
 	}
 	
 	public void run () {
 		this.code.getHighlighter().removeAllHighlights();
-		while(Processor.getPC() != (Integer)this.breakPoint.getValue()){
+		 while(Util.getNbLine(Processor.getPC()) != (Integer)this.breakPoint.getValue()-1 && Processor.isOn()) {
 			stepByStep();
-			try {Thread.sleep(50);}
+			try {Thread.sleep(80);}
 			catch (InterruptedException e) {e.printStackTrace();}
 		}
+		
 	}
 }

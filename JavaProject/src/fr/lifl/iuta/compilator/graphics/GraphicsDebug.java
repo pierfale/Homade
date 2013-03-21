@@ -35,7 +35,7 @@ public class GraphicsDebug extends JPanel{
 		JButton stepByStep = new JButton("sBs");
 		boutons.add(stepByStep);
 		JButton read = new JButton("read");	
-		JSpinner saisis = new JSpinner(new SpinnerNumberModel(1,1,getMaxPc(),1));
+		JSpinner saisis = new JSpinner(new SpinnerNumberModel(0,0,getMaxPc(),1));
 		ButtonListener listener2 = new ButtonListener(this.code,saisis);
 		read.addActionListener(listener2);
 		boutons.add(read);

@@ -19,6 +19,7 @@ public class IpRAM extends AbstractIP {
 			case 2: out = this.get32(in);break;
 			case 3: out = this.get64(in);break;
 			case 4: out = this.copy(in);break;
+			case 5: out = this.freeMemory(in);break;
 		}
 		if(this.out <= out.length)
 			for(int i=0; i<this.out; i++)
@@ -128,6 +129,55 @@ public class IpRAM extends AbstractIP {
 			for(int i=0; i<in[0]; i++) {
 				RAM.set(in[1]+i, RAM.get(in[2]+i));
 			}
+		} catch (InvalideAdressException e) {
+			e.printStackTrace();
+		} catch (UnloadedRAMException e) {
+			e.printStackTrace();
+		}
+		return out;
+	}
+	
+	/*
+	 * in  :	1.adress
+	 * 			2.adressInit
+	 * 
+	 * out :	
+	 */
+	public int [] freeMemory(int [] in) {
+		
+		
+		int [] out = new int[0];
+		try {
+			int currAddr = (int)(RAM.get(in[0]) >> 32);
+			int size = (int)(RAM.get(in[0]));
+			int pagination = in[1];
+			System.out.println("currAddr : "+currAddr+" size : "+size);
+			boolean ok;
+			do {
+				ok = true;
+				System.out.println("> currAddr : "+currAddr);
+				
+				int page1 = 1;
+				int page2 = 0;
+				while(page1 != 0 && ok) {
+					page1 = (int)(RAM.get(pagination) >> 32);
+					page2 = (int)(RAM.get(pagination));
+					System.out.println("pagination : "+pagination+"("+page1+","+page2+")");
+					if(pagination != in[0]) {
+						if(currAddr >= page1 && currAddr < page1+page2 || currAddr+size < page1 && currAddr+size >= page1+page2) {
+							currAddr = page1+page2;
+							pagination = in[1];
+							ok = false;
+						}
+					}
+					pagination++;
+				}
+				if(!ok)
+					pagination++;
+			} while(!ok);
+			long value = ((long)currAddr << 32);
+			value += size;
+			RAM.set(in[0], value);
 		} catch (InvalideAdressException e) {
 			e.printStackTrace();
 		} catch (UnloadedRAMException e) {

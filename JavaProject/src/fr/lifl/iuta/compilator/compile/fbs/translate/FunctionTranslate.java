@@ -26,8 +26,8 @@ public class FunctionTranslate {
 					}
 					if(stack.peek().nodeSize() == 3) {
 						WordTree curr = stack.pop();
-						stack.push(curr.getNode(2));
 						stack.push(curr.getNode(0));
+						stack.push(curr.getNode(2));
 					}
 				}
 				else if(stack.peek().getFunction().equals("parameter")) {

@@ -16,9 +16,30 @@ import fr.lifl.iuta.compilator.exception.UnknownInstructionException;
 import fr.lifl.iuta.compilator.processor.Processor;
 import fr.lifl.iuta.compilator.processor.RAM;
 
-public class GraphicsViewDebug extends Panel{
+public class GraphicsViewDebug extends JPanel{
 
 	public GraphicsViewDebug(){
+		this.setName("Debug");
+	}
+	
+	
+	public static void main(String[] args) {
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (Exception e) {}	
+		fr.lifl.iuta.compilator.compile.fbs.Main.main(new String [] {"fbs01"});
+		JFrame f = new JFrame("Debugueur");
+		GraphicsViewDebug g = new GraphicsViewDebug();g.loadGraphicsDebug();
+		f.add(g);
+		
+		f.setVisible(true);
+		f.pack();
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+
+	public void loadGraphicsDebug() {
+		this.removeAll();
 		GridBagLayout grid = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
 		this.setLayout(grid);
@@ -73,10 +94,10 @@ public class GraphicsViewDebug extends Panel{
 		JPanel panConsole = new JPanel();
 		panConsole.setLayout(new BoxLayout(panConsole,BoxLayout.Y_AXIS));
 		JTabbedPane tabbed = new JTabbedPane();
-		tabbed.addTab("Console",console);
+		tabbed.addTab("Console",new JScrollPane(console));
 		JTextArea biblio = new JTextArea("XAXA");
 		tabbed.addTab("Bibliothèque", biblio);
-		panConsole.add(new JScrollPane(tabbed));
+		panConsole.add(tabbed);
 		grid.setConstraints(panConsole, c);
 		add(panConsole);
 		
@@ -85,23 +106,6 @@ public class GraphicsViewDebug extends Panel{
 		JTextArea biblio2 = new JTextArea("XAXA");
 		grid.setConstraints(biblio2, c);
 		add(biblio2);
-	}
-	
-	
-	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-		} catch (Exception e) {}	
-		fr.lifl.iuta.compilator.compile.fbs.Main.main(new String [] {"fbs01"});
-		JFrame f = new JFrame("Debugueur");
-//		JEditorPane e = null;
-//		e = new JEditorPane();
-//		e.setContentType("text/html");
-//		e.setText("<html><body><h1>test</h1></body></html>");
-//		f.add(e);
-		f.add(new GraphicsViewDebug());
-		f.setVisible(true);
-		f.pack();
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 	}
 }

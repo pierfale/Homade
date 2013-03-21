@@ -1,7 +1,7 @@
 int function main() {
-	display 10*multi(2*2, 5)+1;
+	string s = "helloworld";
+	display s;
 }
 
-int function multi(int n, int n2) {
-	return n*n2;
-}
+
+

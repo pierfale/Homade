@@ -75,8 +75,6 @@ public class GraphicsRAM extends JPanel implements Observer{
 		if (arg != null) { 
 			String tmp = "";
 			this.memory = RAM.getMemory();
-			System.out.println("MEMOIRE" + memory.length);
-			System.out.println("MEMOIRE SIZE : "+ memorysize);
 			if (this.memorysize != this.memory.length ) {
 				for (int i = 0 ; i < memory.length ; i++) {
 					tmp += Util.fill(String.format("%x",memory[i]),i+"")+"\n";

@@ -102,5 +102,16 @@ public class Util {
 		return nbLine;
 	}
 	
+	public static String lnToHTML(String s) {
+		String retour = "";
+		for(int i=0; i<s.length(); i++) {
+			if(s.charAt(i) == '\n')
+				retour += "<br />";
+			else
+				retour += s.charAt(i);
+		}
+		return retour;
+	}
+	
 	
 }

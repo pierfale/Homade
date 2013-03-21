@@ -6,79 +6,127 @@ import fr.lifl.iuta.compilator.compile.fbs.Config;
 
 public class VariableManager {
 
-	public static String get(int adress, int offset) {
+	/*
+	 * 1: offset
+	 */
+	public static String get(int adress) {
 		String retour = "LIT "+Config.ram_paging_adress+"\n";
 		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
 		retour += "LIT "+adress+"\n";
 		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
 		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
 		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
-		retour += "LIT "+offset+"\n";
-		/*gérer offset : 1o*/
 		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
 		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
 		return retour;
 	}
-	//first value of stack
-	public static String set(int adress, int offset) {
+	
+	/*
+	 * 1: offset
+	 * 2:adresse
+	 */
+	public static String get() {
+		String retour = "IP 2 2 1 "+Config.IP_stack_swap+"\n";
+		retour += "LIT "+Config.ram_paging_adress+"\n";
+		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
+		retour += "IP 2 2 1 "+Config.IP_stack_swap+"\n";
+		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
+		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
+		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
+		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
+		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
+		return retour;
+	}
+	
+	/*
+	 * 1: offset
+	 * 2: value
+	 */
+	public static String set(int adress) {
 		String retour = "LIT "+Config.ram_paging_adress+"\n";
 		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
 		retour += "LIT "+adress+"\n";
 		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
 		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
 		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
-		/*gérer offset : 1o*/
+		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
 		retour += "IP 2 2 1 "+Config.IP_stack_swap+"\n";
 		retour += "IP 2 0 1 "+Config.IP_set_variable_RAM_32+"\n";
 		return retour;
 	}
 	
-	public static String set(int adress, int offset, String value) {
+	/*
+	 * 1: offset
+	 */
+	public static String set(int adress, String value) {
 		String retour = "LIT "+Config.ram_paging_adress+"\n";
 		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
 		retour += "LIT "+adress+"\n";
 		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
 		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
 		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
-		/*gérer offset : 1o*/
+		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
+		retour += value;
+		retour += "IP 2 0 1 "+Config.IP_set_variable_RAM_32+"\n";
+		return retour;
+	}
+	
+	/*
+	 * 1: offset
+	 * 2: adresse
+	 */
+	public static String set(String value) {
+		
+		String retour = "IP 2 2 1 "+Config.IP_stack_swap+"\n";
+		retour += "LIT "+Config.ram_paging_adress+"\n";
+		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
+		retour +=  "IP 2 2 1 "+Config.IP_stack_swap+"\n";
+		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
+		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
+		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
+		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
 		retour += value;
 		retour += "IP 2 0 1 "+Config.IP_set_variable_RAM_32+"\n";
 		return retour;
 	}
 	
 	public static String create(int address, int size) {
-		String retour = "LIT "+Config.ram_paging_adress+"\n";
-		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
-		retour += "LIT "+address+"\n";
-		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
-		retour += "LIT "+Config.ram_varaibles_adress +"\n";
-		retour += "LIT "+size+"\n";
-		retour += "IP 3 0 1 "+Config.IP_set_variable_RAM_64+"\n";
-		retour += "LIT "+Config.ram_paging_adress+"\n";
-		retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
-		retour += "LIT "+address+"\n";
-		retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
-		retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
-		retour += "CALL _FUN__create_variable\n";
-		retour += "LIT "+size+"\n";
-		retour += "IP 3 0 1 "+Config.IP_set_variable_RAM_64+"\n";
-		return retour;
+		if(Config.use_ip_freeMemory) {
+			String retour = "LIT "+Config.ram_paging_adress+"\n";
+			retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
+			retour += "LIT "+address+"\n";
+			retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
+			retour += "LIT "+Config.ram_varaibles_adress +"\n";
+			retour += "LIT "+size+"\n";
+			retour += "IP 3 0 1 "+Config.IP_set_variable_RAM_64+"\n";
+			retour += "LIT "+Config.ram_paging_adress+"\n";
+			retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
+			retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
+			retour += "LIT "+address+"\n";
+			retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
+			retour += "IP 2 0 1 "+Config.IP_freeMemory_RAM+"\n";
+			return retour;
+		}
+		else {
+			String retour = "LIT "+Config.ram_paging_adress+"\n";
+			retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
+			retour += "LIT "+address+"\n";
+			retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
+			retour += "LIT "+Config.ram_varaibles_adress +"\n";
+			retour += "LIT "+size+"\n";
+			retour += "IP 3 0 1 "+Config.IP_set_variable_RAM_64+"\n";
+			retour += "LIT "+Config.ram_paging_adress+"\n";
+			retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
+			retour += "LIT "+address+"\n";
+			retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
+			retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
+			retour += "CALL _FUN__create_variable\n";
+			retour += "LIT "+size+"\n";
+			retour += "IP 3 0 1 "+Config.IP_set_variable_RAM_64+"\n";
+			return retour;
+		}
 	}
 	
-	/*
-	 * il faut préalablement avoir crée la destination
-	 */
-	public static void copy(int origin, int destination) {
-		int lbl1 = LabelManager.getNext();
-		int lbl2 = LabelManager.getNext();
-		String retour = "LIT "+origin+"\n";
-		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";
-		retour += "IP 2 1 1 "+Config.IP_stack_nip+"\n";
-		retour += "LIT "+destination+"\n";
-		retour += "IP 1 2 1 "+Config.IP_get_variable_RAM_64+"\n";		
-		retour += "IP 3 0 1 "+Config.IP_copy_RAM+"\n";
-
-	}
 	
 	public static String createFunction() {
 		int lbl0 = LabelManager.getNext();

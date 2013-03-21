@@ -3,6 +3,7 @@ package fr.lifl.iuta.compilator.compile.fbs.translate;
 import java.util.ArrayList;
 import java.util.Map;
 
+import fr.lifl.iuta.compilator.base.Util;
 import fr.lifl.iuta.compilator.compile.fbs.Config;
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Grammar;
@@ -15,22 +16,28 @@ public class NumberTranslate {
 		WordTree retour = new WordTree();
 		if(node == null)
 			return new WordTree();
-		if(node.getFunction().equals("variable") && node.size() == 4) {
+		if(node.getFunction().equals("variable") && node.nodeSize() == 4) {
 			WordTree tmp2 = new WordTree();
+			tmp2.setFunction("variable");
 			for(int i=0; i<node.nodeSize(); i++) {
-				if(i == 2) {
+				if(i == 0) {
+					tmp2.addNode(node.getNode(0).getNode(0));
+				}
+				else if(i == 2) {
 					tmp2.addNode(node.getNode(2));
 				}
 				else {
 					WordTree tmp = createList(node.getNode(i));
+					
 					for(int j=0; j<tmp.nodeSize(); j++)
 						tmp2.addNode(tmp.getNode(j));
 				}
 			}
 			retour.addNode(tmp2);
 		}
-		else if(node.getFunction().equals("call_function") && node.size() >= 3) {
+		else if(node.getFunction().equals("call_function") && node.nodeSize() >= 3) {
 			WordTree tmp2 = new WordTree();
+			tmp2.setFunction("call_function");
 			for(int i=0; i<node.nodeSize(); i++) {
 				if(node.nodeSize() == 4 && i == 2) {
 					tmp2.addNode(node.getNode(2));
@@ -42,6 +49,12 @@ public class NumberTranslate {
 				}
 			}
 			retour.addNode(tmp2);			
+		}
+		else if(node.getFunction().equals("variable") && node.nodeSize() == 1) {
+			WordTree tmp2 = new WordTree();
+			tmp2.setFunction("variable");
+			tmp2.addNode(node.getNode(0).getNode(0));
+			retour.addNode(tmp2);
 		}
 		else {
 			if(!node.getToken().getContents().equals(""))
@@ -57,11 +70,13 @@ public class NumberTranslate {
 
 	private static WordTree createTree(WordTree list, int currPriority) {
 		WordTree retour = new WordTree();
-		if(list.nodeSize() >= 3 && isFunction(list.getNode(0).getToken().getContents()) && list.getNode(1).getToken().getContents().equals("(")) { //function
+		if(list.nodeSize() >= 3 && list.getNode(1).getToken().getContents().equals("(")) { //function
+			retour.setFunction("call_function");
 			for(int i = 0; i<list.nodeSize();i++)
 				retour.addNode(list.getNode(i));
 		}
-		else if(list.nodeSize() >= 4 && isVariable(list.getNode(0).getToken().getContents()) && list.getNode(1).getToken().getContents().equals("[")) { // array
+		else if(list.nodeSize() >= 4 &&list.getNode(1).getToken().getContents().equals("[")) { // array
+			retour.setFunction("variable");
 			for(int i = 0; i<list.nodeSize();i++)
 				retour.addNode(list.getNode(i));
 		}
@@ -86,7 +101,10 @@ public class NumberTranslate {
 					retour.addNode(createTree(tmp, 1));
 				}
 				else {
-					if(isNumber(list.getNode(i).getToken().getContents()) || isVariable(list.getNode(i).getToken().getContents())|| isFunction(list.getNode(i).getToken().getContents())) {
+					if(list.getNode(i).getFunction().equals("variable")) {
+						retour.addNode(list.getNode(i));
+					}
+					else if(isNumber(list.getNode(i).getToken().getContents()) || isVariable(list.getNode(i).getToken().getContents())|| isFunction(list.getNode(i).getToken().getContents())) {
 						if(i == list.nodeSize()-1)
 							retour.addNode(new WordTree(list.getNode(i).getToken(), list.getNode(i).getFunction()));
 						else if(priority(list.getNode(i+1).getToken().getContents()) == currPriority) {
@@ -126,6 +144,7 @@ public class NumberTranslate {
 	
 	public static String translate(WordTree tree, Map<String, MemoryBlock> addrVariable) {
 		String retour = "";
+		boolean through = true;
 		if(tree.nodeSize() >= 3 && isFunction(tree.getNode(0).getToken().getContents()) && tree.getNode(1).getToken().getContents().equals("(")) { //function
 			retour += FunctionTranslate.translate(tree, addrVariable);
 		}
@@ -142,13 +161,14 @@ public class NumberTranslate {
 				retour += "IP 2 1 1 "+Config.IP_operation_modulo+"\n";
 			else if(isNumber(tree.getToken().getContents()))
 				retour += "LIT "+tree.getToken().getContents()+"\n";
-			else if(addrVariable.get(tree.getToken().getContents()) != null){
-				int offset = 0;
-				int address = addrVariable.get(tree.getToken().getContents()).getAddress();
-				retour += VariableManager.get(address, offset);
+			else if(tree.nodeSize() > 0 && tree.getNode(0).getFunction().equals("variable_name")){
+				retour += tree.translate(addrVariable);
+				System.out.println("-----\n"+retour+"\n------");
+				through = false;
 			}
+		
 			
-			for(int i=0; i<tree.nodeSize(); i++) {
+			for(int i=0; through && i<tree.nodeSize(); i++) {
 				if(i == 0)
 					retour +=  translate(tree.getNode(i), addrVariable);		
 				if(i%2 == 1 && i+1<tree.nodeSize())
@@ -161,12 +181,15 @@ public class NumberTranslate {
 	}
 	
 	public static String exec(WordTree node, Map<String, MemoryBlock> addrVariable) {
+		Rapport.addLine("===begin===");
 		Rapport.add("Traduction chaine numérique "+node.display());
 		WordTree tmp = createList(node);
 		Rapport.add("Etape intermédiare"+tmp.display());
 		WordTree tmp2 = createTree(createList(node), 1);
 		Rapport.add("Etape Final"+tmp2.display()+"<br />");
-		return translate(tmp2, addrVariable);
+		String retour = translate(tmp2, addrVariable);
+		Rapport.addLine("Traduction : <br />"+Util.lnToHTML(retour)+"====end=====");
+		return retour;
 	}
 	
 	public static int priority(String op) {

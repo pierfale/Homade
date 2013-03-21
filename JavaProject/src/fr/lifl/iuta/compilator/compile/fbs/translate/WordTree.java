@@ -229,7 +229,8 @@ public class WordTree {
 			int size = 1;
 			
 			retour += VariableManager.create(addr, size);
-			retour += VariableManager.set(addr, 0);
+			retour += "LIT 0\n";
+			retour += VariableManager.set(addr);
 			addrVariable.put(t.getContents(), new MemoryBlock(addr, size));
 			through = false;
 		}
@@ -238,13 +239,6 @@ public class WordTree {
 			retour += node.get(0).translate(addrVariable);
 			retour += "%-- END";
 			through = false;*/
-		}	
-		if(function.equals("call_function")) {
-			int lbl = LabelManager.getNext();
-			Token t =  node.get(2).functionName();
-			retour += VariableManager.createFrame(MemoryBlock.nextFreeSegment(addrVariable));
-			retour += "CALL _FUN_"+t.getContents()+"\n";
-			through = false;
 		}
 		else if(function.equals("declaration_instruction")) {
 			Token t = variableName();
@@ -255,18 +249,41 @@ public class WordTree {
 			addrVariable.put(t.getContents(), new MemoryBlock(addr, size));
 		}
 		else if(function.equals("allocation_instruction")) {
-			Token t = variableName();
+			Token t = node.get(0).getNode(0).variableName();
 			String value = node.get(2).translate(addrVariable);
-			int offset = 0;
 			int address = addrVariable.get(t.getContents()).getAddress();
-			retour += VariableManager.set(address, offset, value);
+			if(node.get(0).nodeSize() == 4) {
+				retour += "LIT 0\n";
+				retour += VariableManager.get(address);
+				retour += NumberTranslate.exec(node.get(0).getNode(2), addrVariable);
+				retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
+				retour += value;
+				retour += "IP 2 0 1 "+Config.IP_set_variable_RAM_32+"\n";
+			}
+			else {
+				address = addrVariable.get(t.getContents()).getAddress();
+				retour += "LIT 0\n";
+				retour += VariableManager.set(address, value);
+			}
 			through = false;
 		}
-		else if(function.equals("variable_name")) {
-			Token t = variableName();
-			int offset = 0;
-			int address = addrVariable.get(t.getContents()).getAddress();
-			retour += VariableManager.get(address, offset);
+		else if(function.equals("variable")) {
+			if(node.size() > 0) {
+				Token t = node.get(0).variableName();
+				int address = addrVariable.get(t.getContents()).getAddress();
+				if(node.size() == 4) {
+					retour += "LIT 0\n";
+					retour += VariableManager.get(address);
+					retour += NumberTranslate.exec(node.get(2), addrVariable);
+
+					retour += "IP 2 1 1 "+Config.IP_operation_sum+"\n";
+					retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
+				}
+				else {
+					retour += "LIT 0\n";
+					retour += VariableManager.get(address);
+				}
+			}
 			through = false;
 		}
 		else if(function.equals("structure")) {
@@ -279,6 +296,9 @@ public class WordTree {
 				retour += node.get(4).translate(addrVariable);
 				retour += "BA _LBL"+lbl1+"\n";
 				retour += "_LBL"+lbl2+"\n";
+				if(node.size() == 6) {
+					retour += node.get(5).translate(addrVariable);
+				}
 				through = false;
 			}
 		}
@@ -363,11 +383,15 @@ public class WordTree {
 		else if(function.equals("array")) {
 			retour += ArrayManager.createArray(this, addrVariable);
 			through = false;
-			
 		}	
+		else if(function.equals("string")) {
+			retour += StringManager.createString(this, addrVariable);
+			through = false;
+		}			
 		else if(function.equals("return_instruction")) {
 			if(node.size() > 1 && node.get(0).getToken().getContents().equals("return")) {
 				retour += node.get(1).translate(addrVariable);
+				retour += "RET\n";
 			}
 			
 			through = false;

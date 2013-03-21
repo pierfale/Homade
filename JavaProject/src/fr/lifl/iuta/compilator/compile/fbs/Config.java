@@ -8,6 +8,7 @@ public class Config {
 	public static final int ram_frame_pointer = 0x2;
 	public static final int	ram_paging_adress = 0x200;
 	public static final int ram_varaibles_adress = 0x400;
+	public static final boolean use_ip_freeMemory = true;
 	
 	//IPS
 	public static final int IP_stack_duplication = 8;
@@ -50,6 +51,7 @@ public class Config {
 	public static final int IP_get_variable_RAM_32 = 66;
 	public static final int IP_get_variable_RAM_64 = 67;
 	public static final int IP_copy_RAM = 68;
+	public static final int IP_freeMemory_RAM = 69;
 	
 	public static final int IP_buffer_out = 96;
 }

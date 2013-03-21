@@ -43,7 +43,9 @@ public class Translation {
 				tmp2 += "CALL _LBL"+FunctionManager.get("main")+"\n";
 				tmp2 += "HALT\n";
 				
-				tmp1 = tmp2+tmp1+VariableManager.createFunction();
+				tmp1 = tmp2+tmp1;
+				if(!Config.use_ip_freeMemory)
+				tmp1 += VariableManager.createFunction();
 				tmp1 = FunctionManager.replace(tmp1);
 				tmp1 = LabelManager.replace(tmp1);
 				writer.write(tmp1);

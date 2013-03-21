@@ -32,6 +32,7 @@ singleLine_instruction	:=	declaration_instruction
 
 allocation_instruction 	:= 	variable "=" number
 						|	variable "=" array
+						|	variable "=" string
 
 						
 declaration_instruction := 	type allocation_instruction
@@ -74,6 +75,7 @@ type 					:=	"int"
 						|	"float"
 						|	"boolean"
 						|	"void"
+						|	"string"
 						|	type "[]"
 
 boolean					:= 	"true"
@@ -103,7 +105,7 @@ string					:= [(")(a-zA-Z0-9)*(")]
 entities				:=	number
 						|	string
 						
-list_entities			:=	list_entities "," entities
+list_entities			:=	entities "," list_entities
 						|	entities
 
 variable_name			:= [(a-zA-Z)(a-zA-Z0-9_)*]
