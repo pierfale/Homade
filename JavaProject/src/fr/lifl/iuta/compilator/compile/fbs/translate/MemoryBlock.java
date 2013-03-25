@@ -10,10 +10,12 @@ public class MemoryBlock {
 	
 	private int address;
 	private int size;
+	private String type;
 	
-	public MemoryBlock(int address, int size) {
+	public MemoryBlock(int address, int size, String type) {
 		this.address = address;
 		this.size = size;
+		this.type = type;
 	}
 	
 	public int getAddress() {
@@ -22,6 +24,10 @@ public class MemoryBlock {
 	
 	public int getSize() {
 		return size;
+	}
+	
+	public String getType() {
+		return type;
 	}
 	
 	public static int nextFreeSegment(Map<String, MemoryBlock> memory) {

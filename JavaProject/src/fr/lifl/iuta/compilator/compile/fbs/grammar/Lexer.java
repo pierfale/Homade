@@ -34,14 +34,25 @@ public class Lexer {
 						end++;
 					}
 					if(beg < line.length()) {
-						while(end <= line.length() && Grammar.existWord(line.substring(beg, end)) == null) {
-							end++;
-							
-						}	
-						while(end <= line.length() && Grammar.existWord(line.substring(beg, end)) != null) {
-							end++;
+						String name = null;
+						if(line.charAt(beg) == '"') {
+							end += 2;
+							while(end-2 < line.length() && line.charAt(end-2) != '"')
+								end++;
+							name = "";
+							if(end-2 == line.length())
+								return null;
 						}
-						String name = Grammar.existWord(line.substring(beg, end-1));
+						else {
+							while(end <= line.length() && Grammar.existWord(line.substring(beg, end)) == null) {
+								end++;
+								
+							}
+							while(end <= line.length() && Grammar.existWord(line.substring(beg, end)) != null) {
+								end++;
+							}
+							name = Grammar.existWord(line.substring(beg, end-1));
+						}
 						if(name != null) {
 							Rapport.addLine("mot detecté: "+line.substring(beg, end-1)+" ["+name+"]");
 							wl.add(line.substring(beg, end-1), nbLine);

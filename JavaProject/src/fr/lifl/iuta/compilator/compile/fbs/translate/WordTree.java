@@ -6,7 +6,9 @@ import java.util.Map;
 
 import fr.lifl.iuta.compilator.compile.fbs.Config;
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
+import fr.lifl.iuta.compilator.compile.fbs.check.Variable;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Token;
+import fr.lifl.iuta.compilator.compile.fbs.grammar.WordList;
 
 public class WordTree {
 	
@@ -167,6 +169,24 @@ public class WordTree {
 		return null;
 	}
 	
+	public Token variableType() {
+		System.out.println("==/=>"+function);
+		if(function.equals("type") && !token.getContents().equals("")) {
+			System.out.println("====>"+token.getContents());
+			return token;
+		}
+		else {
+			for(int i=0; i<node.size(); i++) {
+				Token  tmp = node.get(i).variableType();
+				if(tmp != null) {
+					System.out.println("====>"+tmp.getContents());
+					return tmp;
+				}
+			}
+		}	
+		return null;
+	}
+	
 	public Token functionName() {
 		 if(function.equals("function_name") && !token.getContents().equals("")) {
 			return token;
@@ -182,12 +202,21 @@ public class WordTree {
 		return null;
 	}
 	
-	public boolean contains(ArrayList<Token> list, Token t) {
-		for(int i=0; i<list.size(); i++) {
-			if(list.get(i).getContents().equals(t.getContents()))
-				return true;
+	public WordList toList() {
+		WordList wl = new WordList();
+		if(!token.getContents().equals(""))
+			wl.add(token);
+		for(int i=0; i<node.size(); i++) {
+			wl.add(node.get(i).toList());
 		}
-		return false;
+		return wl;
+	}
+	
+	public void set(WordTree wt) {
+		node = wt.node;
+		token = wt.token;
+		function = wt.function;
+		deleteVar = wt.deleteVar;
 	}
 	
 	public String translate(Map<String, MemoryBlock> addrVariable) {
@@ -231,14 +260,8 @@ public class WordTree {
 			retour += VariableManager.create(addr, size);
 			retour += "LIT 0\n";
 			retour += VariableManager.set(addr);
-			addrVariable.put(t.getContents(), new MemoryBlock(addr, size));
+			addrVariable.put(t.getContents(), new MemoryBlock(addr, size, variableType().getContents()));
 			through = false;
-		}
-		else if(function.equals("parameter")) {/*
-			retour += "%-- BEG";
-			retour += node.get(0).translate(addrVariable);
-			retour += "%-- END";
-			through = false;*/
 		}
 		else if(function.equals("declaration_instruction")) {
 			Token t = variableName();
@@ -246,7 +269,7 @@ public class WordTree {
 			int size = 1;
 			
 			retour += VariableManager.create(addr, size);
-			addrVariable.put(t.getContents(), new MemoryBlock(addr, size));
+			addrVariable.put(t.getContents(), new MemoryBlock(addr, size, variableType().getContents()));
 		}
 		else if(function.equals("allocation_instruction")) {
 			Token t = node.get(0).getNode(0).variableName();
@@ -306,21 +329,22 @@ public class WordTree {
 			if(node.size() > 0 && node.get(0).getToken().getContents().equals("if")) {
 				//retour += "//Structure IF\n";
 				retour += node.get(2).translate(addrVariable);
-				if(node.size() > 4) { // else
-					//retour += "//duplication de la valeur du bz\n";
-					retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
-				}
 				int lbl1 = LabelManager.getNext();
 				retour += "BZ _LBL"+lbl1+"\n";
 				//retour += "//Corps du if\n";
 				retour += node.get(4).translate(addrVariable);
-				retour += "_LBL"+lbl1+"\n";
+				
 				if(node.size() > 6) { // else
+					
 					int lbl2 = LabelManager.getNext();
-					retour += "BNZ _LBL"+lbl2+"\n";
+					retour += "BR _LBL"+lbl2+"\n";
+					retour += "_LBL"+lbl1+"\n";
 					//retour += "//Corps du else\n";
 					retour += node.get(6).translate(addrVariable);
 					retour += "_LBL"+lbl2+"\n";
+				}
+				else {
+					retour += "_LBL"+lbl1+"\n";
 				}
 			}
 			through = false;
@@ -340,6 +364,7 @@ public class WordTree {
 				retour += node.get(2).translate(addrVariable);
 				retour += node.get(1).translate(addrVariable);
 			}
+			//retour += BooleanTranslate.exec(this, addrVariable);
 			through = false;
 		}
 		else if(function.equals("op_compare")) {
@@ -372,9 +397,29 @@ public class WordTree {
 		}
 		else if(function.equals("special_instruction")) {
 			if(node.size() > 1 && node.get(0).getToken().getContents().equals("display")) {
-				retour += "LIT 1\n";
-				retour += node.get(1).translate(addrVariable);
-				retour += "IP 2 0 1 "+Config.IP_buffer_out+"\n";
+				if(node.get(1).getFunction().equals("string")) {
+					int lbl1 = LabelManager.getNext();
+					int lbl2 = LabelManager.getNext();
+					retour += node.get(1).translate(addrVariable);
+					retour += "_LBL"+lbl2+"\n";
+					retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
+					retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
+					retour += "BZ _LBL"+lbl1+"\n";
+					retour += "IP 1 2 1 "+Config.IP_stack_duplication+"\n";
+					retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";	
+					retour += "LIT 0\n";
+					retour += "IP 2 2 1 "+Config.IP_stack_swap+"\n";
+					retour += "IP 2 0 1 "+Config.IP_buffer_out+"\n";
+					retour += "IP 1 1 1 "+Config.IP_operation_inc+"\n";
+					retour += "BA _LBL"+lbl2+"\n";
+					retour += "_LBL"+lbl1+"\n";
+					retour += "IP 1 0 1 "+Config.IP_pop1+"\n";
+				}
+				else if(node.get(1).getFunction().equals("number")) {
+					retour += "LIT 1\n";
+					retour += node.get(1).translate(addrVariable);
+					retour += "IP 2 0 1 "+Config.IP_buffer_out+"\n";
+				}
 				through = false;
 			}
 			

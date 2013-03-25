@@ -34,7 +34,12 @@ public class MyTableModel extends AbstractTableModel{
 
 	public int getRowCount() {return stack.size();}
 
-	public Object getValueAt(int arg0, int arg1) {return data[arg0][arg1];}
+	public Object getValueAt(int arg0, int arg1) {
+		if(arg0 < data.length && arg1 < data[0].length)
+			return data[arg0][arg1];
+		else
+			return "";
+		}
 
 	public void setStack(Object arg1) {init((Stack<Integer>) arg1);}
 	

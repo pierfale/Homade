@@ -59,7 +59,7 @@ public class Words {
 			int cursorWl = 0;
 			int oldCursorWl = 0;
 			boolean ok = true;
-			if(wl.size() < words.get(i).length)
+			if(wl == null || wl.size() < words.get(i).length)
 				ok = false;
 			for(int j=0; ok && j<words.get(i).length; j++) {
 				if(words.get(i)[j].isTerminal()) {

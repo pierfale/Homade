@@ -1,6 +1,9 @@
 int function main() {
-	string s = "helloworld";
-	display s;
+	int n = 0;
+	if(n < 10) {
+		display 1;
+	}
+
 }
 
 

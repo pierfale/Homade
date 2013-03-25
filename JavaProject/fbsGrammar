@@ -55,6 +55,7 @@ boolean_expresion		:= 	"(" boolean_expresion ")"
 						|	boolean
 						|	number op_compare number
 						|	boolean_expresion op_logic boolean_expresion
+						| 	"!" boolean_expresion
 							
 op_compare				:= 	"<"
 						|	">"
@@ -100,7 +101,9 @@ integer					:= [(0-9)+]
 
 decimal					:= [(0-9)+(.)(0-9)+]
 
-string					:= [(")(a-zA-Z0-9)*(")]
+string					:=	"_STRING"
+						|	variable
+						|	call_function
 
 entities				:=	number
 						|	string

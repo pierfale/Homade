@@ -16,68 +16,60 @@ import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
 public class Main {
 	
 	public static void main(String [] args) {
-		Date d = new Date();
-
-		Rapport.newRapport("rapport-"+(new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss")).format(d)+".html");
-		long beg = System.currentTimeMillis();
-		try {
-			if(Grammar.load("fbsGrammar")) {
-				
-				if(args.length == 0) {
-					System.out.println("Aucun fichier en entré");
-				}
-				
-				for(String s : args) {
-					ReadFile reader = new ReadFile(s);
-					WordList wl = Lexer.exec(reader.getString());
-					if(wl == null) {
-						Rapport.addLineError("La reconnaissance du lexique a échoué");
-						System.out.println("La reconnaissance du lexique a échoué");
-						break;
-					}		
-					WordTree wt = Parser.exec(wl);
-					if(wt == null || wl.size() > wt.size()) {
-						Rapport.addLineError("La reconnaissance de la syntaxe a échoué");
-						System.out.println("La reconnaissance de la syntaxe a échoué");
-						break;
-					}
-					else {
-						Rapport.addLine(wt.display());
-						if(Check.exec(wt)) {
-							Translation.exec("out.asm", wt);
-							Rapport.addLineSuccess("La compilation s'est terminé avec succès!<br />Resultat : <br />");
-							
-							System.out.println("La compilation s'est terminé avec succès!");
-							
-							
-							//test en direct
-							
-							String [] argsMain = new String[1];
-							argsMain[0] = "out.asm";
-							fr.lifl.iuta.compilator.base.Main.main(argsMain);
+		Rapport.gen = false;
+		Config.use_ip_freeMemory = false;
+		String input = "", output = "out.asm", grammar = "fbsGrammar";
+		for(int i=0; i<args.length; i++) {
+			System.out.println(args[i]);
+			if(args[i].charAt(0) == '-') {
+				if(args[i].length() > 1) {
+					if(args[i].equals("-r") || args[i].equals("--rapport")) { //rapport
+						Rapport.gen = true;
+						if(i+1<args.length && args[i+1].charAt(0) != '-' && i+2<args.length)  {//name
+							Rapport.newRapport(args[i+1]);
+							i++;
 						}
 						else {
-							Rapport.addLineError("La vérification des types a échoué");
-							System.out.println("La vérification des types a échoué");
+							Date d = new Date();
+							Rapport.newRapport("rapport-"+(new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss")).format(d)+".html");
 						}
+					}
+					else if(args[i].equals("-u") || args[i].equals("--useipmemory")) { //use_ip_freeMemory
+						Config.use_ip_freeMemory = true;
+					}
+					else if(args[i].equals("-o") || args[i].equals("--output")) {
+						if(i+1<args.length && args[i+1].charAt(0) != '-' && i+2<args.length) {
+							output = args[i+1];
+							i++;
+						}
+						else
+							System.out.println("Aucun fichier spécifié en sortie");
+					}
+					else if(args[i].equals("-g") || args[i].equals("--grammar")) {
+						if(i+1<args.length && args[i+1].charAt(0) != '-' && i+2<args.length) {
+							grammar = args[i+1];
+							i++;
+						}
+						else
+							System.out.println("Aucun fichier spécifié pour la grammaire");
 					}
 				}
 			}
 			else {
-				Rapport.addLineError("Le traitement de la configuration de la grammaire a échoué");
-				System.out.println("Le traitement de la configuration de la grammaire a échoué");
+				if(input.equals(""))
+					input = args[i];
+				else
+					System.out.println("Argument(s) inccorecte(s) (plusieurs fichiers en entrée ?)");
 			}
-				
-			
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
 		}
-
-
-		System.out.println("compilation terminé en "+((double)(System.currentTimeMillis()-beg)/1000.0)+" seconds");
-		Rapport.close();
-
 		
+		if(!input.equals("")) {
+			Exec.exec(input, output, grammar);
+		}
+		else
+			System.out.println("Aucun fichier en entrée");
+		
+		Rapport.close();
 	}
 
 }

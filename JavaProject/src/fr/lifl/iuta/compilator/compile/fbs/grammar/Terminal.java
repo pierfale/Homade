@@ -28,6 +28,8 @@ public class Terminal implements Word {
 	}
 
 	public boolean equals(String s) {
+		if(word.equals("_STRING") && s.charAt(0) == '"' && s.charAt(s.length()-1) == '"')
+			return true;
 		if(preg_match) {
 			return Match.equals(word, s);
 		}
@@ -37,6 +39,8 @@ public class Terminal implements Word {
 
 
 	public WordTree match(WordList wl, boolean infinite) {
+		if(word.equals("_STRING") && wl.get(0).getContents().charAt(0) == '"' && wl.get(0).getContents().charAt(wl.get(0).getContents().length()-1) == '"')
+			return new WordTree(new Token(wl.get(0).getContents(), wl.get(0).getLine()));
 		if(preg_match) {
 			if(wl.size() == 1 && Match.equals(word, wl.get(0).getContents())) {
 				//System.out.println("match succes : "+wl.get(0).getContents()+"="+word);

@@ -42,8 +42,9 @@ public class IpOut extends AbstractIP {
 	 */
 	public int [] add(int [] in){
 		int [] out = new int[0];
-		if(in[1] == 0) //char
+		if(in[1] == 0) { //char
 			BufferOut.add((char)in[0]);
+		}
 		if(in[1] == 1) {//integer
 			String tmp = ""+in[0];
 			for(int i=0; i<tmp.length(); i++)

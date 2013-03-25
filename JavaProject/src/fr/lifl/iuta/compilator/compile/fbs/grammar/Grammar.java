@@ -149,6 +149,15 @@ public class Grammar {
 		return null;
 	}
 	
+	public static Words search(String name) {
+		for(int i=0; i<words.size(); i++) {
+			if(words.get(i).getName().equals(name)) {
+				return words.get(i);
+			}
+		}
+		return null;
+	}
+	
 
 
 }

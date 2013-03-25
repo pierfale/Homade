@@ -181,14 +181,14 @@ public class NumberTranslate {
 	}
 	
 	public static String exec(WordTree node, Map<String, MemoryBlock> addrVariable) {
-		Rapport.addLine("===begin===");
+		Rapport.addLine("===begin=n=");
 		Rapport.add("Traduction chaine numérique "+node.display());
 		WordTree tmp = createList(node);
 		Rapport.add("Etape intermédiare"+tmp.display());
 		WordTree tmp2 = createTree(createList(node), 1);
 		Rapport.add("Etape Final"+tmp2.display()+"<br />");
 		String retour = translate(tmp2, addrVariable);
-		Rapport.addLine("Traduction : <br />"+Util.lnToHTML(retour)+"====end=====");
+		Rapport.addLine("Traduction : <br />"+Util.lnToHTML(retour)+"====end=n===");
 		return retour;
 	}
 	

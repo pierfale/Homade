@@ -9,7 +9,6 @@ public class FunctionTranslate {
 	
 	public static String translate(WordTree tree, Map<String, MemoryBlock> addrVariable) {
 		String beforeArg = "", afterArg = "", args = "";
-		ParameterManager.init();
 		beforeArg += VariableManager.createFrame(MemoryBlock.nextFreeSegment(addrVariable));
 		afterArg += "CALL _FUN_"+tree.getNode(0).getToken().getContents()+"\n";
 		afterArg += VariableManager.deleteFrame();

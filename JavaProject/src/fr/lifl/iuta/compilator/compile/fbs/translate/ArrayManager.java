@@ -13,7 +13,7 @@ public class ArrayManager {
 		if(wt.size() == 2 && wt.getNode(0).getToken().getContents().equals("array")) { //if : array n;
 			//create array
 			int addr = MemoryBlock.nextFreeSegment(addrVariable);
-			addrVariable.put(""+addr, new MemoryBlock(addr, 1));
+			addrVariable.put(""+addr, new MemoryBlock(addr, 1, ""));
 			if(Config.use_ip_freeMemory) {
 				retour += "LIT "+Config.ram_paging_adress+"\n";
 				retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
@@ -77,7 +77,7 @@ public class ArrayManager {
 				}
 			}
 			int addr = MemoryBlock.nextFreeSegment(addrVariable);
-			addrVariable.put(""+addr, new MemoryBlock(addr, 1));
+			addrVariable.put(""+addr, new MemoryBlock(addr, 1, ""));
 			if(Config.use_ip_freeMemory) {
 				retour += "LIT "+Config.ram_paging_adress+"\n";
 				retour += "IP 1 1 1 "+Config.IP_get_variable_RAM_32+"\n";
