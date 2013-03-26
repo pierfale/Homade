@@ -27,7 +27,7 @@ public class GraphicsDebug extends JPanel{
 	
 	private JTextPane code;
 	
-	public GraphicsDebug() throws UnknownInstructionException{
+	public GraphicsDebug(GraphicsConsole console) throws UnknownInstructionException{
 		super(new BorderLayout());code = new JTextPane();
 		this.code.setBorder(new TitledBorder("Debug"));
 		
@@ -36,15 +36,14 @@ public class GraphicsDebug extends JPanel{
 		boutons.add(stepByStep);
 		JButton read = new JButton("read");	
 		JSpinner saisis = new JSpinner(new SpinnerNumberModel(0,0,getMaxPc(),1));
-		ButtonListener listener2 = new ButtonListener(this.code,saisis);
+		ButtonListener listener2 = new ButtonListener(this.code,saisis,console);
 		read.addActionListener(listener2);
 		boutons.add(read);
-		ButtonListener listener = new ButtonListener(this.code,saisis);
+		ButtonListener listener = new ButtonListener(this.code,saisis, console);
 		stepByStep.addActionListener(listener);
 		JLabel breakpoint = new JLabel("BreakPoint :");
 		boutons.add(breakpoint);boutons.add(saisis);
 		this.add(boutons,BorderLayout.NORTH);
-		
 
 		this.code.setEditable(false);
 		this.code.setText(ParserR.BinToAsm(RAM.getMemory()));
@@ -62,24 +61,5 @@ public class GraphicsDebug extends JPanel{
 			e.printStackTrace();
 		}
 		return cpt;
-	}
-	
-	
-	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-		} catch (Exception e) {}
-		JFrame f = new JFrame("DebugTest");
-		Main.main(new String [] {"test01"});
-
-		try {
-			f.setContentPane(new GraphicsDebug());
-		} catch (UnknownInstructionException e) {
-			e.printStackTrace();
-		}
-		f.setVisible(true);
-		f.setSize(150,150);
-		f.setLocation(500,500);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
 	}
 }

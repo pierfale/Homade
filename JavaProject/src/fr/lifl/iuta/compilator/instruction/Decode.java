@@ -4,6 +4,13 @@ import fr.lifl.iuta.compilator.exception.UnknownInstructionException;
 import fr.lifl.iuta.compilator.ip.BusIP;
 import fr.lifl.iuta.compilator.processor.Processor;
 
+/**
+ * 
+ * @author danglotb
+ *	
+ *	Classe qui décode le code binaire pour en extraire la bonne instruction ou l'ip a appellée.
+ *
+ */
 public class Decode {
 	
 	public static Instruction decode(long instructions, int offset) throws UnknownInstructionException {
@@ -36,6 +43,9 @@ public class Decode {
 			return new InstructionLIT(instruction & 0x0FFF);
 		} else if ((instruction & 0xF000) == 0x3000){
 			return null;
+			/*
+			 * L'instruction WIM n'a pas été implementée.
+			 */
 			//return new InstructionWim(instruction & 0x0FFF, instructions);
 		} else {
 			throw new UnknownInstructionException(String.format("%x", instruction));

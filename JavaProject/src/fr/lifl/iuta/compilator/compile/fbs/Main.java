@@ -1,26 +1,30 @@
 package fr.lifl.iuta.compilator.compile.fbs;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import fr.lifl.iuta.compilator.compile.fbs.check.Check;
-import fr.lifl.iuta.compilator.compile.fbs.grammar.Grammar;
-import fr.lifl.iuta.compilator.compile.fbs.grammar.Lexer;
-import fr.lifl.iuta.compilator.compile.fbs.grammar.Match;
-import fr.lifl.iuta.compilator.compile.fbs.grammar.Parser;
-import fr.lifl.iuta.compilator.compile.fbs.grammar.WordList;
-import fr.lifl.iuta.compilator.compile.fbs.translate.Translation;
-import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
+/**
+ * 
+ * @author falezp
+ * 
+ * Execute la ligne de commande.
+ * interprete les différentes options
+ *
+ */
 
 public class Main {
 	
 	public static void main(String [] args) {
 		Rapport.gen = false;
 		Config.use_ip_freeMemory = false;
-		String input = "", output = "out.asm", grammar = "fbsGrammar";
+		String input = "", output = "";
+		InputStream grammar;
+		grammar = Main.class.getResourceAsStream("/fbsGrammar");
 		for(int i=0; i<args.length; i++) {
-			System.out.println(args[i]);
 			if(args[i].charAt(0) == '-') {
 				if(args[i].length() > 1) {
 					if(args[i].equals("-r") || args[i].equals("--rapport")) { //rapport
@@ -47,7 +51,11 @@ public class Main {
 					}
 					else if(args[i].equals("-g") || args[i].equals("--grammar")) {
 						if(i+1<args.length && args[i+1].charAt(0) != '-' && i+2<args.length) {
-							grammar = args[i+1];
+							try {
+								grammar = new FileInputStream(new File(args[i+1]));
+							} catch (FileNotFoundException e) {
+								e.printStackTrace();
+							}
 							i++;
 						}
 						else
@@ -64,6 +72,9 @@ public class Main {
 		}
 		
 		if(!input.equals("")) {
+			if(output.equals("")) {
+				output = input+".asm";
+			}
 			Exec.exec(input, output, grammar);
 		}
 		else

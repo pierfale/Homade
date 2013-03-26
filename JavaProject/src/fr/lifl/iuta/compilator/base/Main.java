@@ -35,9 +35,9 @@ public class Main {
 		} catch (IncorrectFormatSourceException e) {
 			e.printStackTrace();
 		}
-		//fr.lifl.iuta.compilator.graphics.GraphicsConsole.main(null);
-		Processor.setOn(true);
+		fr.lifl.iuta.compilator.graphics.GraphicsConsole.main(null);
+		//Processor.setOn(true);
 		//lancement du processeur
-		//Processor.start();
+		Processor.start();
 	}
 }

@@ -1,11 +1,16 @@
 package fr.lifl.iuta.compilator.compile.fbs.translate;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import fr.lifl.iuta.compilator.compile.fbs.Config;
-
+/**
+ * 
+ * @author falezp
+ * 
+ * Représente un block dans la RAM (offset par rapport a la frame courante)
+ * Permet de récupérer le prochain block libre
+ *
+ */
 public class MemoryBlock {
 	
 	private int address;
@@ -31,8 +36,6 @@ public class MemoryBlock {
 	}
 	
 	public static int nextFreeSegment(Map<String, MemoryBlock> memory) {
-		System.out.println("mem:");
-		MemoryBlock.display(memory);
 		int currAddr = 0;
 		boolean ok = true;
 		while(true) {
@@ -51,13 +54,13 @@ public class MemoryBlock {
 		}
 		
 	}
-	
+	/*
 	public static void display(Map<String, MemoryBlock> addrVariable) {
 		Iterator<String> it = addrVariable.keySet().iterator();
 		while(it.hasNext()) {
 			String curr = it.next();
 			System.out.println("var : "+curr+" => "+addrVariable.get(curr).getAddress()+" : "+addrVariable.get(curr).getSize());
 		}
-	}
+	}*/
 
 }

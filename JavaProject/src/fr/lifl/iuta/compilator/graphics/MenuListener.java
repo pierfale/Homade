@@ -16,15 +16,43 @@ public class MenuListener implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		System.out.println("MenuListener : " + e.getActionCommand());
+
+//		switch(e.getActionCommand()){
+//		case "New File" :
+//			String s = JOptionPane.showInputDialog("Entrez un chemin");
+//			if(s == null){System.out.println("merde");}
+//			else{
+//				System.out.println( vue.getPan().getCell1());
+//				vue.getPan().getCell1().addOnglet(s);
+//			}
+//			break;
+//		case "Quit" : 
+//			System.exit(0);
+//			break;
+//		case "IDE" : 
+//			vue.remove(vue.getPan());
+//			vue.setPanel(new Panel());
+//			break;
+//		case "Debug" : 
+//			vue.remove(vue.getPan());
+//			vue.setPanel(new GraphicsViewDebug());
+//			break;
+//		}
 		if(e.getActionCommand().equals("New File")){
+			//new NewFileWindow(vue).getText();
 			String s = JOptionPane.showInputDialog("Entrez un chemin");
-			if(s != null){
+			if(s == null){System.out.println("merde");}
+			else{
+				System.out.println( vue.getPan1().getPanelsec().getCell1());
 				vue.getPan1().getPanelsec().getCell1().addOnglet(s);
 			}
 		}else if(e.getActionCommand().equals("Open File")){
 			JFileChooser chooser = new JFileChooser();
-           if(chooser.showOpenDialog(null)== 0)
-            vue.getPan1().getPanelsec().getCell1().addOnglet(chooser.getSelectedFile().getAbsolutePath());            
+           int tmp = chooser.showOpenDialog(null);
+           if(tmp == 0)
+            vue.getPan1().getPanelsec().getCell1().addOnglet(chooser.getSelectedFile().getAbsolutePath());
+            
 		}else if(e.getActionCommand().equals("Save")){
 			new Listenr(vue).actionPerformed(new ActionEvent(new Object(), 0, "Save"));
 		}else if (e.getActionCommand().equals("Quit")){		

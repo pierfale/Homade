@@ -7,6 +7,12 @@ import fr.lifl.iuta.compilator.processor.BufferOut;
 import fr.lifl.iuta.compilator.processor.Processor;
 import fr.lifl.iuta.compilator.processor.RAM;
 
+/**
+ * 
+ * @author falezp
+ * Cette IP permet de gérer l'affichage sur la console.
+ * 
+ */
 public class IpOut extends AbstractIP {
 	
 	public void exec() throws InstructionFailedException {

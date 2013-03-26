@@ -1,5 +1,11 @@
 package fr.lifl.iuta.compilator.compile.fbs;
 
+/**
+ * 
+ * @author falezp
+ *
+ *Fichier de configuration du compilateur
+ */
 public class Config {
 	
 	//CONSTANTE

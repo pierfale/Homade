@@ -8,13 +8,24 @@ import java.util.Stack;
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Grammar;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Token;
-import fr.lifl.iuta.compilator.compile.fbs.grammar.WordList;
 import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
+
+/**
+ * 
+ * @author falezp
+ * 
+ * Vérifie la cohérence des variables :
+ * 	-unicité (seulement le nom)
+ * 	-existance
+ * 	-portée
+ *
+ */
 
 public class VariableCheck {
 	
 	
 
+	@SuppressWarnings("unchecked")
 	public static ArrayList<Variable> exec(WordTree wt, ArrayList<Variable> variables, Stack<WordTree> stack) {
 		ArrayList<Variable> retour = new ArrayList<Variable>();
 		Rapport.addLine(wt.getToken().getContents()+" ("+wt.getFunction()+") [nb var="+variables.size()+"] : ");
@@ -51,7 +62,6 @@ public class VariableCheck {
 			Rapport.addLineSuccess("variable : "+t.getContents()+"<br />");
 			
 			WordTree lastNode = stack.pop();
-			System.out.println(">"+stack.peek().getFunction());
 			while(Variable.isTypeFunction(stack.peek())) {
 				lastNode = stack.pop();
 			}
@@ -62,7 +72,6 @@ public class VariableCheck {
 			Map<String, String> types = new HashMap<String, String>();
 			types.put("string", "string");
 			types.put("int", "number");
-			System.out.println(type);
 			WordTree ret = Grammar.search(types.get(type)).match(lastNode.toList(), false);
 			if(ret != null) {
 				lastNode.set(ret);

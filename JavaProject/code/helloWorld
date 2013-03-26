@@ -1,0 +1,3 @@
+int function main() {
+	display "hello world";
+}

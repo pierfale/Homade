@@ -1,8 +1,13 @@
 package fr.lifl.iuta.compilator.compile.fbs.translate;
 
-import java.awt.geom.IllegalPathStateException;
-
 import fr.lifl.iuta.compilator.compile.fbs.Config;
+
+/**
+ * 
+ * @author falezp
+ *
+ * Contient les listes d'instructions nécéssaire a l'intéraction avec les varaibles stockées en RAM
+ */
 
 public class VariableManager {
 

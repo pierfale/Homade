@@ -52,6 +52,7 @@ public class Processor extends MyObservable{
 		core = new Core();
 		stack = new Stack<Integer>();
 		stackFunction = new Stack<Integer>();
+		BusIP.removeAllIP();
 	}
 	
 	public static void loadIPS(IPConfig ips) {
@@ -68,13 +69,6 @@ public class Processor extends MyObservable{
 		while(on) {
 			pulse();
 		}
-		/*
-		long [] mem = RAM.getMemory();
-		for(int i=0; i<mem.length; i++) {
-			String tmp = String.format("%x",mem[i]);
-			tmp = Util.fill(tmp);
-			System.out.println(i+ "\t"+tmp);
-		}*/
 	}
 	
 	public static void stop() {

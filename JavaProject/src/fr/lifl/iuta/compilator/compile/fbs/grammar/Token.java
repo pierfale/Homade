@@ -1,5 +1,12 @@
 package fr.lifl.iuta.compilator.compile.fbs.grammar;
 
+/**
+ * 
+ * @author falezp
+ * 
+ * Représente un mot du langage avec une fonction non-déterminé
+ *
+ */
 public class Token {
 	
 	private static final String [][] bracket  = {	{"{", "}"},

@@ -3,10 +3,18 @@ package fr.lifl.iuta.compilator.compile.fbs.translate;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+/**
+ * 
+ * @author falezp
+ *
+ * Singleton qui gere les labels :
+ * lorsque l'ensemble des instructions ont été généré, les label
+ * detecté sont transformé en numéro d'instruction
+ */
 
 public class LabelManager {
 	
@@ -69,7 +77,6 @@ public class LabelManager {
 			e1.printStackTrace();
 		}
 		
-		System.out.println("--------------------\n"+display);
 		String out2 = out;
 		reader = new BufferedReader(new StringReader(out2));
 		out = "";
@@ -96,7 +103,6 @@ public class LabelManager {
 						out += ""+(lbl.get(""+(curr.substring(4))));
 					else
 						out += ""+(lbl.get(""+(curr.substring(4)))-nbLine-1);
-					System.out.println(curr+" : "+lbl.get(""+(curr.substring(4)))+" line : "+nbLine);
 					
 				}
 				else

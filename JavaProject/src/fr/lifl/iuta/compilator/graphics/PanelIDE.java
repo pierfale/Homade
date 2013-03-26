@@ -13,7 +13,6 @@ public class PanelIDE extends JPanel {
 	public PanelIDE(Vue vue){
 		super(new BorderLayout());
 		this.vue = vue;
-		this.setName("IDE");
 		
 		outils = new  BarreOutils(this.vue," Tools Bar ", 0); 
 		pan = new Panelsec();

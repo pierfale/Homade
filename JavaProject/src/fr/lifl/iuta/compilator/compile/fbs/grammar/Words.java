@@ -1,11 +1,18 @@
 package fr.lifl.iuta.compilator.compile.fbs.grammar;
 
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.Stack;
 
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
 import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
+
+/**
+ * 
+ * @author falezp
+ *
+ *Représente une liste de régle d'un mot non-terminal
+ *Contient également l'algorithme utilisé dans la phase de parsing
+ */
 
 public class Words {
 	
@@ -43,6 +50,7 @@ public class Words {
 		return infinite;
 	}
 
+	@SuppressWarnings("unused")
 	public WordTree match(WordList wl, boolean infinite) {
 		Rapport.add("<ul><li>"+name+"("+words.size()+","+infinite+")=>"+wl+"</li>");
 		WordTree retour = new WordTree();

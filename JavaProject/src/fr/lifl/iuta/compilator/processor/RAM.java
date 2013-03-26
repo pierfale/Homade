@@ -4,6 +4,11 @@ import fr.lifl.iuta.compilator.exception.InvalideAdressException;
 import fr.lifl.iuta.compilator.exception.UnloadedRAMException;
 import fr.lifl.iuta.compilator.graphics.MyObservable;
 
+/**
+ * 
+ * @author falezp
+ * Class qui represente la RAM.
+ */
 public class RAM extends MyObservable{
 	
 	private static final int blockMemoryAllocSize = 1024;

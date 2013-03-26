@@ -4,9 +4,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
+
+/**
+ * 
+ * @author falezp
+ * 
+ * Singleton contenant la liste des fonctions associée à lun label
+ *
+ */
 
 public class FunctionManager {
 
@@ -35,7 +42,6 @@ public class FunctionManager {
 	}
 	
 	public static String replace(String in) {
-		System.out.println(in);
 		String out = "";
 		BufferedReader reader = new BufferedReader(new StringReader(in));
 		String line = "";
@@ -64,6 +70,7 @@ public class FunctionManager {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			sc.close();
 		}
 		try {
 			reader.close();
@@ -72,12 +79,12 @@ public class FunctionManager {
 		}
 		return out;
 	}
-	
+	/*
 	public static void dipslay() {
 		Iterator<String> it = list.keySet().iterator();
 		while(it.hasNext()) {
 			String curr = it.next();
 			System.out.println("fun : "+curr+" => "+list.get(curr));
 		}
-	}
+	}*/
 }

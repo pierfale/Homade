@@ -2,14 +2,17 @@ package fr.lifl.iuta.compilator.compile.fbs;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Scanner;
-import java.util.regex.Pattern;
 
-import fr.lifl.iuta.compilator.compile.fbs.grammar.Grammar;
+/**
+ * 
+ * @author falezp
+ * 
+ * Lit le contenu d'un fichier et le retourne sous forme de String
+ *
+ */
 
 public class ReadFile {
 	

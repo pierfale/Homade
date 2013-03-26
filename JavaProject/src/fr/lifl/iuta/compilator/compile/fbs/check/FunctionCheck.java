@@ -4,8 +4,17 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
-import fr.lifl.iuta.compilator.compile.fbs.translate.NumberTranslate;
 import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
+
+/**
+ * 
+ * @author falezp
+ *
+ * Vérifie la cohérence des fonctions (nom, type des parametres) :
+ * 	-l'unicité de celle-ci
+ * 	-l'existance lors des appelles de fonction
+ * 
+ */
 
 public class FunctionCheck {
 	

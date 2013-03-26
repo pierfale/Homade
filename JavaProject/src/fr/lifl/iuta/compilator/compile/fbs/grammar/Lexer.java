@@ -2,10 +2,19 @@ package fr.lifl.iuta.compilator.compile.fbs.grammar;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
+
+/**
+ * 
+ * @author falezp
+ * 
+ * Etape de reconnaissance du lexique
+ * Prend en entrée un String contenant le source
+ * Retourne une liste de Token
+ *
+ */
 
 public class Lexer {
 	

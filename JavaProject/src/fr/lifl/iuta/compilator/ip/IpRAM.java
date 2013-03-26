@@ -6,6 +6,11 @@ import fr.lifl.iuta.compilator.exception.UnloadedRAMException;
 import fr.lifl.iuta.compilator.processor.Processor;
 import fr.lifl.iuta.compilator.processor.RAM;
 
+/**
+ * 
+ * @author danglotb
+ *	Cette IP permet de gérer directement l'état de la RAM : en 32bits ou en 64bits.
+ */
 public class IpRAM extends AbstractIP {
 	
 	public void exec() throws InstructionFailedException {

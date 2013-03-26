@@ -17,8 +17,11 @@ public class ButtonListener implements ActionListener, Runnable{
 	
 	private JTextPane code;
 	private JSpinner breakPoint;
+	private GraphicsConsole console;
 	
-	public ButtonListener(JTextPane code, JSpinner breakPoint){this.code=code;this.breakPoint = breakPoint;}
+	public ButtonListener(JTextPane code, JSpinner breakPoint, GraphicsConsole console){
+		this.code=code;this.breakPoint = breakPoint;this.console = console;
+	}
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand()=="sBs"){
@@ -57,9 +60,9 @@ public class ButtonListener implements ActionListener, Runnable{
 		this.code.getHighlighter().removeAllHighlights();
 		 while(Util.getNbLine(Processor.getPC()) != (Integer)this.breakPoint.getValue()-1 && Processor.isOn()) {
 			stepByStep();
-			try {Thread.sleep(80);}
+			try {Thread.sleep(50);}
 			catch (InterruptedException e) {e.printStackTrace();}
 		}
-		
+		 console.refresh();
 	}
 }

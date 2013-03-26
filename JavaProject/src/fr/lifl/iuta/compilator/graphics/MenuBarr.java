@@ -27,7 +27,6 @@ public class MenuBarr extends JMenuBar{
 	private JMenuItem iDoc  = new JMenuItem("Fbs Doc");
 
 	private JMenu mRun = new JMenu("Run");
-	private JMenuItem iCompil = new JMenuItem("Compiler");
 	private JMenuItem iRun  = new JMenuItem("Run");
 	private JMenuItem iStop = new JMenuItem("Stop");
 	
@@ -57,8 +56,6 @@ public class MenuBarr extends JMenuBar{
 		this.mNFile.add(this.iOther);
 		iOther.addActionListener(listener);
 
-		this.mRun.add(this.iCompil);
-		iRun.addActionListener(listener);
 		this.mRun.add(this.iRun);
 		iRun.addActionListener(listener);
 		this.mRun.add(this.iStop);

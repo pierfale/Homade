@@ -1,9 +1,14 @@
 package fr.lifl.iuta.compilator.compile.fbs.grammar;
 
-import java.util.regex.Pattern;
-
-import fr.lifl.iuta.compilator.compile.fbs.Rapport;
 import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
+
+/**
+ * 
+ * @author falezp
+ * 
+ * Représente un mot terminal (contient une chaine de caractere ou une expression à matcher)
+ *
+ */
 
 public class Terminal implements Word {
 	

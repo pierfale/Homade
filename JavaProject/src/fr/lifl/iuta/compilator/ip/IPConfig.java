@@ -12,6 +12,15 @@ import java.util.Set;
 
 import fr.lifl.iuta.compilator.exception.IncorrectFormatSourceException;
 
+/**
+ * 
+ * @author danglotb
+ * 
+ * IPConfig doit chargé les ips refléxivement a partir du String pathname passer a sa construction.
+ * Les ips doivent être définis de la manière suivante :
+ * 		Numéro d'ip" "Masque" class("chemin vers l'ip") "short | "" "
+ *
+ */
 public class IPConfig {
 	
 	private Map<String, Integer> positions;
@@ -82,20 +91,12 @@ public class IPConfig {
 			
 	}
 	
-	public Set<String> getKeys() {
-		return ips.keySet();
-	}
+	public Set<String> getKeys() {return ips.keySet();}
 	
-	public int getPosition(String key) {
-		return positions.get(key);
-	}
+	public int getPosition(String key) {return positions.get(key);}
 	
-	public AbstractIP getIP(String key) {
-		return ips.get(key);
-	}
+	public AbstractIP getIP(String key) {return ips.get(key);}
 	
-	public boolean isShort(String key) {
-		return shorts.get(key);
-	}
+	public boolean isShort(String key) {return shorts.get(key);}
 
 }

@@ -18,10 +18,9 @@ public class SearchListener implements ActionListener{
 
 	private JTextField field;
 	private JTextPane pane;
-	private JScrollPane scroll;
 
-	public SearchListener(JTextField field, JTextPane pane, JScrollPane scroll){
-		this.field = field;this.pane = pane;this.scroll = scroll;
+	public SearchListener(JTextField field, JTextPane pane){
+		this.field = field;this.pane = pane;
 	}
 
 	public void actionPerformed(ActionEvent e) {

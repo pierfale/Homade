@@ -47,7 +47,7 @@ public class GraphicsRAM extends JPanel implements Observer{
 		panelInt.setLayout(bInt);
 		JLabel searchLabel = new JLabel("Rechercher :");
 		JTextField input = new JTextField();
-		SearchListener listener = new SearchListener(input,text,scrollPane);
+		SearchListener listener = new SearchListener(input,text);
 		input.addActionListener(listener);
 		panelInt.add(searchLabel,b.WEST);panelInt.add(input,b.CENTER);
 		this.add(panelInt,b.SOUTH);

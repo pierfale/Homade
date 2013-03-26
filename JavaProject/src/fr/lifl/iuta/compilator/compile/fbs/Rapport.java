@@ -4,6 +4,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * 
+ * @author falezp
+ * 
+ * Gere le rapport de compilation
+ *
+ */
 public class Rapport {
 	
 	public static boolean gen = true;

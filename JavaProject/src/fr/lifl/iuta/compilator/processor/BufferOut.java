@@ -8,7 +8,6 @@ import java.util.concurrent.Semaphore;
 public class BufferOut {
 	
 	private LinkedBlockingQueue<Character> buffer;
-	private Semaphore sem;
 
 	private static BufferOut instance = null;
 	
@@ -21,29 +20,15 @@ public class BufferOut {
 	public static void init() {
 		instance = new BufferOut();
 		instance.buffer = new LinkedBlockingQueue<Character>();
-		instance.sem = new Semaphore(1, true);
 	}
 	
-	public synchronized static void add(char value) {
-		try {
-			getInstance().sem.acquire();
-			getInstance().buffer.offer(value);
-			getInstance().sem.release();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
+	public static void add(char value) {
+		getInstance().buffer.offer(value);
 	}
 	
 	public synchronized static  char next() {
 		char n = 0;
-		try {
-			getInstance().sem.acquire();
-			n = getInstance().buffer.poll();
-			getInstance().sem.release();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} 
+		n = getInstance().buffer.poll();
 		return n;
 	}
 	

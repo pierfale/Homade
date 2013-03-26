@@ -3,6 +3,13 @@ package fr.lifl.iuta.compilator.processor;
 import fr.lifl.iuta.compilator.exception.InstructionFailedException;
 import fr.lifl.iuta.compilator.instruction.Instruction;
 
+/**
+ * 
+ * @author falezp
+ *
+ * Class qui reprensente un coeur. 
+ */
+
 public class Core {
 	
 	public Core() {

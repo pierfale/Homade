@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Instructions machine</title>
+    <meta name="generator" content="amaya, see http://www.w3.org/Amaya/">
+    <link href="../../../../../Program%20Files/Amaya/amaya/amaya.css"
+      rel="stylesheet" type="text/css">
+  </head>
+  <body style="color: rgb(0, 0, 0);" alink="#EE0000" lang="fr"
+    link="#0000EE" vlink="#551A8B">
+    <div id="header"> <br>
+      <a name="debut"></a><br>
+      <h1 style="background-color: rgb(0, 0, 153);" id="title"><a
+          href="index.html"><img alt="accueil" title="retour accueil"
+            src="figure%20html/btnHomePage3.png" style="border: 0px
+            solid; width: 47px; height: 47px;" border="0" height="512"
+            width="512"></a><span style="color: rgb(255, 255, 51);">Instructions
+
+
+
+
+          machine</span>&nbsp;<small style="color: rgb(255, 255, 51);"><small><small><a
+                name="Site" id="Site"
+                href="file:///Z:/Homade/homade_instruction.html#L113"><strong><span
+                    style="color: rgb(255, 255, 204);"></span></strong></a><a
+                style="color: rgb(255, 255, 204);" href="#L113">Instruction
+
+
+
+
+
+                IP<br>
+              </a></small></small></small></h1>
+    </div>
+    <div id="intro" class="section">
+      <h3>Format des instructions</h3>
+      <p>Homade propose un jeu d'instruction Hyper réduit à 12
+        instructions. Toutes les instructions sont codées sur des mots
+        de 16 bits. Pour certaine instructions, il faudra 2 voire 3 mots
+        de 16 bits de plus pour ranger poids forts et poids faible à la
+        suite de l’instruction(codage Big Endian) ou instructions de
+        reconfiguration.&nbsp; On parlera d’instructions étendues</p>
+      <p>Pour le rangement en mémoire, on utilise des mots de 64 bits en
+        big endian également. La première instruction sur les bits de
+        poids forts, puis la seconde etc… On obtient donc 4 mots de 16
+        bits à chaque lecture mémoire d’instruction. Un mots de 64 bits
+        représente pour le compteur ordinal 4 adresses alors qu'il ne
+        représente qu'un seule adresse pour la mémoire d’instruction.<br>
+      </p>
+      <p>Les instructions étendues sont nécessairement alignées sur les
+        poids fort du mot mémoire de 64 bits.</p>
+      <p></p>
+      <p><img alt="" src="figure%20html/b64.png" height="169"
+          width="501"></p>
+      <p></p>
+      <h2><a name="L4041" id="L4041"></a><a name="L113" id="L113"></a>Déclenchement
+
+
+
+
+
+
+
+        d'IPs</h2>
+      <p>Cette instruction unique permet de déclencher jusque 2048 (-1
+        que l’on verra plus tard) IP différents. Elle permet
+        d’identifier le nombre de données dépilées de la pile du
+        processeur en début d’exécution, nombre de données empilées sur
+        la pile en fin d‘exécution, le numéro de l’IP à déclencher.</p>
+      <p></p>
+      <p>Son format et donc le suivant, il est sur 16 bits :</p>
+      <p><img alt="" src="figure%20html/IP.png" height="90" width="542"></p>
+      <p>•XX : POP 0, 1, 2 ou 3 valeurs retirées de la pile vers l’IP</p>
+      <p>•YY : PUSH 0, 1, 2 ou 3 valeurs envoyées par l’IP sur la pile</p>
+      <p>•S : 0 indique un IP qui s’exécute en moins d’un cycle :
+        Short_IP. 1 signifie que l’IP s’exécute sur plus de 1 cycle :
+        Long_IP. L'activation du&nbsp; signal IPdone est nécessairement
+        déclenché par l'IP pour signaler la fin d’exécution. Deux codes
+        VHDL sont donnés en exemple dans la partie <span
+          style="font-style: italic;">bibliothèque d'IPs/ Construction
+          d'IP</span> pour chacune de ces valeurs.<br>
+      </p>
+      <p>•IIIIIIIIII : sur 10 bits, le numéro de l’Ip à déclencher. On a
+        donc 1024 IP en un cycle et 1024 IP en plus de un cycle.</p>
+      <h3>Exemples d’instructions IP</h3>
+      <p>‘1_10_01_0_0000000001’ déclenche l’IP 0_0000000001 qui dépile
+        les deux sommets de pile et empile le résultat en moins d’un
+        cycle.</p>
+      <p>‘1_00_01_0_0000000001’ déclenche le même IP 0_0000000001 sans
+        dépiler les deux sommets de pile et empile le même résultat que
+        précédemment en moins d’un cycle.</p>
+      <p>‘1_00_01_1_0000000001’ déclenche l’IP 1_0000000001 sans rien
+        dépiler et empile son résultat après un certain nombre de cycles
+        non connu à l’avance et supérieur ou égal à 2 cycles.</p>
+      <p></p>
+      <h3>IPs interdits</h3>
+      <p>L’IP de numéro 1_1111111111 n’est pas autorisé. Il est réservé
+        pour la gestion interne des déclenchements d’IP.</p>
+      <p>L’IP ‘1_11_11_1_1111111111’ est appelé NULL. Il est utilisé
+        lors de l’assemblage des instructions par mots de 64 bits afin
+        de remplir les bits de poids faible du mot lorsqu’il faut
+        aligner l’instruction suivante sur les poids forts du mot de 64
+        bit suivant. Son exécution n’existe pas et donc aucun cycle
+        n’est nécessaire lorsque cette instruction est chargée par le
+        contrôleur de la mémoire de programme. Le programme suivant est
+        composé de 4 instructions, la troisième étant une instruction
+        étendue.</p>
+      <p></p>
+      <p><img alt="" src="figure%20html/Null.png" height="165"
+          width="500"></p>
+      <p></p>
+      <h2><a name="L4042" id="L4042"></a><a name="L138" id="L138"></a>Branchement
+
+
+
+
+
+
+
+        relatif</h2>
+      <p>Il existe trois instructions de branchement relatif : BR, BZ et
+        BNZ. Elles ont toutes les trois sur le même schéma, 6 bits pour
+        le code opération et 10 bits pour le déplacement.</p>
+      <p>Ce déplacement est un entier en complément à deux qui s’ajoute
+        à la valeur du compteur ordinal point sur cette instruction de
+        branchement. La valeur de déplacement ZERO est interdite et
+        entrainerai une boucle infinie. Les deux instructions BZ et BNZ
+        consomment le sommet de pile et effectuent le branchement sous
+        condition de sa valeur égale à zéro ou pas.<br>
+      </p>
+      <p>Dans tous les cas le résultat du branchement doit pointer vers
+        une instruction effective ( pas un FFFF!!!)<br>
+      </p>
+      <h3>Branchement relatif BR</h3>
+      <p><img alt="" src="figure%20html/BR.png" height="82" width="532"></p>
+      <h3>Branchement relatif si Zero BZ&nbsp; (2 cycles sur la version
+        2)<br>
+      </h3>
+      <p><img alt="" src="figure%20html/BZ.png" height="88" width="532"></p>
+      <h3>Branchement relatif si Non Zero BNZ (2 cycles sur la version
+        2)</h3>
+      <p><img alt="" src="figure%20html/BNZ.png" height="84" width="535"></p>
+      <h2><a name="L4043" id="L4043"></a><a name="L140" id="L140"></a>Branchement
+
+
+
+
+
+
+
+        absolu</h2>
+      <p>Il y a deux instructions étendues sur trois mots de 16 bits.
+        Elles produisent toutes le deux le même effet sur le compteur
+        ordinal en y rangeant la valeur codées sur les deux mots de 16
+        bits suivants (codage Big Endian). Le CALL mémorise en plus
+        l’adresse de l’instruction afin de pouvoir revenir à
+        l’instruction suivante lors de l’instruction RETURN. Par le
+        stockage sur 64 bit en mémoire de programme , le temps
+        d'exécution de ces deux instruction reste en un seul cycle.</p>
+      <p>Le résultat du branchement doit pointer vers une instruction
+        effective ( pas un FFFF!!!)<br>
+      </p>
+      <p>Voici les codages de ces deux instructions :</p>
+      <h3>L’instruction Call </h3>
+      <h3><img alt="" src="figure%20html/call.png" height="351"
+          width="548"></h3>
+      <p></p>
+      <h3>Le branchement asbolu</h3>
+      <p><img alt="" src="figure%20html/BRA.png" height="352"
+          width="539"></p>
+      <p></p>
+      <h2><a name="L4044" id="L4044"></a><a name="L142" id="L142"></a>Contrôle
+
+
+
+
+
+
+
+        de flot</h2>
+      <p>Il existe deux instructions de contrôle de flot. La première
+        RETURN permet le retour d'appel de procédure par restauration du
+        compteur ordinal de la valeur rangée lors de l'appel de fonction
+        CALL.</p>
+      <p>La seconde HaLT permet d’arrêter le processeur dans l'état
+        courant . Dans un fonctionnement en mode esclave ( Non
+        disponible sur la version &lt;= 2.1 ) cette instruction
+        déclenche l’activation de la sortie ORTREE sur le processeur.
+        L'esclave ne redémarre que lorsque le signal StartCPU est activé
+        et avec l'adresse sur 13 bits positionnés sur StartAdresse (cf
+        Instruction SPMD). Le redémarrage du processeur maître ne peut
+        se faire que par une reset.<br>
+        Ce fonctionnement permet une arborescence d'Homades. Un
+        processeur homade est un esclave de son père et le maître de ses
+        fils. Une telle utilisation demande un modèle programmation
+        assez particulier qu'on pourrait appelé SPMD*.<br>
+      </p>
+      <h3>Le Return</h3>
+      <p><img alt="" src="figure%20html/return.png" height="79"
+          width="534"></p>
+      <h3>Le HaLT</h3>
+      <p><img alt="" src="figure%20html/hlt.png" height="85" width="536"></p>
+      <p></p>
+      <h2><a name="L40441" id="L40441"></a><a name="L1421" id="L1421"></a><a
+          name="L220" id="L220"></a><a name="L2201" id="L2201"></a>Litéraux</h2>
+      <p>Il existe une instruction qui explicitement range un nombre en
+        sommet de pile du processeur. Cette instruction LIT permet de
+        manipuler des nombres binaires (complement à deux sur la version
+        1.4 le douzième bit est copié sur les 24 bits de poids fort du
+        mots de 32 bits sur le sommet de pile. ) sur 12 bits.</p>
+      <p>Plusieurs LIT de suite avec des décalage et logique permettent
+        de construire des mots de plus de 12 bits ( CF bibliothèque
+        d'IPs) </p>
+      <p></p>
+      <p><img alt="" src="figure%20html/lit.png" height="65" width="533"><br>
+      </p>
+      <div class="section">
+        <h2><a name="L404" id="L404"></a>Intercession <img alt="NEW!"
+            src="figure%20html/new.jpeg" height="45" width="61"><br>
+        </h2>
+        <p>Une nouvelle instruction apparait à partir de la version 2.2.
+          La réflexivité comme concept matériel du processeur Homade:
+          cette nouvelle instruction est dédiée à la modification de la
+          mémoire de programme. Il est sans doute nécessaire de rappeler
+          que le processeur Homade fonctionne plutôt suivant une
+          architecture Harvard avec séparation de la mémoire
+          d'instructions et de la mémoire de données. Cette dernière
+          n'existe que si un IP mémoire a été instancié dans la
+          configuration du processeur. L'instruction WIM va permettre
+          d'écrire dans cette mémoire de programme une suite de trois
+          instructions alignées sur un mot de 64 bits de la
+          mémoire&nbsp; avec un complément automatique d'une quatrième
+          instruction égale à RETURN. Seules les adresses 1&amp;00 à
+          111111111111&amp;00 sont accessibles par cette intercession.
+          Le champ WIM précise explicitement cette adresse.<br>
+          L’instruction WIM comme pour le CALL doit nécessairement être
+          alignée sur un début de mot en mémoire. En aucun cas cette
+          zone de mémoire d'instruction ne pourra être swappée en
+          mémoire si une implémentation de cache d'instruction devient
+          nécessaire.<br>
+          Cette instruction machine sera exploitée principalement pour
+          introduire la notion de VIRTUAL_COMPONENT au niveau
+          assembleur.<br>
+        </p>
+        <h3>Le WIM (Write in Instruction Memory)<br>
+        </h3>
+        <p><img alt="wim format" src="figure%20html/wim.png" height="65"
+            width="533"><br>
+        </p>
+        <p>Utilisation avec ses trois arguments sur 48 bits:<br>
+        </p>
+        <img alt="w64" src="figure%20html/w64.png" height="169"
+          width="501"><br>
+        <br>
+        Cette instruction modifiera le code à l'adresse
+        IIIIIIIIIIII&amp;00 et y rangera le mot de 64 bits
+        "CODE1_CODE2_CODE3_RETURN"<br>
+        <br>
+        Un exemple d’utilisation la reconfiguration dynamique hard/soft:
+        &nbsp;&nbsp;&nbsp; &nbsp; <br>
+        &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp; WIM CALL XXXX YYYY : permet de indirection&nbsp;
+        dynamique vers un appel de fonction en rangeant CALL XXXX YYYY
+        RETURN sur un mot de 64 bits<br>
+        &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp; WIM IPCODE RETURN FFFF permet de changer un
+        appel de fonction en appel d'IP en rangeant IPCODE RETURN FFFF
+        RETURN .<br>
+        On peut aussi produire une fonction courte dynamiquement, pas
+        exploité par l'assembleur Homade pour la version actuelle.<br>
+        &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp; WIM ADD ROT DUP ranger le code online ADD ROT
+        DUP RETURN <br>
+        <h2>Gestion du&nbsp; parallélisme</h2>
+      </div>
+      <p>Deux autres instructions seront disponibles dans les versions
+        suivantes : les instructions SPMD et WAIT permettent de
+        déclencher en parallèle et de se synchroniser en fin d'exécution
+        lorsqu'une batterie d'Homades a été développée. L"instruction
+        SPMD fournira une adresse de branchement sur 13 bits [ I<sub>12</sub>
+        .. I<sub>0</sub> ]à tous les Homades esclaves qui la recevront.
+        Cette adresse est alors shiftée de 2 sur la gauche ( Multiplié
+        par 4). Cette adresse mémoire devra contenir le programme à
+        exécuter par tous les Homades esclaves. Ce programme doit être
+        de longueur inférieure ou égale à 4 et doit nécessairement se
+        terminer par l'instruction HALT.<br>
+      </p>
+      <p>SPMD;<br>
+      </p>
+      <p><img style=" width: 533px; height: 65px;" alt=""
+          src="figure%20html/spmd.png"><br>
+      </p>
+      <p>WAIT:<br>
+      </p>
+      <p><img style=" width: 536px; height: 85px;" alt=""
+          src="figure%20html/wait.png"><br>
+      </p>
+      <p><br>
+        On pourra par exemple placer un CALL sur 3 mots suivi d'un HALT
+        pour obtenir un mode de fonctionnement SPMD. On pourra aussi
+        placer 1 instruction suivi d'un HALT pour émuler un mode SIMD (
+        4 cycles devraient être&nbsp; nécessaires : SPMD + Instr_SIMD +
+        HALT&nbsp; + WAIT ) .<br>
+        La gestion de l'activité et de communications entre esclaves et
+        maître ne font pas partie du cœur Homade. Elles sont assurées
+        par des IPs du maître ou des esclaves à définir. Des exemples
+        seront disponibles en&nbsp; bibliothèques pour metre en place le
+        modèle de calcul SPMD avec gestion de l'activité des esclaves
+        et&nbsp; avec différents réseaux de communication. ( en cours
+        d'étude)<br>
+      </p>
+      <div class="section">
+        <h2><a name="L404" id="L404"></a>Le gestion de la
+          reconfiguration dynamique partielle<br>
+        </h2>
+      </div>
+      Il n'y a pas dans Homade d’instruction spécifique pour ce genre de
+      manipulation d"IP.&nbsp; Par contre&nbsp; comme pour une addition
+      ou un load/store ou&nbsp; etc.&nbsp; vous pouvez créer votre
+      propre IP qui gère la dynamicité des autres IP.<br>
+      Un exemple sera fourni en bibliothèque, l' IP NewIP lit le sommet
+      de pile et interprète celui-ci comme 1 bit pour maître ou
+      esclaves, 11 bits pour le numéro de l'IP et 4 bits pour la version
+      de l"IP à implémenter dans la zone réservée parmi les 16
+      possibles. Ce choix est bien évidement propre à notre
+      implémentation de cet IP NEWIP. Il sera nécessairement un Long_IP<br>
+      <p><br>
+      </p>
+      <p></p>
+    </div>
+  </body>
+</html>

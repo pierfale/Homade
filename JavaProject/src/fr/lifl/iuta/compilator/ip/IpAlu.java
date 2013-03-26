@@ -3,6 +3,12 @@ package fr.lifl.iuta.compilator.ip;
 import fr.lifl.iuta.compilator.exception.InstructionFailedException;
 import fr.lifl.iuta.compilator.processor.Processor;
 
+/**
+ * 
+ * @author danglotb
+ *	
+ * Cette ip contient des primitives de calculs.
+ */
 public class IpAlu extends AbstractIP {
 	
 	public void exec() throws InstructionFailedException {

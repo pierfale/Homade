@@ -21,7 +21,7 @@ public class Vue extends JFrame{
 	protected PanelIDE pan1;
 	protected GraphicsViewDebug pan2; 
 	protected MenuBarr menu;
-
+	
 	public Vue() {	
 
 		this.setTitle("IDE Fbs");

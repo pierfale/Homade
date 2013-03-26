@@ -2,8 +2,15 @@ package fr.lifl.iuta.compilator.compile.fbs.translate;
 
 import java.util.Map;
 
-import fr.lifl.iuta.compilator.base.Util;
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
+
+/**
+ * 
+ * @author falezp
+ * 
+ * Traduit une expression boolean en tenant compte de la priorité d'exécution des opérations
+ *
+ */
 
 public class BooleanTranslate {
 	

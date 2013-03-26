@@ -1,17 +1,23 @@
 package fr.lifl.iuta.compilator.compile.fbs.grammar;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
 import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
+
+/**
+ * 
+ * @author falezp
+ * 
+ * Charge le fichier de configuration de la grammaire et construit la structure en mémoire
+ *
+ */
 
 public class Grammar {
 	
@@ -21,9 +27,9 @@ public class Grammar {
 		
 	}
 	
-	public static boolean load(String pathname) throws FileNotFoundException {
+	public static boolean load(InputStream stream) throws FileNotFoundException {
 		Rapport.addLine("<h2>Lecture du fichier de configuration de la grammaire :</h2>");
-		BufferedReader reader = new BufferedReader(new FileReader(new File(pathname)));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		words = new ArrayList<Words>();
 		String line = "";
 		int nbLine = 1;
@@ -71,8 +77,9 @@ public class Grammar {
 					ok = false;
 				}
 				
+				
 			}
-			
+			sc.close();
 			nbLine++;
 			try {
 				line = reader.readLine();

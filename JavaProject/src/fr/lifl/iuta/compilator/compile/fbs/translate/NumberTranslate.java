@@ -1,14 +1,19 @@
 package fr.lifl.iuta.compilator.compile.fbs.translate;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import fr.lifl.iuta.compilator.base.Util;
 import fr.lifl.iuta.compilator.compile.fbs.Config;
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Grammar;
-import fr.lifl.iuta.compilator.compile.fbs.grammar.Token;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.WordList;
+
+/**
+ * 
+ * @author falezp
+ *
+ * Traduit une expréssion numérique en respectant les priorités des opérations 
+ */
 
 public class NumberTranslate {
 	
@@ -163,7 +168,6 @@ public class NumberTranslate {
 				retour += "LIT "+tree.getToken().getContents()+"\n";
 			else if(tree.nodeSize() > 0 && tree.getNode(0).getFunction().equals("variable_name")){
 				retour += tree.translate(addrVariable);
-				System.out.println("-----\n"+retour+"\n------");
 				through = false;
 			}
 		

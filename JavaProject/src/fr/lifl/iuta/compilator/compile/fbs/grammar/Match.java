@@ -1,9 +1,16 @@
 package fr.lifl.iuta.compilator.compile.fbs.grammar;
 
+/**
+ * 
+ * @author falezp
+ * 
+ * Reconnaissance d'un langage de mathing simplifié
+ *
+ */
+
 public class Match {
 
 	public static boolean equals(String expr, String s) {
-		boolean ok = true;
 		int cursor = 0;
 		int i = 0;
 		while(i<expr.length()) {
@@ -44,7 +51,6 @@ public class Match {
 	}
 	
 	private static boolean match(String expr, char c) {
-		boolean ok = false;
 		for(int i=0; i<expr.length(); i++) {
 			if(i+2<expr.length() && expr.charAt(i+1) == '-') {
 				

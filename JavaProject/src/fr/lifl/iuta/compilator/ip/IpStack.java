@@ -3,6 +3,12 @@ package fr.lifl.iuta.compilator.ip;
 import fr.lifl.iuta.compilator.exception.InstructionFailedException;
 import fr.lifl.iuta.compilator.processor.Processor;
 
+/**
+ * 
+ * @author danglotb
+ *
+ * Cette IP permet de gérer l'état des Stacks.
+ */
 public class IpStack extends AbstractIP {
 
 	public void exec(short instruction) {
@@ -26,11 +32,8 @@ public class IpStack extends AbstractIP {
 			case 4 : out = rot(in);break;
 			case 5 : out = invrot(in);break;
 			case 6 : out = nip(in);break;
-			//tmp
 			case 7 : out = pop1(in);break;
-			//default: out = display(in);break;
 		}
-		//tmp
 		if(this.out <= out.length)
 			for(int i=0; i<this.out; i++)
 				Processor.stackPush(out[i]);			

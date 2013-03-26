@@ -4,13 +4,16 @@ import java.util.Map;
 
 import fr.lifl.iuta.compilator.compile.fbs.Config;
 
-
+/**
+ * 
+ * @author falezp
+ *
+ * Contient les liste d'instruction nécéssaire a l'intération avec les chaines
+ *
+ */
 public class StringManager {
 	public static String createString(WordTree wt, Map<String, MemoryBlock> addrVariable) {
 		String retour = "";
-		System.out.println("°°°°°°>"+wt.nodeSize()+" | "+wt.getFunction()+" | "+wt.getToken().getContents());
-		if(wt.nodeSize() > 0 )
-			System.out.println("+°°°°°>"+wt.getNode(0).nodeSize()+" | "+wt.getNode(0).getFunction()+" | "+wt.getNode(0).getToken().getContents());
 		if(wt.nodeSize() > 0 && !wt.getNode(0).getToken().getContents().equals("")) {
 			int addr = MemoryBlock.nextFreeSegment(addrVariable);
 			addrVariable.put(""+addr, new MemoryBlock(addr, 1, ""));
@@ -47,7 +50,23 @@ public class StringManager {
 				retour += "IP 3 0 1 "+Config.IP_set_variable_RAM_64+"\n";
 			}
 			for(int i=1; i<wt.getNode(0).getToken().getContents().length()-1; i++) {
-				retour += "LIT "+((int)wt.getNode(0).getToken().getContents().charAt(i))+"\n";
+				char curr = wt.getNode(0).getToken().getContents().charAt(i);
+				if(curr == '\\') {
+					i++;
+					curr = wt.getNode(0).getToken().getContents().charAt(i);
+					switch(curr) {
+						case 'n':
+							curr = 13;
+							break;
+						case '0':
+							curr = 0;
+							break;
+						case 't':
+							curr = 9;
+							break;
+					}
+				}
+				retour += "LIT "+((int)curr)+"\n";
 				retour += "LIT "+(i-1)+"\n";
 				retour += VariableManager.set(addr);
 			}

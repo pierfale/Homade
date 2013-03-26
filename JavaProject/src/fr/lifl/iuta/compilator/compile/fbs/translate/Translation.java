@@ -8,6 +8,14 @@ import java.util.HashMap;
 import fr.lifl.iuta.compilator.compile.fbs.Config;
 import fr.lifl.iuta.compilator.compile.fbs.Rapport;
 
+/**
+ * 
+ * @author falezp
+ * 
+ * Etape finale de compilation :
+ *	Traduction d'un arbre de tokens vers une liste d'instruction sous la forme d'un String
+ *
+ */
 
 public class Translation {
 	

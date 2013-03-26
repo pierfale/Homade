@@ -5,10 +5,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fr.lifl.iuta.compilator.compile.fbs.Config;
-import fr.lifl.iuta.compilator.compile.fbs.Rapport;
-import fr.lifl.iuta.compilator.compile.fbs.check.Variable;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Token;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.WordList;
+
+/**
+ * 
+ * @author falezp
+ * 
+ * Structure représentant un arbre de tokens
+ * 
+ * Contient également une fonction pour traduire les tokens non pris en compte par les modules de traduction
+ *
+ */
 
 public class WordTree {
 	
@@ -170,16 +178,13 @@ public class WordTree {
 	}
 	
 	public Token variableType() {
-		System.out.println("==/=>"+function);
 		if(function.equals("type") && !token.getContents().equals("")) {
-			System.out.println("====>"+token.getContents());
 			return token;
 		}
 		else {
 			for(int i=0; i<node.size(); i++) {
 				Token  tmp = node.get(i).variableType();
 				if(tmp != null) {
-					System.out.println("====>"+tmp.getContents());
 					return tmp;
 				}
 			}
@@ -220,7 +225,6 @@ public class WordTree {
 	}
 	
 	public String translate(Map<String, MemoryBlock> addrVariable) {
-		System.out.println("=>"+function+":"+addrVariable.size());
 		String retour = "";
 		boolean through = true;
 		if(function.equals("list_function")) {

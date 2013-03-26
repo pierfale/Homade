@@ -1,14 +1,16 @@
 package fr.lifl.iuta.compilator.graphics;
 
-import javax.swing.JTextArea;
+import javax.swing.JEditorPane;
+import javax.swing.JTextPane;
 
-public class TxtArea extends JTextArea {
+public class TxtArea extends JTextPane {
 
 	private Texttxt t;
 	
 	public TxtArea(Texttxt t){
-		super(t.getChaine());
+		super();
 		this.t = t;
+		this.setText(this.t.getChaine());
 	}
 	
 	public Texttxt gett(){

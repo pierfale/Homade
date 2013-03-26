@@ -1,8 +1,7 @@
 package fr.lifl.iuta.compilator.compile.fbs;
 
 import java.io.FileNotFoundException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.InputStream;
 
 import fr.lifl.iuta.compilator.compile.fbs.check.Check;
 import fr.lifl.iuta.compilator.compile.fbs.grammar.Grammar;
@@ -12,9 +11,17 @@ import fr.lifl.iuta.compilator.compile.fbs.grammar.WordList;
 import fr.lifl.iuta.compilator.compile.fbs.translate.Translation;
 import fr.lifl.iuta.compilator.compile.fbs.translate.WordTree;
 
+/**
+ * 
+ * @author falezp
+ * 
+ * Execute les différentes étapes de la compilation
+ *
+ */
+
 public class Exec {
 	
-	public static int exec(String input, String output, String grammar) {
+	public static int exec(String input, String output, InputStream grammar) {
 		
 		long beg = System.currentTimeMillis();
 		try {

@@ -7,14 +7,20 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
+import fr.lifl.iuta.compilator.graphics.MyObservable;
 import fr.lifl.iuta.compilator.instruction.Instruction;
-
-public class BusIP {
+/**
+ * 
+ * @author danglotb
+ * Le BusIP est chargé de gérer la communication entre les IPs chargés et le Processeurs.
+ * 
+ */
+public class BusIP extends MyObservable{
 	
-	private static ArrayList<AbstractIP> observer = new ArrayList<AbstractIP>();
+	private static ArrayList<AbstractIP> iPs = new ArrayList<AbstractIP>();
 	
 	public static Instruction out(short instruction) {
-		Iterator<AbstractIP> it = observer.iterator();
+		Iterator<AbstractIP> it = iPs.iterator();
 		while(it.hasNext()) {
 			AbstractIP tmp = it.next();
 			tmp.exec(instruction);
@@ -23,6 +29,12 @@ public class BusIP {
 		return null;
 	}
 	
-	public static void addIP(AbstractIP ip) { observer.add(ip); }
+	public static void addIP(AbstractIP ip) { iPs.add(ip); }
+	
+	public static ArrayList<AbstractIP> getIP(){ return iPs; }
+	
+	public static void removeIP(AbstractIP ip) { iPs.remove(ip); }
+
+	public static void removeAllIP() { iPs.clear(); }
 	
 }

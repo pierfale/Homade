@@ -5,8 +5,13 @@ import java.util.Stack;
 
 import fr.lifl.iuta.compilator.compile.fbs.Config;
 
+/**
+ * 
+ * @author falezp
+ *
+ * Contient les liste d'instruction permétant d'agir sur les tableaux
+ */
 public class ArrayManager {
-	
 	
 	public static String createArray(WordTree wt, Map<String, MemoryBlock> addrVariable) {
 		String retour = "";

@@ -33,44 +33,38 @@ public class BarreOutils extends JToolBar {
 		JButton button = null;
 
 		//first button
-		button = makeNavigationButton("/plus_add_blue.png", "Plus",
-				"New File");
-		button.setBorderPainted(false);
-		button.setContentAreaFilled(false);
-		this.add(button,0);
-		
-		//first button
 		button = makeNavigationButton("/play.jpg", "Play",
 				"run program");
 		button.setBorderPainted(false);
 		button.setContentAreaFilled(false);
-		this.add(button,1);
+		button.setForeground(Color.black);
+		this.add(button,0);
 
 		//second button
 		button = makeNavigationButton("/pause.jpg", "Stop",
 				"stop program");
 		button.setBorderPainted(false);
 		button.setContentAreaFilled(false);
-		this.add(button,2);
+		this.add(button,1);
 
 		button = makeNavigationButton("/save.png", "Save",
 				"save program");
 		button.setBorderPainted(false);
 		button.setContentAreaFilled(false);
 		button.setMnemonic(KeyEvent.VK_CONTROL);
-		this.add(button,3);
+		this.add(button,2);
 
 		button = makeNavigationButton("/debug.png", "Debug",
 				"run debug");
 		button.setBorderPainted(false);
 		button.setContentAreaFilled(false);
-		this.add(button,4);
+		this.add(button,3);
 
 		button = makeNavigationButton("/book_icon.png", "Fbs Doc",
 				"Read Some Doc");
 		button.setBorderPainted(false);
 		button.setContentAreaFilled(false);
-		this.add(button,5);
+		this.add(button,4);
 
 		textField = new JTextField("Search", (int)this.vue.getSize().getWidth()/10);
 		textField.setOpaque(true);

@@ -3,7 +3,12 @@ package fr.lifl.iuta.compilator.compile.fbs.translate;
 import java.util.Map;
 import java.util.Stack;
 
-import fr.lifl.iuta.compilator.compile.fbs.grammar.Token;
+/**
+ * 
+ * @author falezp
+ *
+ * Contient les listes d'instructions nécéssaire à l'éxecution des fonctions 
+ */
 
 public class FunctionTranslate {
 	

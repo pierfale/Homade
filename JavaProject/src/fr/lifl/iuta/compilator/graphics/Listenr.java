@@ -6,6 +6,7 @@ import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -17,8 +18,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 
-import fr.lifl.iuta.compilator.processor.Processor;
-
 public class Listenr implements ActionListener{
 
 	private Vue vue;
@@ -29,6 +28,8 @@ public class Listenr implements ActionListener{
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		System.out.println(e.getActionCommand());
+		Runtime r = Runtime.getRuntime();
 		if(e.getActionCommand().equals("Play")||e.getActionCommand().equals("Run")){
 			Component c = vue.getPan1().getPanelsec().getCell1().
 					getTabbedPane().getSelectedComponent();
@@ -37,14 +38,17 @@ public class Listenr implements ActionListener{
 				c = viewport.getView();
 				if(c instanceof TxtArea){
 					tab = new String[] {((TxtArea) c).gett().getChemin()+((TxtArea)c).gett().getName()};
-					fr.lifl.iuta.compilator.compile.fbs.Main.main(tab);
+					try {
+						Process p = r.exec("java -jar compile "+tab[0]);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}else{
+					System.out.println("BarreOutils play   " + c.toString());
 				}
 			}
 		}else if(e.getActionCommand().equals("Stop")){
-			if(Processor.isOn()){
-				Processor.stop();
-				Processor.init();
-			}			
+
 		}else if(e.getActionCommand().equals("Save")){
 			Component c = vue.getPan1().getPanelsec().getCell1().getTabbedPane().getSelectedComponent();
 			if(c instanceof JScrollPane){
@@ -61,6 +65,7 @@ public class Listenr implements ActionListener{
 				}
 			}
 		}else if(e.getActionCommand().equals("Debug")){
+			//fr.lifl.iuta.compilator.base.Main.load(tab); 
 			vue.remove(vue.getPan1());
 			vue.setPanel(vue.getPan2());
 			vue.getMenu().maj();
@@ -68,15 +73,14 @@ public class Listenr implements ActionListener{
 			vue.getPan2().loadGraphicsDebug();
 		}else if(e.getActionCommand().equals("Fbs Doc")){
 			try{
+//				Desktop.getDesktop().browse(URI.create("http://www.google.fr"));
 				Desktop.getDesktop().open(new File("ressources/fbs.html"));
 			}catch(Exception e1){e1.printStackTrace();}
 		}else if(e.getActionCommand().equals("Search")){
 			search();
 		}
-		if(e.getActionCommand().equals("New File")||e.getActionCommand().equals("Plus")){
-			if(vue.getContentPane().getName().equals("Debug")){
-				vue.setContentPane(vue.getPan1());
-			}
+		if(e.getActionCommand().equals("New File")){
+			//new NewFileWindow(vue).getText();
 			String s = JOptionPane.showInputDialog("Entrez un chemin");
 			if(s == null){System.out.println("merde");}
 			else{
@@ -90,8 +94,6 @@ public class Listenr implements ActionListener{
 				vue.getPan1().getPanelsec().getCell1().addOnglet(chooser.getSelectedFile().getAbsolutePath());
 		}else if (e.getActionCommand().equals("Quit")){		
 			System.exit(0);
-		}else if (e.getActionCommand().equals("Compile")){		
-			System.out.println("Listenr Compile");
 		}else if(e.getActionCommand().equals("IDE")){
 			vue.remove(vue.getPan2());
 			vue.setPanel(vue.getPan1());
@@ -119,12 +121,16 @@ public class Listenr implements ActionListener{
 				System.out.println("BarreOutils search " + c.toString());
 			}
 		}
-		String content = are.getText();      
+		are.setHighlighter(hilit);
+		String content = are.getText();
         int index = content.indexOf(s, 0);
+        System.out.println(index);
         if (index >= 0) {   // match found
             try {
                 int end = index + s.length();
-                hilit.addHighlight(index, end, painter);
+                System.out.println("index : " + index  + "  end : " + end);
+                are.setText(content);
+                are.getHighlighter().addHighlight(index, end, painter);
                 are.setCaretPosition(end);
                 entry.setBackground(Color.GREEN);
                 //message("'" + s + "' found. Press ESC to end search");

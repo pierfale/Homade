@@ -50,22 +50,4 @@ public class AbstractGraphicsStack extends JPanel implements Observer{
 		this.repaint();
 	}
 
-//	public static void main(String[] args) {
-//		JFrame f = new JFrame("test");
-//		Stack<Integer> stack = new Stack<Integer>();
-//		stack.add(new Integer(10));stack.add(new Integer(11));stack.add(new Integer(01));
-//		stack.add(new Integer(10));stack.add(new Integer(11));stack.add(new Integer(01));
-//		stack.add(new Integer(10));stack.add(new Integer(11));stack.add(new Integer(01));
-//		f.add(new GraphicsStack(stack, "Stack Function"));
-//		f.setVisible(true);
-//		f.setSize(150,150);
-//		f.setLocation(500,500);
-//		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		try{Thread.sleep(2000); } catch (Exception e) {}
-//		stack.add(new Integer(10));stack.add(new Integer(11));stack.add(new Integer(01));
-//		stack.add(new Integer(10));stack.add(new Integer(11));stack.add(new Integer(01));
-//		stack.add(new Integer(10));stack.add(new Integer(11));stack.add(new Integer(01));
-//		Processor.notifyObserver(stack);
-//	}
-	
 }
