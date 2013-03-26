@@ -1,0 +1,8 @@
+int function main() {
+	string s = "foo bar";
+	int n = 6;
+	while(n >= 0) {
+		display s[n];
+		n = n-1;
+	}
+}

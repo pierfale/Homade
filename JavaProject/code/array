@@ -1,0 +1,8 @@
+int function main() {
+	int[] array = {1, 2, 4, 8, 16, 32};
+	int n = 0;
+	while(n < 6) {
+		display 2*array[n];
+		n = n+1;
+	}
+}

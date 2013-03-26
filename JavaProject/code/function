@@ -1,0 +1,13 @@
+int function main() {
+	display pow(2, 6);
+	display "\n";
+	display pow(10, 3);
+}
+
+int function pow(int n, int exp) {
+	if(exp <= 0)
+		return 1;
+	else
+		return n*pow(n, exp-1);
+}
+
